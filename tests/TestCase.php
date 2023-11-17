@@ -6,8 +6,6 @@ use dmitryrogolev\Is\Providers\IsServiceProvider;
 
 class TestCase extends \Orchestra\Testbench\TestCase 
 {
-    use RefreshDatabase;
-
     /**
      * Получить поставщиков пакета
      *

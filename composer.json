@@ -26,29 +26,35 @@
         "laravel/framework": "^10.30"
     },
     "require-dev": {
-        "orchestra/testbench": "^8.14"
+        "orchestra/testbench": "^8.15"
     },
     "autoload": {
         "psr-4": {
             "dmitryrogolev\\Is\\": "src/",
-            "dmitryrogolev\\Is\\Database\\": "database/", 
-            "dmitryrogolev\\Is\\Database\\Migrations\\": "database/migrations/", 
-            "dmitryrogolev\\Is\\Database\\Factories\\": "database/factories/", 
+            "dmitryrogolev\\Is\\Database\\": "database/",
+            "dmitryrogolev\\Is\\Database\\Migrations\\": "database/migrations/",
+            "dmitryrogolev\\Is\\Database\\Factories\\": "database/factories/",
             "dmitryrogolev\\Is\\Database\\Seeders\\": "database/seeders/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "dmitryrogolev\\Is\\Tests\\": "tests/", 
-            "dmitryrogolev\\Is\\Tests\\Seeders\\": "tests/seeders/", 
-            "dmitryrogolev\\Is\\Tests\\Migrations\\": "tests/migrations/"
+            "dmitryrogolev\\Is\\Tests\\": "tests/",
+            "dmitryrogolev\\Is\\Tests\\Seeders\\": "tests/seeders/",
+            "dmitryrogolev\\Is\\Tests\\Database\\": "tests/database/", 
+            "dmitryrogolev\\Is\\Tests\\Database\\Migrations\\": "tests/database/migrations/", 
+            "dmitryrogolev\\Is\\Tests\\Database\\Factories\\": "tests/database/factories/", 
+            "dmitryrogolev\\Is\\Tests\\Database\\Seeders\\": "tests/database/seeders/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
                 "dmitryrogolev\\Is\\Providers\\IsServiceProvider"
-            ]
+            ], 
+            "aliases": {
+                "Role": "dmitryrogolev\\Is\\Facades\\Role"
+            }
         }
     },
     "minimum-stability": "stable",

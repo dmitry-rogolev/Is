@@ -2,6 +2,7 @@
 
 namespace dmitryrogolev\Is\Contracts;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 interface BaseRoleable 
@@ -12,6 +13,15 @@ interface BaseRoleable
      * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
      */
     public function roles(): MorphToMany;
+
+    /**
+     * Возвращает все роли модели. 
+     * 
+     * При включенной иерархии ролей, возвращает все нижестоящие и равные по уровню в иерархии роли.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function allRoles(): Collection;
 
     /**
      * Подгружает роли

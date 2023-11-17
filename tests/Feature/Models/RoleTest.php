@@ -1,48 +1,30 @@
 <?php
 
-namespace dmitryrogolev\Is\Tests\Feature;
+namespace dmitryrogolev\Is\Tests\Feature\Models;
 
+use dmitryrogolev\Is\Models\Database;
 use dmitryrogolev\Is\Tests\TestCase;
 
 class RoleTest extends TestCase
 {
-    private string $role = '';
-
-    protected function setUp(): void
+    /**
+     * Расширяет ли модель базовый класс для всех моделей?
+     *
+     * @return void
+     */
+    public function test_extends_database(): void 
     {
-        parent::setUp();
-
-        $this->role = config('is.models.role');
+        $this->assertInstanceOf(Database::class, config('is.models.role'));
     }
 
     /**
-     * Проверяем, что имя таблицы ролей совпадает с именем таблицы из конфига.
+     * Совпадает ли имя таблицы модели с конфигом?
      *
      * @return void
      */
     public function test_table(): void 
     {
-        $this->assertEquals(config('is.tables.roles'), (new ($this->role))->getTable());
-    }
-
-    /**
-     * Проверяем, что имя первичного ключа роли совпадает с первичным ключом из конфига.
-     *
-     * @return void
-     */
-    public function test_primary_key(): void 
-    {
-        $this->assertEquals(config('is.primary_key'), (new ($this->role))->getKeyName());
-    }
-
-    /**
-     * Проверяем статус временных меток
-     *
-     * @return void
-     */
-    public function test_timestamps(): void 
-    {
-        $this->assertEquals(config('is.uses.timestamps'), (new ($this->role))->usesTimestamps());
+        $this->assertEquals(config('is.tables.roles'), app(config('is.models.role'))->getTable());
     }
 
     /**

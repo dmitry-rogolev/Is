@@ -4,6 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
+/**
+ * Сидер модели ролей.
+ */
 class RoleSeeder extends Seeder
 {
     /**
@@ -20,10 +23,28 @@ class RoleSeeder extends Seeder
                     'level'       => 5,
                 ],
                 [
+                    'name'        => 'Editor',
+                    'slug'        => 'editor',
+                    'description' => 'Editor Role',
+                    'level'       => 3,
+                ],
+                [
                     'name'        => 'Moderator',
                     'slug'        => 'moderator',
                     'description' => 'Moderator Role',
                     'level'       => 2,
+                ],
+                [
+                    'name'        => 'Seller',
+                    'slug'        => 'seller',
+                    'description' => 'Seller Role',
+                    'level'       => 1,
+                ],
+                [
+                    'name'        => 'Customer',
+                    'slug'        => 'customer',
+                    'description' => 'Customer Role',
+                    'level'       => 1,
                 ],
                 [
                     'name'        => 'User',
@@ -40,9 +61,24 @@ class RoleSeeder extends Seeder
                     'description' => 'Admin Role',
                 ],
                 [
+                    'name'        => 'Editor',
+                    'slug'        => 'editor',
+                    'description' => 'Editor Role',
+                ],
+                [
                     'name'        => 'Moderator',
                     'slug'        => 'moderator',
                     'description' => 'Moderator Role',
+                ],
+                [
+                    'name'        => 'Seller',
+                    'slug'        => 'seller',
+                    'description' => 'Seller Role',
+                ],
+                [
+                    'name'        => 'Customer',
+                    'slug'        => 'customer',
+                    'description' => 'Customer Role',
                 ],
                 [
                     'name'        => 'User',
@@ -53,7 +89,7 @@ class RoleSeeder extends Seeder
         }
 
         foreach ($roles as $role) {
-            if (! config('is.models.role')::whereSlug($role['slug'])->first()) {
+            if (! config('is.models.role')::where('slug', $role['slug'])->count()) {
                 config('is.models.role')::create($role);
             }
         }

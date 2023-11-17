@@ -1,6 +1,6 @@
 <?php
 
-namespace dmitryrogolev\Is\Tests;
+namespace dmitryrogolev\Is\Tests\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;

@@ -3,6 +3,7 @@
 namespace dmitryrogolev\Is\Traits;
 
 use dmitryrogolev\Is\Helper;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Str;
@@ -19,6 +20,22 @@ trait BaseHasRoles
         $query = $this->morphToMany(config('is.models.role'), config('is.relations.roleable'))->using(config('is.models.roleable'));
 
         return config('is.uses.timestamps') ? $query->withTimestamps() : $query;
+    }
+
+    /**
+     * Возвращает все роли модели. 
+     * 
+     * При включенной иерархии ролей, возвращает все нижестоящие и равные по уровню в иерархии роли.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function allRoles(): Collection 
+    {
+        if (config('is.uses.levels')) {
+            return config('is.models.role')::where('level', '<=', $this->level())->get();
+        } 
+
+        return $this->roles;
     }
 
     /**

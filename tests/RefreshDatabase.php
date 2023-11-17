@@ -13,7 +13,7 @@ trait RefreshDatabase
      *
      * @var string
      */
-    protected string $seeder = \dmitryrogolev\Is\Tests\Seeders\DatabaseSeeder::class;
+    protected string $seeder = \dmitryrogolev\Is\Tests\Database\Seeders\DatabaseSeeder::class;
 
     /**
      * Следует ли запускать сидеры после миграции
@@ -30,7 +30,7 @@ trait RefreshDatabase
     protected function defineDatabaseMigrations(): void
     {
         $this->loadMigrationsFrom(
-            __DIR__.'/migrations'
+            __DIR__.'/database/migrations'
         );
     }
 }

@@ -5,26 +5,31 @@ namespace dmitryrogolev\Is\Models;
 use dmitryrogolev\Is\Contracts\RoleHasRelations as ContractRoleHasRelations;
 use dmitryrogolev\Is\Traits\RoleHasRelations;
 use dmitryrogolev\Is\Traits\Sluggable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class BaseRole extends Model implements ContractRoleHasRelations 
+/**
+ * Модель роли.
+ */
+class BaseRole extends Database implements ContractRoleHasRelations 
 {
     use HasFactory, Sluggable, RoleHasRelations;
+
+    /**
+     * Атрибуты, для которых разрешено массовое присвоение значений.
+     *
+     * @var array<string>
+     */
+    protected $fillable = [
+        'name', 
+        'slug', 
+        'description', 
+    ];
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
-        $this->connection = config('is.connection');
         $this->table = config('is.tables.roles');
-        $this->primaryKey = config('is.primary_key');
-        $this->timestamps = config('is.uses.timestamps');
-        $this->fillable = [
-            'name', 
-            'slug', 
-            'description', 
-        ];
 
         if (config('is.uses.levels')) {
             array_push($this->fillable, 'level');
@@ -32,13 +37,14 @@ class BaseRole extends Model implements ContractRoleHasRelations
     }
 
     /**
-     * Возвращаем роль по ее slug
+     * Магический метод, возвращающий роль по ее slug.
      * 
-     * Например, Role::admin(), Role::user(), Role::moderator()
+     * Например, Role::admin(), Role::user(), Role::moderator().
      *
      * @param string $method
      * @param array $parameters
      * @return mixed
+     * @throws \BadMethodCallException
      */
     public static function __callStatic($method, $parameters)
     {
@@ -53,6 +59,11 @@ class BaseRole extends Model implements ContractRoleHasRelations
         }
     }
 
+    /**
+     * Создайте новый экземпляр фабрики для модели.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory<static>
+     */
     protected static function newFactory()
     {
         return config('is.factories.role')::new();

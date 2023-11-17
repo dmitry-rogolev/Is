@@ -1,6 +1,6 @@
 <?php
 
-namespace dmitryrogolev\Is\Tests\Migrations;
+namespace dmitryrogolev\Is\Tests\Database\Migrations;
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Запустить миграцию.
      *
      * @return void
      */
@@ -44,7 +44,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Откатить миграцию.
      *
      * @return void
      */

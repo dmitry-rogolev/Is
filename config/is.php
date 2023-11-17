@@ -226,5 +226,14 @@ return [
          */
         'levels' => env('IS_USES_LEVELS', true), 
 
+        /**
+         * * Вести ли журнал. 
+         * 
+         * В журнал записываются данные для отладки, предупреждения, ошибки и т.д.
+         * 
+         * @link https://clck.ru/36dspa Логирование
+         */
+        'logging' => env('IS_USES_LOGGING', true), 
+
     ], 
 ];
