@@ -1,46 +1,82 @@
 <?php 
 
 namespace dmitryrogolev\Is;
+
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+use Illuminate\Support\Stringable;
 
 class Helper 
 {
     /**
-     * Преобразует строку в slug
+     * Преобразует значение в объект "\Illuminate\Support\Stringable".
      *
-     * @param string $value
-     * @return string
+     * @param mixed $value
+     * @return \Illuminate\Support\Stringable
      */
-    public static function slug(string $value): string 
+    public static function str($value = ''): Stringable 
     {
-        return str($value)->snake(config('is.separator'))->slug(config('is.separator'))->toString();
+        $value = value($value);
+
+        if ($value instanceof Stringable) {
+            return $value;
+        }
+
+        return is_string($value) ? Str::of($value) : Str::of('');
     }
 
     /**
-     * Привести аргумент к массиву
+     * Преобразует строку в slug
      *
-     * @param mixed $argument
+     * @param  mixed $value
+     * @return string
+     */
+    public static function slug($value): string 
+    {
+        return static::str($value)->camel()->snake(config('is.separator'))->toString();
+    }
+
+    /**
+     * Разбивает строку на массив по регулярному выражению.
+     *
+     * @param   mixed $value
+     * @param   string $delimiter
+     * @return  array
+     */
+    public static function split($value, string $delimiter = '/[,|\s_.-]+/'): array 
+    {
+        return static::str($value)->split($delimiter)->toArray();
+    }
+
+    /**
+     * Приводит значение к массиву.
+     *
+     * @param  mixed $value
      * @return array
      */
-    public static function arrayFrom(mixed $argument): array
+    public static function toArray($value): array
     {
-        if (is_array($argument) || $argument instanceof Collection) {
-            $result = Arr::flatten($argument);
+        $value = value($value);
 
-            for ($i = 0; $i < count($result); $i++) {
-                if (is_string($result[$i])) {
-                    $result[$i] = str($result[$i])->split('/[,|]/')->toArray();
-                }
-            }
-
-            return Arr::flatten($result);
+        if (is_string($value) || $value instanceof Stringable) {
+            $value = static::split($value);
         }
 
-        if (is_string($argument)) {
-            return str($argument)->split('/[,|]/')->toArray();
-        }
+        return Arr::flatten(Arr::wrap($value));
+    }
 
-        return Arr::wrap($argument);
+    /**
+     * Записывает сообщение указанного уровня в журнал. 
+     * 
+     * @param string $level
+     * @param string $message
+     * @param array  $context
+     * @return void
+     */
+    public static function log(string $level, string $message, array $context = []): void
+    {
+        if (config('is.uses.logging')) {
+            app('log')->channel(config('is.log_channel'))->log($level, $message, $context);
+        } 
     }
 }

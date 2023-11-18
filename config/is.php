@@ -18,7 +18,7 @@ return [
      * 
      * @link https://clck.ru/36LkBo Конфигурирование БД
      */
-    'connection' => env('IS_CONNECTION', config('database.default', null)), 
+    'connection' => env('IS_CONNECTION', config('database.default')), 
 
     /**
      * * Имена таблиц, которые создает пакет. 
@@ -105,6 +105,13 @@ return [
     'separator' => env('IS_SEPARATOR', '.'), 
 
     /**
+     * * Имя канала для ведения журнала.
+     * 
+     * @link https://clck.ru/36dspa Логирование
+     */
+    'log_channel' => env('IS_LOG_CHANNEL', config('logging.default', 'stack')), 
+
+    /**
      * * Флаги
      */ 
     'uses' => [
@@ -116,7 +123,7 @@ return [
          * 
          * @link https://clck.ru/36JNiT UUID
          */
-        'uuid' => env('IS_USES_UUID', true), 
+        'uuid' => (bool) env('IS_USES_UUID', true), 
 
         /**
          * * Использовать ли программное удаление для моделей. 
@@ -129,7 +136,7 @@ return [
          * 
          * @link https://clck.ru/36JNnr Программное удаление моделей
          */
-        'soft_deletes' => env('IS_USES_SOFT_DELETES', false), 
+        'soft_deletes' => (bool) env('IS_USES_SOFT_DELETES', false), 
 
         /**
          * * Использовать ли временные метки для моделей. 
@@ -141,7 +148,7 @@ return [
          * 
          * @link https://clck.ru/36JNke Временные метки моделей
          */
-        'timestamps' => env('IS_USES_TIMESTAMPS', true), 
+        'timestamps' => (bool) env('IS_USES_TIMESTAMPS', true), 
 
         /**
          * * Использовать ли миграции по умолчанию.
@@ -149,14 +156,14 @@ return [
          * Если вы не публикуете или не создаете свои миграции таблиц для этого пакета, 
          * то установите данный флаг в true.
          */
-        'migrations' => env('IS_USES_MIGRATIONS', false), 
+        'migrations' => (bool) env('IS_USES_MIGRATIONS', false), 
 
         /**
          * * Использовать ли сидеры по умолчанию.
          * 
          * Если вы хотитите использовать сидеры по умолчанию, установите данный флаг в true.
          */
-        'seeders' => env('IS_USES_SEED', false), 
+        'seeders' => (bool) env('IS_USES_SEED', false), 
 
         /**
          * * Регистрировать ли дериктивы blade (is, endis, role, endrole, level, endlevel).
@@ -168,7 +175,7 @@ return [
          * 
          * @link https://clck.ru/36Ls42 Директивы Blade
          */
-        'blade' => env('IS_USES_BLADE', true), 
+        'blade' => (bool) env('IS_USES_BLADE', true), 
 
         /**
          * * Регистировать ли посредники (is, role, level).
@@ -180,7 +187,7 @@ return [
          * 
          * @link https://clck.ru/36LsKF Посредники
          */
-        'middlewares' => env('IS_USES_MIDDLEWARES', true), 
+        'middlewares' => (bool) env('IS_USES_MIDDLEWARES', true), 
 
         /**
          * * Следует ли подгружать отношение модели после изменения. 
@@ -193,7 +200,7 @@ return [
          * Если вы делаете много опираций с ролями, 
          * рекомендуется отключить данную функцию для увеличения производительности.
          */
-        'load_on_update' => env('IS_USES_LOAD_ON_UPDATE', true), 
+        'load_on_update' => (bool) env('IS_USES_LOAD_ON_UPDATE', true), 
 
         /**
          * * Следует ли расширять метод "is" модели Eloquent.
@@ -208,7 +215,7 @@ return [
          * 
          * @link https://clck.ru/36LeCR Метод is модели Eloquent
          */
-        'extend_is_method' => env('IS_USES_EXTEND_IS_METHOD', true), 
+        'extend_is_method' => (bool) env('IS_USES_EXTEND_IS_METHOD', true), 
 
         /**
          * * Использовать ли иерархию ролей на основе уровней. 
@@ -224,7 +231,7 @@ return [
          * Если эта функция включена, то вам не придется добалять пользователю все роли, 
          * которые ему необходимы, а будет достаточно добавить только одну вышестоящую в иерархии роль.
          */
-        'levels' => env('IS_USES_LEVELS', true), 
+        'levels' => (bool) env('IS_USES_LEVELS', true), 
 
         /**
          * * Вести ли журнал. 
@@ -233,7 +240,7 @@ return [
          * 
          * @link https://clck.ru/36dspa Логирование
          */
-        'logging' => env('IS_USES_LOGGING', true), 
+        'logging' => (bool) env('IS_USES_LOGGING', false), 
 
     ], 
 ];

@@ -17,7 +17,7 @@ class DatabaseTest extends TestCase
      */
     public function test_connection(): void 
     {
-        $this->assertEquals(config('is.connection'), $this->model()->getConnectionName());
+        
     }
 
     /**

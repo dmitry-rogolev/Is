@@ -22,7 +22,7 @@ return new class extends Migration
                 if (config('is.uses.uuid')) {
                     $table->uuid(config('is.primary_key'));
                 } else {
-                    $table->id();
+                    $table->id(config('is.primary_key'));
                 }
 
                 $table->string('name', 255)->unique();

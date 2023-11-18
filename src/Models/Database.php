@@ -13,13 +13,8 @@ abstract class Database extends Model
     {
         parent::__construct($attributes);
 
-        $this->connection = config('is.connection', null);
-
-        if (! config('is.primary_key')) {
-            logger('Отсутствует конфигурация is.primary_key');
-        }
-
-        $this->primaryKey = config('is.primary_key', 'id');
+        $this->setConnection(config('is.connection', null));
+        $this->setKeyName(config('is.primary_key', 'id'));
         $this->timestamps = config('is.uses.timestamps', true);
     }
 }

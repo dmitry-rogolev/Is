@@ -26,6 +26,7 @@
     <env name="IS_FACTORIES_ROLE" value="dmitryrogolev\Is\Database\Factories\RoleFactory" />
     <env name="IS_SEEDERS_ROLE" value="dmitryrogolev\Is\Database\Seeders\RoleSeeder" />
     <env name="IS_SEPARATOR" value="." />
+    <env name="IS_LOG_CHANNEL" value="stack" />
     <env name="IS_USES_UUID" value="true" />
     <env name="IS_USES_SOFT_DELETES" value="true" />
     <env name="IS_USES_TIMESTAMPS" value="true" />
