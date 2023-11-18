@@ -58,7 +58,7 @@ trait BaseHasRoles
      */
     public function attachRole(...$role): bool
     {
-        $roles = Helper::arrayFrom($role);
+        $roles = Helper::toArray($role);
         $attached = false;
 
         foreach ($roles as $role) {
@@ -86,7 +86,7 @@ trait BaseHasRoles
      */
     public function detachRole(...$role): bool
     {
-        $roles = Helper::arrayFrom($role);
+        $roles = Helper::toArray($role);
         $detached = false;
 
         if (empty($roles)) {
@@ -147,7 +147,7 @@ trait BaseHasRoles
      */
     public function hasOneRole(...$role): bool 
     {
-        $roles = Helper::arrayFrom($role);
+        $roles = Helper::toArray($role);
 
         foreach ($roles as $role) {
             if ($this->checkRole($role)) {
@@ -166,7 +166,7 @@ trait BaseHasRoles
      */
     public function hasAllRoles(...$role): bool 
     {
-        $roles = Helper::arrayFrom($role);
+        $roles = Helper::toArray($role);
 
         foreach ($roles as $role) {
             if (! $this->checkRole($role)) {

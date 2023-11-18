@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Log;
 use ReflectionClass;
 use ReflectionMethod;
 
+/**
+ * Тестируем помошника.
+ */
 class HelperTest extends TestCase
 {
     /**
@@ -32,10 +35,10 @@ class HelperTest extends TestCase
      */
     public function test_str(): void 
     {
-        $this->assertEquals('', Helper::str()->toString());
-        $this->assertEquals('', Helper::str(null)->toString());
-        $this->assertEquals('', Helper::str('')->toString());
-        $this->assertEquals('', Helper::str([])->toString());
+        $this->assertEquals('',     Helper::str()->toString());
+        $this->assertEquals('',     Helper::str(null)->toString());
+        $this->assertEquals('',     Helper::str('')->toString());
+        $this->assertEquals('',     Helper::str([])->toString());
         $this->assertEquals('test', Helper::str('test')->toString());
         $this->assertEquals('test', Helper::str(fn () => 'test')->toString());
     }
@@ -79,12 +82,12 @@ class HelperTest extends TestCase
      */
     public function test_to_array(): void 
     {
-        $this->assertEquals([], Helper::toArray(null));
-        $this->assertEquals([5], Helper::toArray(5));
-        $this->assertEquals(['test'], Helper::toArray('test'));
-        $this->assertEquals(['test'], Helper::toArray(fn () => 'test'));
-        $this->assertEquals(['test', 5], Helper::toArray([[['test'], [5]]]));
-        $this->assertEquals(['test', 5], Helper::toArray('test, 5'));
+        $this->assertEquals([],             Helper::toArray(null));
+        $this->assertEquals([5],            Helper::toArray(5));
+        $this->assertEquals(['test'],       Helper::toArray('test'));
+        $this->assertEquals(['test'],       Helper::toArray(fn () => 'test'));
+        $this->assertEquals(['test', 5],    Helper::toArray([[['test'], [5]]]));
+        $this->assertEquals(['test', 5],    Helper::toArray('test, 5'));
     }
 
     /**

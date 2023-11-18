@@ -37,7 +37,7 @@ trait HasLevels
      */
     public function attachRole(...$role): bool
     {
-        $roles = Helper::arrayFrom($role);
+        $roles = Helper::toArray($role);
         $attached = false;
 
         foreach ($roles as $role) {
@@ -62,7 +62,7 @@ trait HasLevels
      */
     public function hasOneRole(...$role): bool 
     {
-        $roles = Helper::arrayFrom($role);
+        $roles = Helper::toArray($role);
 
         foreach ($roles as $role) {
             if ($this->checkLevel($role)) {
@@ -81,7 +81,7 @@ trait HasLevels
      */
     public function hasAllRoles(...$role): bool 
     {
-        $roles = Helper::arrayFrom($role);
+        $roles = Helper::toArray($role);
 
         foreach ($roles as $role) {
             if (! $this->checkLevel($role)) {

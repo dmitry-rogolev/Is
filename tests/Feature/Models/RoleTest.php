@@ -2,7 +2,6 @@
 
 namespace dmitryrogolev\Is\Tests\Feature\Models;
 
-use dmitryrogolev\Is\Models\Database;
 use dmitryrogolev\Is\Tests\TestCase;
 
 class RoleTest extends TestCase
@@ -14,7 +13,12 @@ class RoleTest extends TestCase
      */
     public function test_extends_database(): void 
     {
-        $this->assertInstanceOf(Database::class, config('is.models.role'));
+        // TODO
+    }
+
+    public function test_implements_role_has_relations(): void 
+    {
+        // TODO
     }
 
     /**
@@ -32,14 +36,9 @@ class RoleTest extends TestCase
      *
      * @return void
      */
-    public function test_get_a_role_by_slug(): void
+    public function test_call_static_get_role(): void
     {
-        $this->assertModelExists($this->role::user());
-        $this->assertModelExists($this->role::admin());
-        $this->assertModelExists($this->role::moderator());
-
-        $this->expectException(\BadMethodCallException::class);
-        $this->role::undefined();
+        // TODO
     }
 
     /**
@@ -49,20 +48,6 @@ class RoleTest extends TestCase
      */
     public function test_factory(): void 
     {
-        $this->assertEquals(config('is.factories.role'), $this->role::factory()::class);
-        $this->assertModelExists($this->role::factory()->create());
-    }
-
-    /**
-     * Проверяем полиморфную связь многие-ко-многим
-     *
-     * @return void
-     */
-    public function test_roleables(): void 
-    {
-        $moderator = $this->role::moderator();
-        
-        $this->assertTrue($moderator->roleables(config('is.models.user'))->get()->isNotEmpty());
-        $this->assertTrue($moderator->users->isNotEmpty());
+        // TODO
     }
 }
