@@ -17,7 +17,7 @@ class DatabaseTest extends TestCase
      */
     public function test_connection(): void 
     {
-        // TODO
+        $this->assertEquals(config('is.connection'), app(Item::class)->getConnectionName());
     }
 
     /**
@@ -27,7 +27,7 @@ class DatabaseTest extends TestCase
      */
     public function test_primary_key(): void 
     {
-        $this->assertEquals(config('is.primary_key'), $this->model()->getKeyName());
+        $this->assertEquals(config('is.primary_key'), app(Item::class)->getKeyName());
     }
 
     /**
@@ -37,17 +37,7 @@ class DatabaseTest extends TestCase
      */
     public function test_timestamps(): void 
     {
-        $this->assertEquals(config('is.uses.timestamps'), $this->model()->usesTimestamps());
-    }
-
-    /**
-     * Возвращает модель, которая наследуется от базовой модели Database.
-     *
-     * @return \dmitryrogolev\Is\Tests\Feature\Models\Item
-     */
-    public function model(): Item 
-    {
-        return new Item;
+        $this->assertEquals(config('is.uses.timestamps'), app(Item::class)->usesTimestamps());
     }
 }
 

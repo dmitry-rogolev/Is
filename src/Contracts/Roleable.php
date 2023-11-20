@@ -3,7 +3,7 @@
 namespace dmitryrogolev\Is\Contracts;
 
 if (config('is.uses.levels')) {
-    interface Roleable extends Levelable
+    interface Roleable extends BaseRoleable, Levelable
     {
     
     }

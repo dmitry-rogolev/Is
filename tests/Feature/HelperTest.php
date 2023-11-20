@@ -4,7 +4,6 @@ namespace dmitryrogolev\Is\Tests\Feature;
 
 use dmitryrogolev\Is\Helper;
 use dmitryrogolev\Is\Tests\TestCase;
-use Illuminate\Support\Facades\Log;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -88,20 +87,5 @@ class HelperTest extends TestCase
         $this->assertEquals(['test'],       Helper::toArray(fn () => 'test'));
         $this->assertEquals(['test', 5],    Helper::toArray([[['test'], [5]]]));
         $this->assertEquals(['test', 5],    Helper::toArray('test, 5'));
-    }
-
-    /**
-     * Записывает ли метод "log" переданное сообщение в журнал?
-     *
-     * @return void
-     */
-    public function test_log(): void 
-    {
-        if (config('is.log_channel') === 'null' || ! config('is.uses.logging')) {
-            $this->markTestSkipped('Ведение журнала отключено.');
-        }
-        
-        Log::shouldReceive('channel->log')->once()->with('debug', 'test', []);
-        Helper::log('debug', 'test');
     }
 }

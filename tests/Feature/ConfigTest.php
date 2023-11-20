@@ -4,7 +4,6 @@ namespace dmitryrogolev\Is\Tests\Feature;
 
 use dmitryrogolev\Is\Tests\TestCase;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -149,27 +148,6 @@ class ConfigTest extends TestCase
     }
 
     /**
-     * Есть ли конфигурация имени канала журнала?
-     *
-     * @return void
-     */
-    public function test_log_channel(): void 
-    {
-        if (config('is.log_channel') === 'null' || ! config('is.uses.logging')) {
-            $this->markTestSkipped('Ведение журнала отключено.');
-        }
-
-        $this->assertTrue(is_string(config('is.log_channel')));
-        $this->assertNotEmpty(config('is.log_channel'));
-
-        Log::shouldReceive('channel->debug')
-            ->once()
-            ->with('test');
-
-        Log::channel(config('is.log_channel'))->debug('test');
-    }
-
-    /**
      * Есть ли конфигурация флага использования UUID?
      *
      * @return void
@@ -267,15 +245,5 @@ class ConfigTest extends TestCase
     public function test_uses_levels(): void 
     {
         $this->assertTrue(is_bool(config('is.uses.levels')));
-    }
-
-    /**
-     * Есть ли конфигурация флага ведения журнала?
-     *
-     * @return void
-     */
-    public function test_uses_logging(): void 
-    {
-        $this->assertTrue(is_bool(config('is.uses.logging')));
     }
 }

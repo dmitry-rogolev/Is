@@ -7,10 +7,13 @@ use dmitryrogolev\Is\Http\Middlewares\VerifyLevel;
 use dmitryrogolev\Is\Http\Middlewares\VerifyRole;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Поставщик функционала ролей для моделей.
+ */
 class IsServiceProvider extends ServiceProvider
 {
     /**
-     * Имя тега пакета
+     * Имя тега пакета.
      *
      * @var string
      */
@@ -31,6 +34,8 @@ class IsServiceProvider extends ServiceProvider
 
     /**
      * Загрузка любых служб пакета.
+     * 
+     * @return void
      */
     public function boot(): void
     {
@@ -45,7 +50,7 @@ class IsServiceProvider extends ServiceProvider
     }
 
     /**
-     * Объединяем конфигурацию пакета с конфигурацией приложения
+     * Объединяем конфигурацию пакета с конфигурацией приложения.
      *
      * @return void
      */
@@ -67,7 +72,7 @@ class IsServiceProvider extends ServiceProvider
     }
 
     /**
-     * Публикуем файлы пакета
+     * Публикуем файлы пакета.
      *
      * @return void
      */
@@ -93,7 +98,7 @@ class IsServiceProvider extends ServiceProvider
     }
 
     /**
-     * Регистрируем сидеры
+     * Регистрируем сидеры.
      *
      * @return void
      */
@@ -107,7 +112,7 @@ class IsServiceProvider extends ServiceProvider
     }
 
     /**
-     * Регистрируем директивы Blade
+     * Регистрируем директивы Blade.
      *
      * @return void
      */
@@ -144,7 +149,7 @@ class IsServiceProvider extends ServiceProvider
     }
 
     /**
-     * Регистрируем комманды 
+     * Регистрируем комманды.
      *
      * @return void
      */

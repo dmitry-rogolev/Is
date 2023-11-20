@@ -2,6 +2,7 @@
 
 namespace dmitryrogolev\Is\Models;
 
+use dmitryrogolev\Is\Helper;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,8 +14,8 @@ abstract class Database extends Model
     {
         parent::__construct($attributes);
 
-        $this->setConnection(config('is.connection', null));
-        $this->setKeyName(config('is.primary_key', 'id'));
-        $this->timestamps = config('is.uses.timestamps', true);
+        $this->setConnection(config('is.connection'));
+        $this->setKeyName(config('is.primary_key'));
+        $this->timestamps = config('is.uses.timestamps');
     }
 }

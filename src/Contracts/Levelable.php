@@ -4,7 +4,7 @@ namespace dmitryrogolev\Is\Contracts;
 
 use Illuminate\Database\Eloquent\Model;
 
-interface Levelable extends BaseRoleable
+interface Levelable
 {
     /**
      * Получить наибольший уровень ролей
@@ -19,20 +19,4 @@ interface Levelable extends BaseRoleable
      * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function role(): Model|null;
-
-    /**
-     * Проверяем наличие хотябы одной роли
-     *
-     * @param array ...$role
-     * @return boolean
-     */
-    public function hasOneRole(...$role): bool;
-
-    /**
-     * Проверяем наличие всех ролей
-     *
-     * @param array ...$role
-     * @return boolean
-     */
-    public function hasAllRoles(...$role): bool;
 }

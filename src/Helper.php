@@ -64,19 +64,4 @@ class Helper
 
         return Arr::flatten(Arr::wrap($value));
     }
-
-    /**
-     * Записывает сообщение указанного уровня в журнал. 
-     * 
-     * @param string $level
-     * @param string $message
-     * @param array  $context
-     * @return void
-     */
-    public static function log(string $level, string $message, array $context = []): void
-    {
-        if (config('is.uses.logging')) {
-            app('log')->channel(config('is.log_channel'))->log($level, $message, $context);
-        } 
-    }
 }

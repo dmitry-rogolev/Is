@@ -35,18 +35,6 @@ class RoleSeeder extends Seeder
                     'level'       => 2,
                 ],
                 [
-                    'name'        => 'Seller',
-                    'slug'        => 'seller',
-                    'description' => 'Seller Role',
-                    'level'       => 1,
-                ],
-                [
-                    'name'        => 'Customer',
-                    'slug'        => 'customer',
-                    'description' => 'Customer Role',
-                    'level'       => 1,
-                ],
-                [
                     'name'        => 'User',
                     'slug'        => 'user',
                     'description' => 'User Role',
@@ -69,16 +57,6 @@ class RoleSeeder extends Seeder
                     'name'        => 'Moderator',
                     'slug'        => 'moderator',
                     'description' => 'Moderator Role',
-                ],
-                [
-                    'name'        => 'Seller',
-                    'slug'        => 'seller',
-                    'description' => 'Seller Role',
-                ],
-                [
-                    'name'        => 'Customer',
-                    'slug'        => 'customer',
-                    'description' => 'Customer Role',
                 ],
                 [
                     'name'        => 'User',

@@ -105,13 +105,6 @@ return [
     'separator' => env('IS_SEPARATOR', '.'), 
 
     /**
-     * * Имя канала для ведения журнала.
-     * 
-     * @link https://clck.ru/36dspa Логирование
-     */
-    'log_channel' => env('IS_LOG_CHANNEL', config('logging.default', 'stack')), 
-
-    /**
      * * Флаги
      */ 
     'uses' => [
@@ -232,15 +225,6 @@ return [
          * которые ему необходимы, а будет достаточно добавить только одну вышестоящую в иерархии роль.
          */
         'levels' => (bool) env('IS_USES_LEVELS', true), 
-
-        /**
-         * * Вести ли журнал. 
-         * 
-         * В журнал записываются данные для отладки, предупреждения, ошибки и т.д.
-         * 
-         * @link https://clck.ru/36dspa Логирование
-         */
-        'logging' => (bool) env('IS_USES_LOGGING', false), 
 
     ], 
 ];

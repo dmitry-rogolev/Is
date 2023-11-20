@@ -15,8 +15,8 @@ class Roleable extends MorphPivot
     {
         parent::__construct($attributes);
 
-        $this->connection = config('is.connection');
-        $this->table = config('is.tables.roleables');
+        $this->setConnection(config('is.connection'));
+        $this->setTable(config('is.tables.roleables'));
         $this->timestamps = config('is.uses.timestamps');
     }
 }

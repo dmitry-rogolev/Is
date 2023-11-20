@@ -17,7 +17,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $roles = config('is.models.role')::where('slug', '!=', 'admin')->get();
-        $admin = config('is.models.role')::admin();
+        $admin = config('is.models.role')::where('slug', '=', 'admin')->first();
 
         // Администратор будет только один.
         $user = config('is.models.user')::factory()->create();
