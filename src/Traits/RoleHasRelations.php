@@ -4,10 +4,13 @@ namespace dmitryrogolev\Is\Traits;
 
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
+/**
+ * Добавляет роли отношения с другими моделями.
+ */
 trait RoleHasRelations 
 {
     /**
-     * Возвращает модели, которые имеют данную роль
+     * Роль относится к множеству моделей.
      *
      * @param string $related Имя модели
      * @return \Illuminate\Database\Eloquent\Relations\MorphToMany

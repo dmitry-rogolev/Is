@@ -15,7 +15,7 @@ trait HasSlug
      *
      * @var string
      */
-    protected $slugKey = 'slug';
+    protected string $slugKey = 'slug';
 
     /**
      * Возвращает имя аттрибута "slug".
@@ -30,16 +30,14 @@ trait HasSlug
     /**
      * Изменяет имя аттрибута "slug".
      *
-     * @param mixed $name
-     * @return void
+     * @param string $key
+     * @return static
      */
-    public function setSlugKey(mixed $keyName): void 
+    public function setSlugKey(string $key): static 
     {
-        $keyName = value($keyName);
-        
-        if (is_string($keyName)) {
-            $this->slugKey = $keyName;
-        }
+        $this->slugKey = $key;
+
+        return $this;
     }
 
     /**
@@ -58,7 +56,7 @@ trait HasSlug
      * @param mixed $value
      * @return void
      */
-    public function setSlug(mixed $value): void 
+    public function setSlug($value): void 
     {
         $this->attributes[$this->getSlugKey()] = Helper::slug($value);
     }
@@ -69,7 +67,7 @@ trait HasSlug
      * @param mixed $value
      * @return void
      */
-    public function setSlugAttribute(mixed $value): void 
+    public function setSlugAttribute($value): void 
     {
         $this->attributes[$this->getSlugKey()] = Helper::slug($value);
     }
@@ -80,7 +78,7 @@ trait HasSlug
      * @param mixed $slug
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public static function findBySlug(mixed $slug): Model|null
+    public static function findBySlug($slug): Model|null
     {
         return static::where(app(static::class)->getSlugKey(), '=', Helper::slug($slug))->first();
     }
