@@ -76,22 +76,22 @@ class RoleTest extends TestCase
     public function test_uses_traits(): void 
     {
         $traits = collect(class_uses_recursive(app(config('is.models.role'))));
-        $hasUuids = fn () => $traits->contains(HasUuids::class);
-        $softDeletes = fn () => $traits->contains(SoftDeletes::class);
+        $hasUuids = $traits->contains(HasUuids::class);
+        $softDeletes = $traits->contains(SoftDeletes::class);
         $hasTraits = function () use ($hasUuids, $softDeletes) {
             if (config('is.uses.uuid') && config('is.uses.soft_deletes')) {
-                return $hasUuids() && $softDeletes();
+                return $hasUuids && $softDeletes;
             } 
             
             if (config('is.uses.uuid')) {
-                return $hasUuids() && ! $softDeletes();
+                return $hasUuids && ! $softDeletes;
             } 
             
             if (config('is.uses.soft_deletes')) {
-                return ! $hasUuids() && $softDeletes();
+                return ! $hasUuids && $softDeletes;
             }
             
-            return ! $hasUuids() && ! $softDeletes();
+            return ! $hasUuids && ! $softDeletes;
         };
         
         $this->assertTrue($hasTraits());

@@ -31,7 +31,7 @@ class UserSeeder extends Seeder
             if (config('is.uses.levels')) {
                 $user->attachRole($role);
             } else {
-                $user->attachRole($roles->where('level', '<=', $role->level()));
+                $user->attachRole($roles->where('level', '<=', $role->level));
             }
         }
     }

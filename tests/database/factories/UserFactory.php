@@ -9,10 +9,9 @@ use Orchestra\Testbench\Factories\UserFactory as TestbenchUserFactory;
  */
 class UserFactory extends TestbenchUserFactory
 {
-    /**
-     * Имя модели.
-     *
-     * @var string
-     */
-    protected $model = \dmitryrogolev\Is\Tests\Models\User::class;
+    public function __construct(...$parameters) 
+    {
+        parent::__construct(...$parameters);
+        $this->model = config('is.models.user');
+    }
 }

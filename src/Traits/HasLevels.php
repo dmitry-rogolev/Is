@@ -3,6 +3,7 @@
 namespace dmitryrogolev\Is\Traits;
 
 use dmitryrogolev\Is\Helper;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 trait HasLevels 
@@ -26,6 +27,18 @@ trait HasLevels
     {
         return $this->roles->sortByDesc('level')->first();
     } 
+
+    /**
+     * Возвращает все роли модели. 
+     * 
+     * При включенной иерархии ролей, возвращает все нижестоящие и равные по уровню в иерархии роли.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getRoles(): Collection
+    {
+        return config('is.models.role')::where('level', '<=', $this->level())->get();
+    }
 
     /**
      * Присоединить роли

@@ -34,8 +34,8 @@ class RoleHasRelationsTest extends TestCase
     {
         $role = config('is.models.role')::factory()->create();
         config('is.models.user')::factory()->create()->roles()->attach($role);
-        $createdAtColumn = app(config('is.models.user'))->getCreatedAtColumn();
-        $updatedAtColumn = app(config('is.models.user'))->getUpdatedAtColumn();
+        $createdAtColumn = app(config('is.models.roleable'))->getCreatedAtColumn();
+        $updatedAtColumn = app(config('is.models.roleable'))->getUpdatedAtColumn();
 
         $user = fn () => $role->roleables(config('is.models.user'))->first();
         $checkTimestamps = fn () => $user()->pivot->{$createdAtColumn} && $user()->pivot->{$updatedAtColumn};
