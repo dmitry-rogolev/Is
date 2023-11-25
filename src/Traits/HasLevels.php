@@ -6,20 +6,15 @@ use dmitryrogolev\Is\Helper;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Функционал иерархии ролей.
+ */
 trait HasLevels 
 {
-    /**
-     * Получить наибольший уровень ролей
-     *
-     * @return int
-     */
-    public function level(): int 
-    {
-        return $this->role()?->level ?? 0;
-    }
+    use AbstractHasRoles;
 
     /**
-     * Получить роль с наибольшим уровнем
+     * Получить роль с наибольшим уровнем.
      *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
@@ -29,10 +24,19 @@ trait HasLevels
     } 
 
     /**
-     * Возвращает все роли модели. 
-     * 
-     * При включенной иерархии ролей, возвращает все нижестоящие и равные по уровню в иерархии роли.
+     * Получить наибольший уровень ролей.
      *
+     * @return int
+     */
+    public function level(): int 
+    {
+        return $this->role()?->level ?? 0;
+    }
+
+    /**
+     * Возвращает все нижестоящие по уровню роли относительно той, 
+     * которая привязанна к данной модели и имеет наибольший уровень.
+     * 
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getRoles(): Collection
@@ -41,20 +45,17 @@ trait HasLevels
     }
 
     /**
-     * Присоединить роли
+     * Присоединяет роль.
      * 
-     * Можно передавать идентификатор, slug или модель роли.
-     * 
-     * @param mixed ...$role
+     * @param int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection ...$role
      * @return bool
      */
     public function attachRole(...$role): bool
     {
-        $roles = Helper::toArray($role);
         $attached = false;
 
-        foreach ($roles as $role) {
-            if (! $this->checkLevel($role) && $model = $this->getRole($role)) {
+        foreach (Helper::toArray($role) as $value) {
+            if (! $this->checkLevel($value) && $model = $this->getRole($value)) {
                 $this->roles()->attach($model);
                 $attached = true;
             }
@@ -68,17 +69,15 @@ trait HasLevels
     }
 
     /**
-     * Проверяем наличие хотябы одной роли
+     * Проверяет наличие хотябы одной роли из переданных.
      *
-     * @param array ...$role
-     * @return boolean
+     * @param int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection ...$role
+     * @return bool
      */
     public function hasOneRole(...$role): bool 
     {
-        $roles = Helper::toArray($role);
-
-        foreach ($roles as $role) {
-            if ($this->checkLevel($role)) {
+        foreach (Helper::toArray($role) as $value) {
+            if ($this->checkLevel($value)) {
                 return true;
             }
         }
@@ -87,17 +86,15 @@ trait HasLevels
     }
 
     /**
-     * Проверяем наличие всех ролей
+     * Проверяет наличие всех переданных ролей.
      *
-     * @param array ...$role
-     * @return boolean
+     * @param int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection ...$role
+     * @return bool
      */
     public function hasAllRoles(...$role): bool 
     {
-        $roles = Helper::toArray($role);
-
-        foreach ($roles as $role) {
-            if (! $this->checkLevel($role)) {
+        foreach (Helper::toArray($role) as $value) {
+            if (! $this->checkLevel($value)) {
                 return false;
             }
         }
@@ -106,12 +103,12 @@ trait HasLevels
     }
 
     /**
-     * Проверяем наличие уровня доступа роли
+     * Проверяем наличие уровня доступа роли.
      *
-     * @param mixed $role
-     * @return boolean
+     * @param int|string|\Illuminate\Database\Eloquent\Model $role
+     * @return bool
      */
-    protected function checkLevel(mixed $role): bool 
+    protected function checkLevel($role): bool 
     {
         if (is_null($role = $this->getRole($role))) {
             return false;

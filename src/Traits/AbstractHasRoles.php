@@ -234,6 +234,9 @@ trait AbstractHasRoles
             return $role;
         }
 
-        return config('is.models.role')::where(app(config('is.models.role'))->getKeyName(), $role)->orWhere('slug', $role)->first();
+        return config('is.models.role')
+                ::where(app(config('is.models.role'))->getKeyName(), $role)
+                ->orWhere('slug', $role)
+                ->first();
     }
 }

@@ -85,6 +85,11 @@ class AbstractHasRolesTest extends TestCase
         $this->assertTrue($user->attachRole($roles));
         $this->assertEquals($roles->pluck(config('is.primary_key')), $user->roles->pluck(config('is.primary_key')));
 
+        // При попытке повторного присоединения роли вернется false.
+        $role = $this->getRole();
+        $this->assertTrue($user->attachRole($role));
+        $this->assertFalse($user->attachRole($role));
+
         config(['is.uses.load_on_update' => false]);
         $user = $this->getUser();
         $roles = $this->getRole(3);
@@ -106,6 +111,9 @@ class AbstractHasRolesTest extends TestCase
         $roles = $user->roles->slice(0, 3);
         $this->assertTrue($user->detachRole($user->roles->slice(3)));
         $this->assertEquals($roles->pluck(config('is.primary_key')), $user->roles->pluck(config('is.primary_key')));
+
+        // При попытке отсоеднинения отсутствующей у пользователя роли вернется false.
+        $this->assertFalse($user->detachRole($this->getRole()));
 
         // Есть не передать аргрумент, то будут отсоединены все роли.
         $user = $this->getUserWithRoles();
