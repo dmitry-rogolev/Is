@@ -4,6 +4,9 @@ namespace dmitryrogolev\Is\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * Фабрика роли.
+ */
 class RoleFactory extends Factory
 {
     /**

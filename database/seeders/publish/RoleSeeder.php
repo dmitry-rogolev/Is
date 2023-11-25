@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use dmitryrogolev\Is\Facades\Role;
 use Illuminate\Database\Seeder;
 
 /**
@@ -10,66 +11,80 @@ use Illuminate\Database\Seeder;
 class RoleSeeder extends Seeder
 {
     /**
-     * Запустить сидер
+     * Запустить сидер.
      */
     public function run(): void
     {
-        if (config('is.uses.levels')) {
-            $roles = [
-                [
-                    'name'        => 'Admin',
-                    'slug'        => 'admin',
-                    'description' => 'Admin Role',
-                    'level'       => 5,
-                ],
-                [
-                    'name'        => 'Editor',
-                    'slug'        => 'editor',
-                    'description' => 'Editor Role',
-                    'level'       => 3,
-                ],
-                [
-                    'name'        => 'Moderator',
-                    'slug'        => 'moderator',
-                    'description' => 'Moderator Role',
-                    'level'       => 2,
-                ],
-                [
-                    'name'        => 'User',
-                    'slug'        => 'user',
-                    'description' => 'User Role',
-                    'level'       => 1,
-                ],
-            ];
-        } else {
-            $roles = [
-                [
-                    'name'        => 'Admin',
-                    'slug'        => 'admin',
-                    'description' => 'Admin Role',
-                ],
-                [
-                    'name'        => 'Editor',
-                    'slug'        => 'editor',
-                    'description' => 'Editor Role',
-                ],
-                [
-                    'name'        => 'Moderator',
-                    'slug'        => 'moderator',
-                    'description' => 'Moderator Role',
-                ],
-                [
-                    'name'        => 'User',
-                    'slug'        => 'user',
-                    'description' => 'User Role',
-                ],
-            ];
-        }
-
-        foreach ($roles as $role) {
-            if (! config('is.models.role')::where('slug', $role['slug'])->count()) {
-                config('is.models.role')::create($role);
+        foreach ($this->getRoles() as $role) {
+            if (! Role::has($role['slug'])) {
+                Role::create($role);
             }
         }
     }
+
+    /**
+     * Возвращает роли.
+     *
+     * @return array
+     */
+    public function getRoles(): array 
+    {
+        return config('is.uses.levels') ? static::ROLES_WITH_LEVELS : static::ROLES;
+    }
+
+    /**
+     * Роли с полями уровней.
+     */
+    const ROLES_WITH_LEVELS = [
+        [
+            'name'        => 'Admin',
+            'slug'        => 'admin',
+            'description' => 'Admin Role',
+            'level'       => 5,
+        ],
+        [
+            'name'        => 'Editor',
+            'slug'        => 'editor',
+            'description' => 'Editor Role',
+            'level'       => 3,
+        ],
+        [
+            'name'        => 'Moderator',
+            'slug'        => 'moderator',
+            'description' => 'Moderator Role',
+            'level'       => 2,
+        ],
+        [
+            'name'        => 'User',
+            'slug'        => 'user',
+            'description' => 'User Role',
+            'level'       => 1,
+        ],
+    ];
+
+    /**
+     * Роли без полей уровней.
+     */
+    const ROLES = [
+        [
+            'name'        => 'Admin',
+            'slug'        => 'admin',
+            'description' => 'Admin Role',
+        ],
+        [
+            'name'        => 'Editor',
+            'slug'        => 'editor',
+            'description' => 'Editor Role',
+        ],
+        [
+            'name'        => 'Moderator',
+            'slug'        => 'moderator',
+            'description' => 'Moderator Role',
+        ],
+        [
+            'name'        => 'User',
+            'slug'        => 'user',
+            'description' => 'User Role',
+        ],
+    ];
 }

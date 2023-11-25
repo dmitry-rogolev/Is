@@ -6,6 +6,9 @@ use dmitryrogolev\Is\Contracts\Roleable;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 
+/**
+ * Посредник, проверяющий наличие роли у пользователя.
+ */
 class VerifyRole 
 {
     /**
@@ -14,7 +17,7 @@ class VerifyRole
     protected Guard $auth;
 
     /**
-     * Create a new filter instance.
+     * Создать новый экземпляр посредника.
      *
      * @param \Illuminate\Contracts\Auth\Guard $auth
      */
@@ -24,7 +27,7 @@ class VerifyRole
     }
 
     /**
-     * Handle an incoming request.
+     * Обработать входящий запрос.
      *
      * @param \Illuminate\Http\Request $request
      * @param \Closure $next

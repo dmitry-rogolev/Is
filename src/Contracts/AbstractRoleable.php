@@ -5,6 +5,9 @@ namespace dmitryrogolev\Is\Contracts;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
+/**
+ * Функционал ролей.
+ */
 interface AbstractRoleable 
 {
     /**
