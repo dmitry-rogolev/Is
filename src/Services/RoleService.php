@@ -48,11 +48,7 @@ class RoleService extends Service
      */
     public function show($key, Roleable $roleable = null): Model|null 
     {
-        if ($roleable && ! $roleable->getRoles()->contains(fn ($item) => 
-            $item->getKey() === $key 
-            || $item->getSlug() === $key 
-            || ($key instanceof ($this->model) && $item->is($key))
-        )) {
+        if ($roleable && ! $roleable->hasRole($key)) {
             return null;
         }
         
