@@ -27,6 +27,21 @@ interface Servicable
     public function setModel(string $model): static;
 
     /**
+     * Возвращает имя сидера модели.
+     *
+     * @return string
+     */
+    public function getSeeder(): string;
+
+    /**
+     * Изменяет имя сидера модели.
+     *
+     * @param string $seeder
+     * @return static
+     */
+    public function setSeeder(string $seeder): static;
+
+    /**
      * Возвращает все модели.
      *
      * @return \Illuminate\Database\Eloquent\Collection
@@ -75,7 +90,7 @@ interface Servicable
      * Создать модель.
      *
      * @param array $attributes
-     * @return Model
+     * @return \Illuminate\Database\Eloquent\Model
      */
     public function make(array $attributes = []): Model;
 

@@ -20,6 +20,13 @@ abstract class Service implements Servicable
     protected string $model;
 
     /**
+     * Имя сидера модели.
+     *
+     * @var string
+     */
+    protected string $seeder;
+
+    /**
      * Возвращает имя модели сервиса.
      *
      * @return string
@@ -39,6 +46,31 @@ abstract class Service implements Servicable
     {
         if (class_exists($model)) {
             $this->model = $model;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Возвращает имя сидера модели.
+     *
+     * @return string
+     */
+    public function getSeeder(): string 
+    {
+        return $this->seeder;
+    }
+
+    /**
+     * Изменяет имя сидера модели.
+     *
+     * @param string $seeder
+     * @return static
+     */
+    public function setSeeder(string $seeder): static 
+    {
+        if (class_exists($seeder)) {
+            $this->seeder = $seeder;
         }
 
         return $this;
@@ -82,7 +114,7 @@ abstract class Service implements Servicable
      */
     public function show($key): Model|null 
     {
-        if ($key instanceof $this->model && $key->exists) {
+        if ($key instanceof ($this->model) && $key->exists) {
             return $key;
         }
 
@@ -119,7 +151,7 @@ abstract class Service implements Servicable
      * Создать модель.
      *
      * @param array $attributes
-     * @return Model
+     * @return \Illuminate\Database\Eloquent\Model
      */
     public function make(array $attributes = []): Model 
     {
@@ -264,12 +296,12 @@ abstract class Service implements Servicable
     }
 
     /**
-     * Запускает сидер ролей.
+     * Запускает сидер модели.
      *
      * @return void
      */
     public function seed(): void 
     {
-        app(config('is.seeders.role'))->run();
+        app($this->seeder)->run();
     }
 }
