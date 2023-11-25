@@ -42,7 +42,7 @@ abstract class Service implements Servicable
      * @param string $model
      * @return static
      */
-    public function setModel(string $model): static 
+    protected function setModel(string $model): static 
     {
         if (class_exists($model)) {
             $this->model = $model;
@@ -67,7 +67,7 @@ abstract class Service implements Servicable
      * @param string $seeder
      * @return static
      */
-    public function setSeeder(string $seeder): static 
+    protected function setSeeder(string $seeder): static 
     {
         if (class_exists($seeder)) {
             $this->seeder = $seeder;

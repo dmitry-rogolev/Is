@@ -19,27 +19,11 @@ interface Servicable
     public function getModel(): string;
 
     /**
-     * Изменяет имя модели сервиса.
-     *
-     * @param string $model
-     * @return static
-     */
-    public function setModel(string $model): static;
-
-    /**
      * Возвращает имя сидера модели.
      *
      * @return string
      */
     public function getSeeder(): string;
-
-    /**
-     * Изменяет имя сидера модели.
-     *
-     * @param string $seeder
-     * @return static
-     */
-    public function setSeeder(string $seeder): static;
 
     /**
      * Возвращает все модели.

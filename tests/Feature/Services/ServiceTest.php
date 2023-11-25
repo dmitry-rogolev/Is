@@ -35,20 +35,6 @@ class ServiceTest extends TestCase
     }
 
     /**
-     * Есть ли метод, изменяющий имя модели сервиса?
-     *
-     * @return void
-     */
-    public function test_set_model(): void 
-    {
-        $this->service->setModel(config('is.models.user'));
-        $this->assertEquals(config('is.models.user'), $this->service->getModel());
-
-        $this->service->setModel('MyModel');
-        $this->assertNotEquals('MyModel', $this->service->getModel());
-    }
-
-    /**
      * Есть ли метод, возвращающий имя сидера модели?
      *
      * @return void
@@ -56,20 +42,6 @@ class ServiceTest extends TestCase
     public function test_get_seeder(): void 
     {
         $this->assertEquals(config('is.seeders.role'), $this->service->getSeeder());
-    }
-
-    /**
-     * Есть ли метод, изменяющий имя сидера модели?
-     *
-     * @return void
-     */
-    public function test_set_seeder(): void 
-    {
-        $this->service->setSeeder(config('is.models.user'));
-        $this->assertEquals(config('is.models.user'), $this->service->getSeeder());
-
-        $this->service->setSeeder('MySeeder');
-        $this->assertNotEquals('MySeeder', $this->service->getSeeder());
     }
 
     /**

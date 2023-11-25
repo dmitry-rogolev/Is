@@ -5,6 +5,7 @@ namespace dmitryrogolev\Is\Providers;
 use dmitryrogolev\Is\Console\Commands\InstallCommand;
 use dmitryrogolev\Is\Http\Middlewares\VerifyLevel;
 use dmitryrogolev\Is\Http\Middlewares\VerifyRole;
+use dmitryrogolev\Is\Services\RoleService;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -30,6 +31,7 @@ class IsServiceProvider extends ServiceProvider
         $this->loadMigrations();
         $this->publishFiles();
         $this->registerCommands();
+        $this->registerServices();
     }
 
     /**
@@ -160,5 +162,16 @@ class IsServiceProvider extends ServiceProvider
                 InstallCommand::class, 
             ]);
         }
+    }
+
+    /**
+     * Регистрируем сервисы.
+     *
+     * @return void
+     */
+    private function registerServices(): void 
+    {
+        $this->app->singleton(RoleService::class);
+        $this->app->alias(RoleService::class, 'role');
     }
 }
