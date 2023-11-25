@@ -2,113 +2,39 @@
 
 namespace dmitryrogolev\Is\Services;
 
+use dmitryrogolev\Is\Contracts\Roleable;
+use dmitryrogolev\Is\Contracts\RoleServicable;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 
-class RoleService extends Service 
+/**
+ * Сервис работы с таблицей ролей.
+ */
+class RoleService extends Service implements RoleServicable
 {
+    public function __construct() 
+    {
+        $this->setModel(config('is.models.role'));
+    }
+
     /**
-     * Возвращает все роли
+     * Возвращает все модели.
      *
+     * @param \dmitryrogolev\Is\Contracts\Roleable $roleable
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function index(): Collection 
+    public function index(Roleable $roleable = null): Collection
     {
-        return config('is.models.role')::all();
+        return $roleable ? $roleable->getRoles() : parent::index();
     }
 
     /**
-     * Возвращает роль по ее идентификатору, slug'у или модели
+     * Возвращает все модели.
      *
-     * @param mixed $role
-     * @return \Illuminate\Database\Eloquent\Model|null
+     * @param \dmitryrogolev\Is\Contracts\Roleable $roleable
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function show(mixed $id): Model|null 
+    public function all(Roleable $roleable = null): Collection
     {
-        return $this->getRole($id);
-    }
-
-    /**
-     * Создает роль
-     *
-     * @param array $attributes
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    public function store(array $attributes = []): Model 
-    {
-        return empty($attributes) ? config('is.models.role')::factory()->create() : config('is.models.role')::create($attributes);
-    }
-
-    /**
-     * Обновляет модель
-     *
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @param array $attributes
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    public function update($model, array $attributes): Model 
-    {
-        $model->fill($attributes);
-        $model->save();
-
-        return $model;
-    }
-
-    /**
-     * Удаляет модель
-     *
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @return bool|null
-     */
-    public function delete($model): bool|null
-    {
-        return $model->delete();
-    }
-
-    /**
-     * Очищает таблицу ролей
-     *
-     * @return void
-     */
-    public function truncate(): void 
-    {
-        config('is.models.role')::truncate();
-    }
-
-    /**
-     * Удаляет модель
-     *
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @return bool|null
-     */
-    public function forceDelete($model): bool|null
-    {
-        return $model->forceDelete();
-    }
-
-    /**
-     * Востанавливает модель
-     *
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @return bool
-     */
-    public function restore($model): bool 
-    {
-        return $model->restore();
-    }
-
-    /**
-     * Получить роль по ее идентификатору или slug'у.
-     *
-     * @param mixed $role
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    protected function getRole($role): Model|null 
-    {
-        if (is_int($role) || is_string($role)) {
-            return config('is.models.role')::where(app(config('is.models.role'))->getKeyName(), $role)->orWhere('slug', $role)->first();
-        }
-
-        return $role instanceof (config('is.models.role')) ? $role : null;
+        return $this->index($roleable);
     }
 }

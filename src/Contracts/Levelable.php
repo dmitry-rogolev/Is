@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Функционал иерархии ролей.
  */
-interface Levelable
+interface Levelable extends AbstractRoleable
 {
     /**
      * Получить роль с наибольшим уровнем.

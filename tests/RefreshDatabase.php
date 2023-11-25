@@ -20,7 +20,7 @@ trait RefreshDatabase
      *
      * @var boolean
      */
-    protected bool $seed = true;
+    protected bool $seed = false;
 
     /**
      * Определите миграцию базы данных

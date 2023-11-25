@@ -1,8 +1,7 @@
 <?php 
 
-namespace dmitryrogolev\Is\Services;
+namespace dmitryrogolev\Is\Contracts;
 
-use dmitryrogolev\Is\Contracts\Servicable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,24 +9,14 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Сервис работы с таблицей.
  */
-abstract class Service implements Servicable
+interface Servicable 
 {
-    /**
-     * Имя модели таблицы.
-     *
-     * @var string
-     */
-    protected string $model;
-
     /**
      * Возвращает имя модели сервиса.
      *
      * @return string
      */
-    public function getModel(): string 
-    {
-        return $this->model;
-    }
+    public function getModel(): string;
 
     /**
      * Изменяет имя модели сервиса.
@@ -35,44 +24,28 @@ abstract class Service implements Servicable
      * @param string $model
      * @return static
      */
-    public function setModel(string $model): static 
-    {
-        if (class_exists($model)) {
-            $this->model = $model;
-        }
-
-        return $this;
-    }
+    public function setModel(string $model): static;
 
     /**
      * Возвращает все модели.
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function index(): Collection
-    {
-        return $this->model::all();
-    }
+    public function index(): Collection;
 
     /**
      * Возвращает все модели.
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function all(): Collection
-    {
-        return $this->index();
-    }
+    public function all(): Collection;
 
     /**
      * Возвращает случайную модель из таблицы.
      *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function random(): Model|null 
-    {
-        return $this->model::query()->inRandomOrder()->first();
-    }
+    public function random(): Model|null;
 
     /**
      * Возвращает модель по ее идентификатору.
@@ -80,18 +53,7 @@ abstract class Service implements Servicable
      * @param int|string|\Illuminate\Database\Eloquent\Model $key
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function show($key): Model|null 
-    {
-        if ($key instanceof $this->model && $key->exists) {
-            return $key;
-        }
-
-        if (is_int($key) || is_string($key)) {
-            return $this->model::find($key);
-        }
-
-        return null;
-    }
+    public function show(int|string $id): Model|null;
 
     /**
      * Возвращает модель по ее идентификатору.
@@ -99,10 +61,7 @@ abstract class Service implements Servicable
      * @param int|string|\Illuminate\Database\Eloquent\Model $key
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function find($key): Model|null 
-    {
-        return $this->show($key);
-    }
+    public function find(int|string $id): Model|null;
 
     /**
      * Проверяет наличие модели в таблице.
@@ -110,10 +69,7 @@ abstract class Service implements Servicable
      * @param int|string|\Illuminate\Database\Eloquent\Model $key
      * @return bool
      */
-    public function has($key): bool 
-    {
-        return (bool) $this->show($key);
-    }
+    public function has($key): bool;
 
     /**
      * Создать модель.
@@ -121,10 +77,7 @@ abstract class Service implements Servicable
      * @param array $attributes
      * @return Model
      */
-    public function make(array $attributes = []): Model 
-    {
-        return $this->model::make($attributes);
-    }
+    public function make(array $attributes = []): Model;
 
     /**
      * Создать модель и сохранить ее в таблицу.
@@ -132,10 +85,7 @@ abstract class Service implements Servicable
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function store(array $attributes = []): Model 
-    {
-        return $this->model::create($attributes);
-    }
+    public function store(array $attributes = []): Model;
 
     /**
      * Создать модель и сохранить ее в таблицу.
@@ -143,10 +93,7 @@ abstract class Service implements Servicable
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function create(array $attributes = []): Model 
-    {
-        return $this->store($attributes);
-    }
+    public function create(array $attributes = []): Model;
 
     /**
      * Возвращает фабрику модели.
@@ -155,10 +102,7 @@ abstract class Service implements Servicable
      * @param \Closure|array|null $state
      * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
-    public function factory($count = null, $state = []): Factory
-    {
-        return $this->model::factory($count, $state);
-    }
+    public function factory($count = null, $state = []): Factory;
 
     /**
      * Геренирует модели с помощью фабрики.
@@ -168,30 +112,7 @@ abstract class Service implements Servicable
      * @param bool $create
      * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection
      */
-    public function generate($attributes = [], $count = null, bool $create = true): Model|Collection
-    {
-        $attributes = value($attributes);
-        $count = value($count);
-
-        if (is_int($attributes)) {
-            $count = $attributes;
-            $attributes = [];
-        }
-
-        if (is_bool($attributes)) {
-            $create = $attributes;
-            $attributes = [];
-        }
-
-        if (is_bool($count)) {
-            $create = $count;
-            $count = null;
-        }
-
-        $factory = $this->factory($count);
-        
-        return $create ? $factory->create($attributes) : $factory->make($attributes);
-    }
+    public function generate($attributes = [], $count = null, bool $create = true): Model|Collection;
 
     /**
      * Обновляет модель.
@@ -200,13 +121,7 @@ abstract class Service implements Servicable
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function update(Model $model, array $attributes): Model 
-    {
-        $model->fill($attributes);
-        $model->save();
-
-        return $model;
-    }
+    public function update(Model $model, array $attributes): Model;
 
     /**
      * Обновляет модель.
@@ -215,10 +130,7 @@ abstract class Service implements Servicable
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function fill(Model $model, array $attributes): Model 
-    {
-        return $this->update($model, $attributes);
-    }
+    public function fill(Model $model, array $attributes): Model;
 
     /**
      * Удаляет модель.
@@ -226,20 +138,14 @@ abstract class Service implements Servicable
      * @param \Illuminate\Database\Eloquent\Model $model
      * @return bool|null
      */
-    public function delete(Model $model): bool|null
-    {
-        return $model->delete();
-    }
+    public function delete(Model $model): bool|null;
 
     /**
      * Очищает таблицу.
      *
      * @return void
      */
-    public function truncate(): void
-    {
-        $this->model::truncate();
-    }
+    public function truncate(): void;
 
     /**
      * Удаляет модель.
@@ -247,10 +153,7 @@ abstract class Service implements Servicable
      * @param \Illuminate\Database\Eloquent\Model $model
      * @return bool|null
      */
-    public function forceDelete(Model $model): bool|null
-    {
-        return $model->forceDelete();
-    }
+    public function forceDelete(Model $model): bool|null;
 
     /**
      * Востанавливает модель.
@@ -258,18 +161,12 @@ abstract class Service implements Servicable
      * @param \Illuminate\Database\Eloquent\Model $model
      * @return bool
      */
-    public function restore($model): bool
-    {
-        return $model->restore();
-    }
+    public function restore($model): bool;
 
     /**
      * Запускает сидер ролей.
      *
      * @return void
      */
-    public function seed(): void 
-    {
-        app(config('is.seeders.role'))->run();
-    }
+    public function seed(): void;
 }
