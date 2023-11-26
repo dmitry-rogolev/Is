@@ -3,6 +3,7 @@
 namespace dmitryrogolev\Is\Services;
 
 use dmitryrogolev\Is\Contracts\Roleable;
+use dmitryrogolev\Is\Traits\HasConfig;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,141 +12,13 @@ use Illuminate\Database\Eloquent\Model;
  */
 class RoleService extends Service
 {
+    use HasConfig;
+    
     public function __construct() 
     {
         $this->setModel(config('is.models.role'));
         $this->setSeeder(config('is.seeders.role'));
         $this->setFactory(config('is.factories.role'));
-    }
-
-    /**
-     * Возвращает имя соединения к БД.
-     *
-     * @return string|null
-     */
-    public function connection(): string|null
-    {
-        return config('is.connection', null);
-    }
-
-    /**
-     * Возвращает имя таблицы ролей.
-     *
-     * @return string
-     */
-    public function tableRoles(): string
-    {
-        return config('is.tables.roles');
-    }
-
-    /**
-     * Возвращает имя промежуточной таблицы ролей.
-     *
-     * @return string
-     */
-    public function tableRoleables(): string 
-    {
-        return config('is.tables.roleables');
-    }
-
-    /**
-     * Возвращает имя полиморфной связи.
-     *
-     * @return string
-     */
-    public function relationName(): string 
-    {
-        return config('is.relations.roleable');
-    }
-
-    /**
-     * Возвращает имя первичного ключа.
-     *
-     * @return string
-     */
-    public function primaryKey(): string 
-    {
-        return config('is.primary_key');
-    }
-
-    /**
-     * Возвращает имя промежуточной модели.
-     *
-     * @return string
-     */
-    public function getRoleableModel(): string 
-    {
-        return config('is.models.roleable');
-    }
-
-    /**
-     * Возвращает имя модели пользователя.
-     *
-     * @return string
-     */
-    public function getUserModel(): string 
-    {
-        return config('is.models.user');
-    }
-
-    /**
-     * Возвращает разделитель строк.
-     *
-     * @return string
-     */
-    public function separator(): string 
-    {
-        return config('is.separator');
-    }
-
-    /**
-     * Используется ли в моделях UUID?
-     *
-     * @return bool
-     */
-    public function usesUuid(): bool 
-    {
-        return (bool) config('is.uses.uuid');
-    }
-
-    /**
-     * Используется ли программное удаление моделей?
-     *
-     * @return boolean
-     */
-    public function usesSoftSeletes(): bool
-    {
-        return (bool) config('is.uses.soft_deletes');
-    }
-
-    /**
-     * Используются ли временные метки в моделях?
-     *
-     * @return boolean
-     */
-    public function usesTimestamps(): bool 
-    {
-        return (bool) config('is.uses.timestamps');
-    }
-
-    /**
-     * Включена ли подгрузка отношений после изменения?
-     *
-     * @return boolean
-     */
-    public function usesLoadOnUpdate(): bool 
-    {
-        return (bool) config('is.uses.load_on_update');
-    }
-
-    /**
-     * Включена ли иерархия ролей?
-     *
-     * @return boolean
-     */
-    public function usesLevels(): bool 
-    {
-        return (bool) config('is.uses.levels');
     }
 
     /**
