@@ -8,7 +8,7 @@ namespace dmitryrogolev\Is\Traits;
 trait HasConfig
 {
     /**
-     * * Подключение к БД, которое должен использовать пакет.
+     * Подключение к БД, которое должен использовать пакет.
      * 
      * Список возможных подключений определен в файле конфигурации "config/database.php".
      * По умолчанию используется подключение к приложению по умолчанию.
@@ -20,7 +20,7 @@ trait HasConfig
      */
     public function connection(string|null $value = null): string|null
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.connection' => $value]);
         }
 
@@ -28,14 +28,14 @@ trait HasConfig
     }
 
     /**
-     * * Имя таблицы ролей.
+     * Имя таблицы ролей.
      *
      * @param string|null $value
      * @return string
      */
     public function rolesTable(string|null $value = null): string
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.tables.roles' => $value]);
         }
 
@@ -43,7 +43,7 @@ trait HasConfig
     }
 
     /**
-     * * Имя промежуточной таблицы, которая соединяет модели, использующие трейт HasRoles, с ролями.
+     * Имя промежуточной таблицы, которая соединяет модели, использующие трейт HasRoles, с ролями.
      * 
      * @link https://clck.ru/36JLPn Полиморфные отношения многие-ко-многим
      *
@@ -52,7 +52,7 @@ trait HasConfig
      */
     public function roleablesTable(string|null $value = null): string
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.tables.roleables' => $value]);
         }
 
@@ -60,7 +60,7 @@ trait HasConfig
     }
 
     /**
-     * * Имя полиморфной связи моделей.
+     * Имя полиморфной связи моделей.
      * 
      * Используется в промежуточной таблице для полей {relation_name}_id и {relation_name}_type.
      * Например, roleable_id и roleable_type.
@@ -76,7 +76,7 @@ trait HasConfig
      */
     public function relationName(string|null $value = null): string
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.relations.roleable' => $value]);
         }
 
@@ -84,10 +84,10 @@ trait HasConfig
     }
 
     /**
-     * * Имя первичного ключа моделей
+     * Имя первичного ключа моделей
      * 
      * Первичный ключ - это поле в таблице, которое хранит уникальное значение, 
-     * по которому можно явно идентфицировать ту или иную запись в таблице.
+     * по которому можно явно идентифицировать ту или иную запись в таблице.
      * 
      * @link https://clck.ru/36Ln4n Первичный ключ модели Eloquent
      *
@@ -96,7 +96,7 @@ trait HasConfig
      */
     public function primaryKey(string|null $value = null): string
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.primary_key' => $value]);
         }
 
@@ -104,14 +104,14 @@ trait HasConfig
     }
 
     /**
-     * * Имя модели роли.
+     * Имя модели роли.
      *
      * @param string|null $value
      * @return string
      */
     public function roleModel(string|null $value = null): string
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.models.role' => $value]);
         }
 
@@ -119,14 +119,14 @@ trait HasConfig
     }
 
     /**
-     * * Имя промежуточной модели.
+     * Имя промежуточной модели.
      *
      * @param string|null $value
      * @return string
      */
     public function roleableModel(string|null $value = null): string
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.models.roleable' => $value]);
         }
 
@@ -134,14 +134,14 @@ trait HasConfig
     }
 
     /**
-     * * Имя модели пользователя.
+     * Имя модели пользователя.
      *
      * @param string|null $value
      * @return string
      */
     public function userModel(string|null $value = null): string
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.models.user' => $value]);
         }
 
@@ -149,14 +149,14 @@ trait HasConfig
     }
 
     /**
-     * * Имя фабрики роли.
+     * Имя фабрики роли.
      *
      * @param string|null|null $value
      * @return string
      */
     public function roleFactory(string|null $value = null): string
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.factories.role' => $value]);
         }
 
@@ -164,14 +164,14 @@ trait HasConfig
     }
 
     /**
-     * * Имя сидера роли.
+     * Имя сидера роли.
      *
      * @param string|null|null $value
      * @return string
      */
     public function roleSeeder(string|null $value = null): string
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.seeders.role' => $value]);
         }
 
@@ -179,16 +179,16 @@ trait HasConfig
     }
 
     /**
-     * * Строковый разделитель. 
+     * Строковый разделитель. 
      * 
-     * Используется для раделения строк на подстроки для поля slug.
+     * Используется для разделения строк на подстроки для поля slug.
      *
      * @param string|null $value
      * @return string
      */
     public function separator(string|null $value = null): string
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.separator' => $value]);
         }
 
@@ -196,7 +196,7 @@ trait HasConfig
     }
 
     /**
-     * * Использовать ли в моделях uuid вместо обычного id.
+     * Использовать ли в моделях uuid вместо обычного id.
      * 
      * UUID — это универсальные уникальные буквенно-цифровые идентификаторы длиной 36 символов.
      * 
@@ -207,7 +207,7 @@ trait HasConfig
      */
     public function usesUuid(bool|null $value = null): bool
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.uses.uuid' => $value]);
         }
 
@@ -215,7 +215,7 @@ trait HasConfig
     }
 
     /**
-     * * Использовать ли программное удаление для моделей. 
+     * Использовать ли программное удаление для моделей. 
      * 
      * Помимо фактического удаления записей из БД, 
      * Eloquent может выполнять «программное удаление» моделей. 
@@ -230,7 +230,7 @@ trait HasConfig
      */
     public function usesSoftDeletes(bool|null $value = null): bool
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.uses.soft_deletes' => $value]);
         }
 
@@ -238,7 +238,7 @@ trait HasConfig
     }
 
     /**
-     * * Использовать ли временные метки для моделей. 
+     * Использовать ли временные метки для моделей. 
      * 
      * По умолчанию модели Eloquent определяют поля "created_at" и "updated_at", 
      * в которых хранятся дата и время создания и изменения модели соответственно.
@@ -252,7 +252,7 @@ trait HasConfig
      */
     public function usesTimestamps(bool|null $value = null): bool
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.uses.timestamps' => $value]);
         }
 
@@ -260,7 +260,7 @@ trait HasConfig
     }
 
     /**
-     * * Использовать ли миграции по умолчанию.
+     * Использовать ли миграции по умолчанию.
      * 
      * Если вы не публикуете или не создаете свои миграции таблиц для этого пакета, 
      * то установите данный флаг в true.
@@ -270,7 +270,7 @@ trait HasConfig
      */
     public function usesMigrations(bool|null $value = null): bool
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.uses.migrations' => $value]);
         }
 
@@ -278,16 +278,16 @@ trait HasConfig
     }
 
     /**
-     * * Использовать ли сидеры по умолчанию.
+     * Использовать ли сидеры по умолчанию.
      * 
-     * Если вы хотитите использовать сидеры по умолчанию, установите данный флаг в true.
+     * Если вы хотите использовать сидеры по умолчанию, установите данный флаг в true.
      *
      * @param bool|null $value
      * @return boolean
      */
     public function usesSeeders(bool|null $value = null): bool
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.uses.seeders' => $value]);
         }
 
@@ -295,11 +295,11 @@ trait HasConfig
     }
 
     /**
-     * * Регистрировать ли дериктивы blade (is, endis, role, endrole, level, endlevel).
+     * Регистрировать ли директивы blade (is, endis, role, endrole, level, endlevel).
      * 
      * Директивы is и role предоставляют одинаковый функционал. 
      * 
-     * Эти дериктывы применимы только к модели пользователя, 
+     * Эти директивы применимы только к модели пользователя, 
      * использующего трейт "\dmitryrogolev\Is\Traits\HasRoles".
      * 
      * @link https://clck.ru/36Ls42 Директивы Blade
@@ -309,7 +309,7 @@ trait HasConfig
      */
     public function usesBlade(bool|null $value = null): bool
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.uses.blade' => $value]);
         }
 
@@ -317,7 +317,7 @@ trait HasConfig
     }
 
     /**
-     * * Регистировать ли посредники (is, role, level).
+     * Регистрировать ли посредники (is, role, level).
      * 
      * Посредники is и role предоставляют одинаковый функционал.
      * 
@@ -331,7 +331,7 @@ trait HasConfig
      */
     public function usesMiddlewares(bool|null $value = null): bool
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.uses.middlewares' => $value]);
         }
 
@@ -339,14 +339,14 @@ trait HasConfig
     }
 
     /**
-     * * Следует ли подгружать отношение модели после изменения. 
+     * Следует ли подгружать отношение модели после изменения. 
      * 
      * По умолчанию после подключения или удаления отношения(-ий) моделей с ролями, 
-     * отношения будут подгружены заного. 
+     * отношения будут подгружены заново. 
      * Это означает, что модель всегда будет хранить актуальные отношения, 
      * однако также это означает увеличение количества запросов к базе данных. 
      * 
-     * Если вы делаете много опираций с ролями, 
+     * Если вы делаете много операций с ролями, 
      * рекомендуется отключить данную функцию для увеличения производительности.
      *
      * @param bool|null $value
@@ -354,7 +354,7 @@ trait HasConfig
      */
     public function usesLoadOnUpdate(bool|null $value = null): bool
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.uses.load_on_update' => $value]);
         }
 
@@ -362,7 +362,7 @@ trait HasConfig
     }
 
     /**
-     *  * Следует ли расширять метод "is" модели Eloquent.
+     * Следует ли расширять метод "is" модели Eloquent.
      * 
      * Метод is по умолчанию сравнивает две модели. 
      * Трейт HasRoles расширяет данный метод. 
@@ -379,7 +379,7 @@ trait HasConfig
      */
     public function usesExtendIsMethod(bool|null $value = null): bool
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.uses.extend_is_method' => $value]);
         }
 
@@ -387,18 +387,18 @@ trait HasConfig
     }
 
     /**
-     * * Использовать ли иерархию ролей на основе уровней. 
+     * Использовать ли иерархию ролей на основе уровней. 
      * 
-     * Иерархия подразумевает, что вышестоящая в иерархии роль иммеет допуск 
+     * Иерархия подразумевает, что вышестоящая в иерархии роль имеет допуск 
      * к функционалу нижестоящих относительно нее ролей.
-     * Например, если модель имеет роль с уровенем 5, 
+     * Например, если модель имеет роль с уровнем 5, 
      * то проверка наличия роли с уровнем 3 будет положительна. 
      * 
      * $user->attachRole($admin); // level 3
      * 
      * $user->hasRole($moderator); // level 2 // true 
      * 
-     * Если эта функция включена, то вам не придется добалять пользователю все роли, 
+     * Если эта функция включена, то вам не придется добавлять пользователю все роли, 
      * которые ему необходимы, а будет достаточно добавить только одну вышестоящую в иерархии роль.
      *
      * @param bool|null $value
@@ -406,7 +406,7 @@ trait HasConfig
      */
     public function usesLevels(bool|null $value = null): bool
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             config(['is.uses.levels' => $value]);
         }
 

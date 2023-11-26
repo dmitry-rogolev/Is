@@ -30,10 +30,10 @@ class RoleFactory extends Factory
         $name = fake()->unique()->name();
 
         return [
-            'name'        => $name,
-            'slug'        => $name,
+            'name' => $name,
+            'slug' => $name,
             'description' => $name . ' role',
-            'level'       => config('is.uses.levels') ? fake()->randomNumber(1) : 0,
+            'level' => config('is.uses.levels') ? fake()->randomNumber(1) : 0,
         ];
     }
 }

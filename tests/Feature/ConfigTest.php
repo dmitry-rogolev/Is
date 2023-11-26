@@ -19,10 +19,10 @@ class ConfigTest extends TestCase
      */
     public function test_count_tests(): void
     {
-        $count = collect(config('is'))->flatten()->count();
+        $count   = collect(config('is'))->flatten()->count();
         $methods = (new ReflectionClass($this))->getMethods(ReflectionMethod::IS_PUBLIC);
-        $tests = collect($methods)
-            ->filter(fn($method) => str_starts_with($method->name, 'test'))
+        $tests   = collect($methods)
+            ->filter(fn ($method) => str_starts_with($method->name, 'test'))
             ->where('name', '!=', __FUNCTION__);
 
         $this->assertCount($count, $tests);
@@ -35,7 +35,7 @@ class ConfigTest extends TestCase
      */
     public function test_connection(): void
     {
-        if (!config('is.connection')) {
+        if (! config('is.connection')) {
             $this->markTestSkipped('Отсутствует конфигурация "is.connection"');
         }
 
