@@ -2,6 +2,7 @@
 
 namespace dmitryrogolev\Is\Tests\Database\Migrations;
 
+use dmitryrogolev\Is\Facades\Is;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,16 +16,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $connection = config('is.connection');
-        $table = app(config('is.models.user'))->getTable();
+        $connection = Is::connection();
+        $table = app(Is::userModel())->getTable();
         
         if (! Schema::connection($connection)->hasTable($table)) {
             Schema::connection($connection)->create($table, function (Blueprint $table) {
-                if (config('is.uses.uuid')) {
-                    $table->uuid(config('is.primary_key'));
-                } else {
-                    $table->id();
-                }
+
+                Is::usesUuid() ? $table->uuid(Is::primaryKey()) : $table->id(Is::primaryKey());
 
                 $table->string('name');
                 $table->string('email')->unique();
@@ -32,11 +30,11 @@ return new class extends Migration
                 $table->string('password');
                 $table->rememberToken();
 
-                if (config('is.uses.timestamps')) {
+                if (Is::usesTimestamps()) {
                     $table->timestamps();
                 } 
 
-                if (config('is.uses.soft_deletes')) {
+                if (Is::usesSoftDeletes()) {
                     $table->softDeletes();
                 }
             });

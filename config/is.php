@@ -1,10 +1,10 @@
-<?php 
+<?php
 
 /**
  * Конфигурация Is
  * 
- * @version 0.0.1
- * @author Dmitry Rogolev <work.drogolev@internet.ru>
+ * @version 0.0.2
+ * @author Роголев Дмитрий <work.drogolev@internet.ru>
  * @license MIT
  */
 
@@ -14,11 +14,11 @@ return [
      * * Подключение к БД, которое должен использовать пакет.
      * 
      * Список возможных подключений определен в файле конфигурации "config/database.php".
-     * По умолчанию используется подключинение к приложению по умолчанию.
+     * По умолчанию используется подключение к приложению по умолчанию.
      * 
      * @link https://clck.ru/36LkBo Конфигурирование БД
      */
-    'connection' => env('IS_CONNECTION', config('database.default')), 
+    'connection' => env('IS_CONNECTION', config('database.default')),
 
     /**
      * * Имена таблиц, которые создает пакет. 
@@ -31,9 +31,9 @@ return [
      * @link https://clck.ru/36JLPn Полиморфные отношения многие-ко-многим
      */
     'tables' => [
-        'roles' => env('IS_TABLES_ROLES', 'roles'), 
-        'roleables' => env('IS_TABLES_ROLEABLES', 'roleables'), 
-    ], 
+        'roles' => env('IS_TABLES_ROLES', 'roles'),
+        'roleables' => env('IS_TABLES_ROLEABLES', 'roleables'),
+    ],
 
     /**
      * * Имя полиморфной связи моделей.
@@ -41,25 +41,25 @@ return [
      * Используется в промежуточной таблице для полей {relation_name}_id и {relation_name}_type.
      * Например, roleable_id и roleable_type.
      * 
-     * В поле {relation_name}_id указывается идентфикатор модели, которая связывается с ролью.
+     * В поле {relation_name}_id указывается идентификатор модели, которая связывается с ролью.
      * В поле {relation_name}_type указывается полное название модели, 
      * например "\App\Models\Role", которая связывается с ролью.
      * 
      * @link https://clck.ru/36JLPn Полиморфные отношения многие-ко-многим
      */
     'relations' => [
-        'roleable' => env('IS_RELATIONS_ROLEABLE', 'roleable'), 
-    ], 
+        'roleable' => env('IS_RELATIONS_ROLEABLE', 'roleable'),
+    ],
 
     /**
      * * Имя первичного ключа моделей
      * 
      * Первичный ключ - это поле в таблице, которое хранит уникальное значение, 
-     * по которому можно явно идентфицировать ту или иную запись в таблице.
+     * по которому можно явно идентифицировать ту или иную запись в таблице.
      * 
      * @link https://clck.ru/36Ln4n Первичный ключ модели Eloquent
      */
-    'primary_key' => env('IS_PRIMARY_KEY', 'id'), 
+    'primary_key' => env('IS_PRIMARY_KEY', 'id'),
 
     /**
      * * Имена моделей, которые используются в пакете.
@@ -68,14 +68,14 @@ return [
 
         // Роль
         'role' => env('IS_MODELS_ROLE', \dmitryrogolev\Is\Models\Role::class),
-        
+
         // Промежуточная модель
-        'roleable' => env('IS_MODELS_ROLEABLE', \dmitryrogolev\Is\Models\Roleable::class), 
+        'roleable' => env('IS_MODELS_ROLEABLE', \dmitryrogolev\Is\Models\Roleable::class),
 
         // Пользователь по умолчанию
-        'user' => env('IS_MODELS_USER', config('auth.providers.users.model')), 
+        'user' => env('IS_MODELS_USER', config('auth.providers.users.model')),
 
-    ], 
+    ],
 
     /**
      * * Имена фабрик, которые используются в пакете.
@@ -83,30 +83,30 @@ return [
     'factories' => [
 
         // Фабрика роли
-        'role' => env('IS_FACTORIES_ROLE', \dmitryrogolev\Is\Database\Factories\RoleFactory::class), 
+        'role' => env('IS_FACTORIES_ROLE', \dmitryrogolev\Is\Database\Factories\RoleFactory::class),
 
-    ], 
+    ],
 
     /**
-     * * Имена сидеров, которые использутся в пакете.
+     * * Имена сидеров, которые используются в пакете.
      */
     "seeders" => [
 
         // Сидер роли
-        "role" => env('IS_SEEDERS_ROLE', \dmitryrogolev\Is\Database\Seeders\RoleSeeder::class), 
-        
-    ], 
+        "role" => env('IS_SEEDERS_ROLE', \dmitryrogolev\Is\Database\Seeders\RoleSeeder::class),
+
+    ],
 
     /**
      * * Строковый разделитель. 
      * 
-     * Используется для раделения строк на подстроки для поля slug.
+     * Используется для разделения строк на подстроки для поля slug.
      */
-    'separator' => env('IS_SEPARATOR', '.'), 
+    'separator' => env('IS_SEPARATOR', '.'),
 
     /**
      * * Флаги
-     */ 
+     */
     'uses' => [
 
         /**
@@ -116,7 +116,7 @@ return [
          * 
          * @link https://clck.ru/36JNiT UUID
          */
-        'uuid' => (bool) env('IS_USES_UUID', true), 
+        'uuid' => (bool) env('IS_USES_UUID', true),
 
         /**
          * * Использовать ли программное удаление для моделей. 
@@ -129,7 +129,7 @@ return [
          * 
          * @link https://clck.ru/36JNnr Программное удаление моделей
          */
-        'soft_deletes' => (bool) env('IS_USES_SOFT_DELETES', false), 
+        'soft_deletes' => (bool) env('IS_USES_SOFT_DELETES', false),
 
         /**
          * * Использовать ли временные метки для моделей. 
@@ -141,7 +141,7 @@ return [
          * 
          * @link https://clck.ru/36JNke Временные метки моделей
          */
-        'timestamps' => (bool) env('IS_USES_TIMESTAMPS', true), 
+        'timestamps' => (bool) env('IS_USES_TIMESTAMPS', true),
 
         /**
          * * Использовать ли миграции по умолчанию.
@@ -149,29 +149,29 @@ return [
          * Если вы не публикуете или не создаете свои миграции таблиц для этого пакета, 
          * то установите данный флаг в true.
          */
-        'migrations' => (bool) env('IS_USES_MIGRATIONS', false), 
+        'migrations' => (bool) env('IS_USES_MIGRATIONS', false),
 
         /**
          * * Использовать ли сидеры по умолчанию.
          * 
-         * Если вы хотитите использовать сидеры по умолчанию, установите данный флаг в true.
+         * Если вы хотите использовать сидеры по умолчанию, установите данный флаг в true.
          */
-        'seeders' => (bool) env('IS_USES_SEED', false), 
+        'seeders' => (bool) env('IS_USES_SEED', false),
 
         /**
-         * * Регистрировать ли дериктивы blade (is, endis, role, endrole, level, endlevel).
+         * * Регистрировать ли директивы blade (is, endis, role, endrole, level, endlevel).
          * 
          * Директивы is и role предоставляют одинаковый функционал. 
          * 
-         * Эти дериктывы применимы только к модели пользователя, 
+         * Эти директивы применимы только к модели пользователя, 
          * использующего трейт "\dmitryrogolev\Is\Traits\HasRoles".
          * 
          * @link https://clck.ru/36Ls42 Директивы Blade
          */
-        'blade' => (bool) env('IS_USES_BLADE', true), 
+        'blade' => (bool) env('IS_USES_BLADE', true),
 
         /**
-         * * Регистировать ли посредники (is, role, level).
+         * * Регистрировать ли посредники (is, role, level).
          * 
          * Посредники is и role предоставляют одинаковый функционал.
          * 
@@ -180,20 +180,20 @@ return [
          * 
          * @link https://clck.ru/36LsKF Посредники
          */
-        'middlewares' => (bool) env('IS_USES_MIDDLEWARES', true), 
+        'middlewares' => (bool) env('IS_USES_MIDDLEWARES', true),
 
         /**
          * * Следует ли подгружать отношение модели после изменения. 
          * 
          * По умолчанию после подключения или удаления отношения(-ий) моделей с ролями, 
-         * отношения будут подгружены заного. 
+         * отношения будут подгружены заново. 
          * Это означает, что модель всегда будет хранить актуальные отношения, 
          * однако также это означает увеличение количества запросов к базе данных. 
          * 
-         * Если вы делаете много опираций с ролями, 
+         * Если вы делаете много операций с ролями, 
          * рекомендуется отключить данную функцию для увеличения производительности.
          */
-        'load_on_update' => (bool) env('IS_USES_LOAD_ON_UPDATE', true), 
+        'load_on_update' => (bool) env('IS_USES_LOAD_ON_UPDATE', true),
 
         /**
          * * Следует ли расширять метод "is" модели Eloquent.
@@ -208,23 +208,23 @@ return [
          * 
          * @link https://clck.ru/36LeCR Метод is модели Eloquent
          */
-        'extend_is_method' => (bool) env('IS_USES_EXTEND_IS_METHOD', true), 
+        'extend_is_method' => (bool) env('IS_USES_EXTEND_IS_METHOD', true),
 
         /**
          * * Использовать ли иерархию ролей на основе уровней. 
          * 
-         * Иерархия подразумевает, что вышестоящая в иерархии роль иммеет допуск 
+         * Иерархия подразумевает, что вышестоящая в иерархии роль имеет допуск 
          * к функционалу нижестоящих относительно нее ролей.
-         * Например, если модель имеет роль с уровенем 5, 
+         * Например, если модель имеет роль с уровнем 5, 
          * то проверка наличия роли с уровнем 3 будет положительна. 
          * 
          * $user->attachRole($admin); // level 3
          * $user->hasRole($moderator); // level 2 // true 
          * 
-         * Если эта функция включена, то вам не придется добалять пользователю все роли, 
+         * Если эта функция включена, то вам не придется добавлять пользователю все роли, 
          * которые ему необходимы, а будет достаточно добавить только одну вышестоящую в иерархии роль.
          */
-        'levels' => (bool) env('IS_USES_LEVELS', true), 
+        'levels' => (bool) env('IS_USES_LEVELS', true),
 
-    ], 
+    ],
 ];
