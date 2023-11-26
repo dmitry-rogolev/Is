@@ -4,6 +4,9 @@ namespace dmitryrogolev\Is\Console\Commands;
 
 use Illuminate\Console\Command;
 
+/**
+ * Команда установки пакета "Is", предоставляющего функционал ролей.
+ */
 class InstallCommand extends Command
 {
     /**
