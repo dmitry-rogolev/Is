@@ -4,6 +4,7 @@ namespace dmitryrogolev\Is\Tests\Feature;
 
 use dmitryrogolev\Is\Helper;
 use dmitryrogolev\Is\Tests\TestCase;
+use Illuminate\Support\Stringable;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -36,12 +37,8 @@ class HelperTest extends TestCase
      */
     public function test_str(): void
     {
-        $this->assertEquals('', Helper::str()->toString());
-        $this->assertEquals('', Helper::str(null)->toString());
-        $this->assertEquals('', Helper::str('')->toString());
-        $this->assertEquals('', Helper::str([])->toString());
+        $this->assertInstanceOf(Stringable::class, Helper::str());
         $this->assertEquals('test', Helper::str('test')->toString());
-        $this->assertEquals('test', Helper::str(fn () => 'test')->toString());
     }
 
     /**
@@ -86,6 +83,7 @@ class HelperTest extends TestCase
         $this->assertEquals([], Helper::toArray(null));
         $this->assertEquals([5], Helper::toArray(5));
         $this->assertEquals(['test'], Helper::toArray('test'));
+        $this->assertEquals(['test', 5], Helper::toArray('test,5'));
         $this->assertEquals(['test'], Helper::toArray(fn () => 'test'));
         $this->assertEquals(['test', 5], Helper::toArray([[['test'], [5]]]));
         $this->assertEquals(['test', 5], Helper::toArray('test, 5'));

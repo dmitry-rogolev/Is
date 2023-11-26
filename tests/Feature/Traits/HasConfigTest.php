@@ -4,12 +4,31 @@ namespace dmitryrogolev\Is\Tests\Feature\Traits;
 
 use dmitryrogolev\Is\Tests\TestCase;
 use dmitryrogolev\Is\Traits\HasConfig;
+use ReflectionClass;
+use ReflectionMethod;
 
 /**
  * Тестируем функционал доступа к конфигурации.
  */
 class HasConfigTest extends TestCase
 {
+    /**
+     * Совпадает ли количество тестов с количеством параметров конфигурации?
+     *
+     * @return void
+     */
+    public function test_count_tests(): void
+    {
+        $methods = (new ReflectionClass(Base::class))->getMethods(ReflectionMethod::IS_PUBLIC);
+        $count   = collect($methods)->count();
+        $methods = (new ReflectionClass($this))->getMethods(ReflectionMethod::IS_PUBLIC);
+        $tests   = collect($methods)
+            ->filter(fn ($method) => str_starts_with($method->name, 'test'))
+            ->where('name', '!=', __FUNCTION__);
+
+        $this->assertCount($count, $tests);
+    }
+
     /**
      * Есть ли метод, возвращающий и изменяющий соединение к БД?
      *
