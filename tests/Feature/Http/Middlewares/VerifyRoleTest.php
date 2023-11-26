@@ -16,39 +16,100 @@ class VerifyRoleTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * Есть ли посредник, проверяющий наличие роли у пользователя?
+     * Можно ли посетить страницу без аутентификации, но с необходимой ролью?
      *
      * @return void
      */
-    public function test_verify_one_role(): void 
+    public function test_without_auth(): void 
     {
+        config(['is.uses.levels' => false]);
         $user = $this->getUser();
-        $role = Role::generate(['slug' => 'user']);
-        $user->attachRole($role);
+        $user->attachRole(Role::generate(['slug' => 'user']));
 
         $response = $this->get('role/user');
         $response->assertStatus(403);
+    }
 
-        $response = $this->actingAs($user)->get('role/user');
+    /**
+     * Можно ли посетить страницу с аутентификацией и со случайной ролью?
+     *
+     * @return void
+     */
+    public function test_with_some_role(): void 
+    {
+        config(['is.uses.levels' => false]);
+        $user = $this->getUser();
+        $user->attachRole(Role::generate());
+
+        $response = $this->actingAs($user)->get('is/editor');
+        $response->assertStatus(403);
+    } 
+
+    /**
+     * Можно ли посетить страницу с необхомой ролью?
+     *
+     * @return void
+     */
+    public function test_with_role(): void 
+    {
+        config(['is.uses.levels' => false]);
+        $user = $this->getUser();
+        $user->attachRole(Role::generate(['slug' => 'admin']));
+
+        $response = $this->actingAs($user)->post('is/admin');
         $response->assertStatus(200);
+    }
+
+    /**
+     * Можно ли посетить страницу, имея одну из требуемых ролей?
+     *
+     * @return void
+     */
+    public function test_with_several_roles(): void 
+    {
+        config(['is.uses.levels' => false]);
+        $user = $this->getUser();
+        $user->attachRole(Role::generate(['slug' => 'moderator']));
+
+        $response = $this->actingAs($user)->post('is/user/moderator/editor');
+        $response->assertStatus(200);
+    }
+
+    /**
+     * Можно ли посетить страницу с меньшим уровнем?
+     *
+     * @return void
+     */
+    public function test_with_lower_level(): void 
+    {
+        if (! config('is.uses.levels')) {
+            $this->markTestSkipped('Иерархия ролей отключена.');
+        }
 
         $user = $this->getUser();
-        if (config('is.uses.levels')) {
-            $role = Role::generate(['slug' => 'moderator', 'level' => 2]);
-            Role::generate(['slug' => 'admin', 'level' => 5]);
-        } else {
-            $role = Role::generate(['slug' => 'moderator']);
-            Role::generate(['slug' => 'admin']);
-        }
-        $user->attachRole($role);
+        Role::generate(['slug' => 'editor', 'level' => 3]);
+        $user->attachRole(Role::generate(['slug' => 'moderator', 'level' => 2]));
 
-        $response = $this->actingAs($user)->get('role/admin');
+        $response = $this->actingAs($user)->get('role/editor');
         $response->assertStatus(403);
+    }
 
-        $response = $this->actingAs($user)->get('role/moderator');
-        $response->assertStatus(200);
+    /**
+     * Можно ли посетить страницу с большим уровнем?
+     *
+     * @return void
+     */
+    public function test_with_large_level(): void 
+    {
+        if (! config('is.uses.levels')) {
+            $this->markTestSkipped('Иерархия ролей отключена.');
+        }
 
-        $response = $this->actingAs($user)->get('role/user/moderator');
+        $user = $this->getUser();
+        Role::generate(['slug' => 'editor', 'level' => 3]);
+        $user->attachRole(Role::generate(['slug' => 'admin', 'level' => 5]));
+
+        $response = $this->actingAs($user)->get('is/editor');
         $response->assertStatus(200);
     }
 

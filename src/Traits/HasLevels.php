@@ -110,6 +110,10 @@ trait HasLevels
      */
     protected function checkLevel($role): bool 
     {
+        if (! config('is.uses.levels')) {
+            return $this->checkRole($role);
+        }
+        
         if (is_null($role = $this->getRole($role))) {
             return false;
         }

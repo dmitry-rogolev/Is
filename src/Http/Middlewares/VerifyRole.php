@@ -37,12 +37,10 @@ class VerifyRole
      */
     public function handle(Request $request, \Closure $next, ...$role): mixed 
     {
-        $role = join(',', $role);
-
         if ($this->auth->check() && $this->auth->user() instanceof Roleable && $this->auth->user()->hasRole($role)) {
             return $next($request);
         }
 
-        abort(403, sprintf("Доступ запрещен. Нет требуемой роли \"%s\".", $role));
+        abort(403, sprintf("Доступ запрещен. Нет требуемой роли \"%s\".", join(',', $role)));
     }
 }
