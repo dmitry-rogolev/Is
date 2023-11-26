@@ -2,6 +2,7 @@
 
 namespace dmitryrogolev\Is\Tests\Database\Seeders;
 
+use dmitryrogolev\Is\Facades\Is;
 use Illuminate\Database\Seeder;
 
 /**
@@ -12,23 +13,23 @@ class UserSeeder extends Seeder
     protected $count_users = 20;
 
     /**
-     * Запустить сидер
+     * Запустить сидер.
      */
     public function run(): void
     {
-        $roles = config('is.models.role')::where('slug', '!=', 'admin')->get();
-        $admin = config('is.models.role')::where('slug', '=', 'admin')->first();
+        $roles = Is::roleModel()::where('slug', '!=', 'admin')->get();
+        $admin = Is::roleModel()::where('slug', '=', 'admin')->first();
 
         // Администратор будет только один.
-        $user = config('is.models.user')::factory()->create();
+        $user = Is::generate();
         $user->attachRole($admin);
 
         // Пользователи со случайными ролями.
         for ($i = 0; $i < $this->count_users; $i++) {
-            $user = config('is.models.user')::factory()->create();
+            $user = Is::generate();
             $role = $roles->random();
 
-            if (config('is.uses.levels')) {
+            if (Is::usesLevels()) {
                 $user->attachRole($role);
             } else {
                 $user->attachRole($roles->where('level', '<=', $role->level));
