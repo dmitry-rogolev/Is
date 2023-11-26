@@ -15,11 +15,7 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        foreach ($this->getRoles() as $role) {
-            if (! Role::has($role['slug'])) {
-                Role::create($role);
-            }
-        }
+        Role::createGroupIfNotExists($this->getRoles());
     }
 
     /**
@@ -29,62 +25,11 @@ class RoleSeeder extends Seeder
      */
     public function getRoles(): array 
     {
-        return config('is.uses.levels') ? static::ROLES_WITH_LEVELS : static::ROLES;
+        return [
+            ['name' => 'Admin',     'slug' => 'admin',      'description' => 'Admin Role',      'level' => 5],
+            ['name' => 'Editor',    'slug' => 'editor',     'description' => 'Editor Role',     'level' => 3],
+            ['name' => 'Moderator', 'slug' => 'moderator',  'description' => 'Moderator Role',  'level' => 2],
+            ['name' => 'User',      'slug' => 'user',       'description' => 'User Role',       'level' => 1],
+        ];
     }
-
-    /**
-     * Роли с полями уровней.
-     */
-    const ROLES_WITH_LEVELS = [
-        [
-            'name'        => 'Admin',
-            'slug'        => 'admin',
-            'description' => 'Admin Role',
-            'level'       => 5,
-        ],
-        [
-            'name'        => 'Editor',
-            'slug'        => 'editor',
-            'description' => 'Editor Role',
-            'level'       => 3,
-        ],
-        [
-            'name'        => 'Moderator',
-            'slug'        => 'moderator',
-            'description' => 'Moderator Role',
-            'level'       => 2,
-        ],
-        [
-            'name'        => 'User',
-            'slug'        => 'user',
-            'description' => 'User Role',
-            'level'       => 1,
-        ],
-    ];
-
-    /**
-     * Роли без полей уровней.
-     */
-    const ROLES = [
-        [
-            'name'        => 'Admin',
-            'slug'        => 'admin',
-            'description' => 'Admin Role',
-        ],
-        [
-            'name'        => 'Editor',
-            'slug'        => 'editor',
-            'description' => 'Editor Role',
-        ],
-        [
-            'name'        => 'Moderator',
-            'slug'        => 'moderator',
-            'description' => 'Moderator Role',
-        ],
-        [
-            'name'        => 'User',
-            'slug'        => 'user',
-            'description' => 'User Role',
-        ],
-    ];
 }

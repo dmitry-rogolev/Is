@@ -28,10 +28,7 @@ return new class extends Migration
                 $table->string('name', 255)->unique();
                 $table->string('slug', 255)->unique();
                 $table->text('description')->nullable();
-
-                if (config('is.uses.levels')) {
-                    $table->tinyInteger('level')->default(1);
-                }
+                $table->tinyInteger('level')->default(0);
 
                 if (config('is.uses.timestamps')) {
                     $table->timestamps();

@@ -45,6 +45,16 @@ class ServiceTest extends TestCase
     }
 
     /**
+     * Есть ли метод, возвращающий имя фабрики модели?
+     *
+     * @return void
+     */
+    public function test_get_factory(): void 
+    {
+        $this->assertEquals(config('is.factories.role'), $this->service->getFactory());
+    }
+
+    /**
      * Есть ли метод, возвращающий все записи таблицы?
      *
      * @return void
@@ -112,6 +122,75 @@ class ServiceTest extends TestCase
     }
 
     /**
+     * Есть ли метод, создающий модель, только если она не существует в таблице?
+     *
+     * @return void
+     */
+    public function test_make_if_not_exists(): void 
+    {
+        $this->assertNotNull($this->service->makeIfNotExists([
+            'name' => 'Admin', 
+            'slug' => 'admin', 
+        ]));
+        config('is.models.role')::create([
+            'name' => 'Admin', 
+            'slug' => 'admin',  
+        ]);
+        $this->assertNull($this->service->makeIfNotExists([
+            'name' => 'Admin', 
+            'slug' => 'admin',  
+        ]));
+    }
+
+    /**
+     * Есть ли метод, создающий группу моделей?
+     *
+     * @return void
+     */
+    public function test_make_group(): void 
+    {
+        $group = [
+            ['name' => 'User', 'slug' => 'user'], 
+            ['name' => 'Moderator', 'slug' => 'moderator'], 
+            ['name' => 'Editor', 'slug' => 'editor'], 
+            ['name' => 'Admin', 'slug' => 'admin'], 
+        ];
+
+        $models = $this->service->makeGroup($group);
+        $this->assertNotCount(0, $models);
+        $models->each(fn ($item) => $this->assertModelMissing($item));
+
+        collect($group)->each(fn ($item) => $this->service->getModel()::create($item));
+
+        $models = $this->service->makeGroup($group);
+        $this->assertNotCount(0, $models);
+    }
+
+    /**
+     * Есть ли метод, создающий группу не существующих моделей?
+     *
+     * @return void
+     */
+    public function test_make_group_if_not_exists(): void 
+    {
+        $group = [
+            ['name' => 'User', 'slug' => 'user'], 
+            ['name' => 'Moderator', 'slug' => 'moderator'], 
+            ['name' => 'Editor', 'slug' => 'editor'], 
+            ['name' => 'Admin', 'slug' => 'admin'], 
+        ];
+
+        $models = $this->service->makeGroupIfNotExists($group);
+        $this->assertNotCount(0, $models);
+        $models->each(fn ($item) => $this->assertModelMissing($item));
+
+        collect($group)->each(fn ($item) => $this->service->getModel()::create($item));
+
+        $models = $this->service->makeGroupIfNotExists($group);
+        $this->assertCount(0, $models);
+    }
+
+    /**
      * Есть ли метод, создающий модель и сохраняющий ее в таблице?
      *
      * @return void
@@ -129,13 +208,95 @@ class ServiceTest extends TestCase
     }
 
     /**
+     * Есть ли метод, создающий модель и сохраняющий ее в таблице, 
+     * только если она не существует в таблице?
+     *
+     * @return void
+     */
+    public function test_store_if_not_exists(): void 
+    {
+        $this->assertModelExists($this->service->storeIfNotExists([
+            'name' => 'Admin', 
+            'slug' => 'admin', 
+        ]));
+        $this->assertNull($this->service->storeIfNotExists([
+            'name' => 'Admin', 
+            'slug' => 'admin', 
+        ]));
+        $this->assertModelExists($this->service->createIfNotExists([
+            'name' => 'User', 
+            'slug' => 'user', 
+        ]));
+        $this->assertNull($this->service->createIfNotExists([
+            'name' => 'User', 
+            'slug' => 'user', 
+        ]));
+    }
+
+    /**
+     * Есть ли метод, создающий группу моделей?
+     *
+     * @return void
+     */
+    public function test_store_group(): void 
+    {
+        $group = [
+            ['name' => 'User', 'slug' => 'user'], 
+            ['name' => 'Moderator', 'slug' => 'moderator'], 
+            ['name' => 'Editor', 'slug' => 'editor'], 
+            ['name' => 'Admin', 'slug' => 'admin'], 
+        ];
+
+        $models = $this->service->storeGroup($group);
+        $this->assertNotCount(0, $models);
+        $models->each(fn ($item) => $this->assertModelExists($item));
+
+        config('is.models.role')::truncate();
+
+        $models = $this->service->createGroup($group);
+        $this->assertNotCount(0, $models);
+        $models->each(fn ($item) => $this->assertModelExists($item));
+    }
+
+    /**
+     * Есть ли метод, создающий группу не существующих моделей?
+     *
+     * @return void
+     */
+    public function test_store_group_if_not_exists(): void 
+    {
+        $group = [
+            ['name' => 'User', 'slug' => 'user'], 
+            ['name' => 'Moderator', 'slug' => 'moderator'], 
+            ['name' => 'Editor', 'slug' => 'editor'], 
+            ['name' => 'Admin', 'slug' => 'admin'], 
+        ];
+
+        $models = $this->service->storeGroupIfNotExists($group);
+        $this->assertNotCount(0, $models);
+        $models->each(fn ($item) => $this->assertModelExists($item));
+
+        $models = $this->service->storeGroupIfNotExists($group);
+        $this->assertCount(0, $models);
+
+        config('is.models.role')::truncate();
+
+        $models = $this->service->createGroupIfNotExists($group);
+        $this->assertNotCount(0, $models);
+        $models->each(fn ($item) => $this->assertModelExists($item));
+
+        $models = $this->service->createGroupIfNotExists($group);
+        $this->assertCount(0, $models);
+    }
+
+    /**
      * Есть ли метод, возвращающий фабрику модели?
      *
      * @return void
      */
     public function test_factory(): void 
     {
-        $this->assertEquals(config('is.factories.role'), $this->service->factory()::class);
+        $this->assertEquals($this->service->getFactory(), $this->service->factory()::class);
     }
 
     /**

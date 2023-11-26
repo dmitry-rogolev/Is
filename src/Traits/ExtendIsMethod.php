@@ -21,11 +21,13 @@ trait ExtendIsMethod
     public function is($model, bool $all = false): bool
     {
         if (
-            is_int($model) 
-            || is_string($model) 
-            || $model instanceof (config('is.models.role')) 
-            || is_array($model) 
-            || $model instanceof Collection
+            config('is.uses.extend_is_method') && (
+                is_int($model) 
+                || is_string($model) 
+                || $model instanceof (config('is.models.role')) 
+                || is_array($model) 
+                || $model instanceof Collection
+            )
         ) {
             return $this->hasRole($model, $all);
         }

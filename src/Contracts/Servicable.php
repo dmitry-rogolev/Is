@@ -2,6 +2,7 @@
 
 namespace dmitryrogolev\Is\Contracts;
 
+use ArrayAccess;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +25,13 @@ interface Servicable
      * @return string
      */
     public function getSeeder(): string;
+
+    /**
+     * Возвращает имя фабрики модели.
+     *
+     * @return string
+     */
+    public function getFactory(): string;
 
     /**
      * Возвращает все модели.
@@ -79,6 +87,31 @@ interface Servicable
     public function make(array $attributes = []): Model;
 
     /**
+     * Создать модель, только если она не существует в таблице.
+     *
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function makeIfNotExists(array $attributes = []): Model|null;
+
+    /**
+     * Создать группу моделей.
+     *
+     * @param \ArrayAccess|array $group
+     * @param boolean $ifNotExists
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function makeGroup(ArrayAccess|array $group, bool $ifNotExists = false): Collection;
+
+    /**
+     * Создать группу не существующих в таблице моделей.
+     *
+     * @param \ArrayAccess|array $group
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function makeGroupIfNotExists(ArrayAccess|array $group): Collection;
+
+    /**
      * Создать модель и сохранить ее в таблицу.
      *
      * @param array $attributes
@@ -93,6 +126,56 @@ interface Servicable
      * @return \Illuminate\Database\Eloquent\Model
      */
     public function create(array $attributes = []): Model;
+
+    /**
+     * Создать модель и сохранить ее в таблицу, если ее не существует.
+     *
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function storeIfNotExists(array $attributes = []): Model|null;
+
+    /**
+     * Создать модель и сохранить ее в таблицу, если ее не существует.
+     *
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function createIfNotExists(array $attributes = []): Model|null;
+
+    /**
+     * Создать группу моделей и сохранить ее в таблицу.
+     *
+     * @param \ArrayAccess|array $group
+     * @param boolean $ifNotExists
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function storeGroup(ArrayAccess|array $group, bool $ifNotExists = false): Collection;
+
+    /**
+     * Создать группу моделей и сохранить ее в таблицу.
+     *
+     * @param \ArrayAccess|array $group
+     * @param boolean $ifNotExists
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function createGroup(ArrayAccess|array $group, bool $ifNotExists = false): Collection;
+
+    /**
+     * Создать группу не существующих моделей и сохранить ее в таблицу.
+     *
+     * @param \ArrayAccess|array $group
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function storeGroupIfNotExists(ArrayAccess|array $group): Collection;
+
+    /**
+     * Создать группу не существующих моделей и сохранить ее в таблицу.
+     *
+     * @param \ArrayAccess|array $group
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function createGroupIfNotExists(ArrayAccess|array $group): Collection;
 
     /**
      * Возвращает фабрику модели.

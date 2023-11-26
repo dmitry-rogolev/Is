@@ -29,17 +29,11 @@ class RoleFactory extends Factory
     {
         $name = fake()->unique()->name();
 
-        $definition = [
+        return [
             'name' => $name, 
             'slug' => $name, 
             'description' => $name.' role', 
+            'level' => config('is.uses.levels') ? fake()->randomNumber(1) : 0,
         ];
-
-        // Если иерархия ролей отключена, то поля "level" в таблице не будет.
-        if (config('is.uses.levels')) {
-            $definition['level'] = fake()->randomNumber(1);
-        }
-
-        return $definition;
     }
 }

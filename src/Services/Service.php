@@ -2,6 +2,7 @@
 
 namespace dmitryrogolev\Is\Services;
 
+use ArrayAccess;
 use dmitryrogolev\Is\Contracts\Servicable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -25,6 +26,13 @@ abstract class Service implements Servicable
      * @var string
      */
     protected string $seeder;
+
+    /**
+     * Имя фабрики модели.
+     *
+     * @var string
+     */
+    protected string $factory;
 
     /**
      * Возвращает имя модели сервиса.
@@ -71,6 +79,31 @@ abstract class Service implements Servicable
     {
         if (class_exists($seeder)) {
             $this->seeder = $seeder;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Возвращает имя фабрики модели.
+     *
+     * @return string
+     */
+    public function getFactory(): string 
+    {
+        return $this->factory;
+    }
+
+    /**
+     * Изменяет имя фабрики модели.
+     *
+     * @param string $factory
+     * @return static
+     */
+    protected function setFactory(string $factory): static 
+    {
+        if (class_exists($factory)) {
+            $this->factory = $factory;
         }
 
         return $this;
@@ -159,6 +192,48 @@ abstract class Service implements Servicable
     }
 
     /**
+     * Создать модель, только если она не существует в таблице.
+     *
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function makeIfNotExists(array $attributes = []): Model|null 
+    {
+        return $this->make($attributes);
+    }
+
+    /**
+     * Создать группу моделей.
+     *
+     * @param \ArrayAccess|array $group
+     * @param boolean $ifNotExists
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function makeGroup(ArrayAccess|array $group, bool $ifNotExists = false): Collection
+    {
+        $result = new Collection;
+
+        foreach ($group as $attributes) {
+            if (is_array($attributes) && ($model = $ifNotExists ? $this->makeIfNotExists($attributes) : $this->make($attributes))) {
+                $result->push($model);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Создать группу не существующих в таблице моделей.
+     *
+     * @param \ArrayAccess|array $group
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function makeGroupIfNotExists(ArrayAccess|array $group): Collection 
+    {
+        return $this->makeGroup($group, true);
+    }
+
+    /**
      * Создать модель и сохранить ее в таблицу.
      *
      * @param array $attributes
@@ -178,6 +253,82 @@ abstract class Service implements Servicable
     public function create(array $attributes = []): Model 
     {
         return $this->store($attributes);
+    }
+
+    /**
+     * Создать модель и сохранить ее в таблицу, если ее не существует.
+     *
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function storeIfNotExists(array $attributes = []): Model|null 
+    {
+        return $this->store($attributes);
+    }
+
+    /**
+     * Создать модель и сохранить ее в таблицу, если ее не существует.
+     *
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function createIfNotExists(array $attributes = []): Model|null 
+    {
+        return $this->storeIfNotExists($attributes);
+    }
+
+    /**
+     * Создать группу моделей и сохранить ее в таблицу.
+     *
+     * @param \ArrayAccess|array $group
+     * @param boolean $ifNotExists
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function storeGroup(ArrayAccess|array $group, bool $ifNotExists = false): Collection
+    {
+        $result = new Collection;
+
+        foreach ($group as $attributes) {
+            if (is_array($attributes) && ($model = $ifNotExists ? $this->storeIfNotExists($attributes) : $this->store($attributes))) {
+                $result->push($model);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Создать группу моделей и сохранить ее в таблицу.
+     *
+     * @param \ArrayAccess|array $group
+     * @param boolean $ifNotExists
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function createGroup(ArrayAccess|array $group, bool $ifNotExists = false): Collection 
+    {
+        return $this->storeGroup($group, $ifNotExists);
+    }
+
+    /**
+     * Создать группу не существующих моделей и сохранить ее в таблицу.
+     *
+     * @param \ArrayAccess|array $group
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function storeGroupIfNotExists(ArrayAccess|array $group): Collection 
+    {
+        return $this->storeGroup($group, true);
+    }
+
+    /**
+     * Создать группу не существующих моделей и сохранить ее в таблицу.
+     *
+     * @param \ArrayAccess|array $group
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function createGroupIfNotExists(ArrayAccess|array $group): Collection 
+    {
+        return $this->storeGroupIfNotExists($group);
     }
 
     /**

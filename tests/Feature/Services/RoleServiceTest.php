@@ -86,6 +86,31 @@ class RoleServiceTest extends TestCase
     }
 
     /**
+     * Есть ли метод, создающий модель только если ее не существует в таблице?
+     *
+     * @return void
+     */
+    public function test_store_if_not_exists(): void 
+    {
+        $this->assertNotNull($this->service->storeIfNotExists([
+            'name' => 'User', 
+            'slug' => 'user', 
+        ]));
+        $this->assertNull($this->service->storeIfNotExists([
+            'name' => 'User', 
+            'slug' => 'user', 
+        ]));
+        $this->assertNotNull($this->service->createIfNotExists([
+            'name' => 'Admin', 
+            'slug' => 'admin', 
+        ]));
+        $this->assertNull($this->service->createIfNotExists([
+            'name' => 'Admin', 
+            'slug' => 'admin', 
+        ]));
+    }
+
+    /**
      * Возвращает пользователя, который относится к множеству ролей.
      *
      * @param int $count
