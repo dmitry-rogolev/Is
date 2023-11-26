@@ -16,7 +16,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $table = config('is.tables.roleables');
+        $table      = config('is.tables.roleables');
         $connection = config('is.connection');
 
         if (! Schema::connection($connection)->hasTable($table)) {

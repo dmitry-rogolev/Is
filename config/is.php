@@ -18,7 +18,7 @@ return [
      * 
      * @link https://clck.ru/36LkBo Конфигурирование БД
      */
-    'connection' => env('IS_CONNECTION', config('database.default')),
+    'connection'  => env('IS_CONNECTION', config('database.default')),
 
     /**
      * * Имена таблиц, которые создает пакет. 
@@ -30,8 +30,8 @@ return [
      * 
      * @link https://clck.ru/36JLPn Полиморфные отношения многие-ко-многим
      */
-    'tables' => [
-        'roles' => env('IS_TABLES_ROLES', 'roles'),
+    'tables'      => [
+        'roles'     => env('IS_TABLES_ROLES', 'roles'),
         'roleables' => env('IS_TABLES_ROLEABLES', 'roleables'),
     ],
 
@@ -47,7 +47,7 @@ return [
      * 
      * @link https://clck.ru/36JLPn Полиморфные отношения многие-ко-многим
      */
-    'relations' => [
+    'relations'   => [
         'roleable' => env('IS_RELATIONS_ROLEABLE', 'roleable'),
     ],
 
@@ -64,23 +64,23 @@ return [
     /**
      * * Имена моделей, которые используются в пакете.
      */
-    'models' => [
+    'models'      => [
 
         // Роль
-        'role' => env('IS_MODELS_ROLE', \dmitryrogolev\Is\Models\Role::class),
+        'role'     => env('IS_MODELS_ROLE', \dmitryrogolev\Is\Models\Role::class),
 
         // Промежуточная модель
         'roleable' => env('IS_MODELS_ROLEABLE', \dmitryrogolev\Is\Models\Roleable::class),
 
         // Пользователь по умолчанию
-        'user' => env('IS_MODELS_USER', config('auth.providers.users.model')),
+        'user'     => env('IS_MODELS_USER', config('auth.providers.users.model')),
 
     ],
 
     /**
      * * Имена фабрик, которые используются в пакете.
      */
-    'factories' => [
+    'factories'   => [
 
         // Фабрика роли
         'role' => env('IS_FACTORIES_ROLE', \dmitryrogolev\Is\Database\Factories\RoleFactory::class),
@@ -90,7 +90,7 @@ return [
     /**
      * * Имена сидеров, которые используются в пакете.
      */
-    "seeders" => [
+    "seeders"     => [
 
         // Сидер роли
         "role" => env('IS_SEEDERS_ROLE', \dmitryrogolev\Is\Database\Seeders\RoleSeeder::class),
@@ -102,12 +102,12 @@ return [
      * 
      * Используется для разделения строк на подстроки для поля slug.
      */
-    'separator' => env('IS_SEPARATOR', '.'),
+    'separator'   => env('IS_SEPARATOR', '.'),
 
     /**
      * * Флаги
      */
-    'uses' => [
+    'uses'        => [
 
         /**
          * * Использовать ли в моделях uuid вместо обычного id.
@@ -116,7 +116,7 @@ return [
          * 
          * @link https://clck.ru/36JNiT UUID
          */
-        'uuid' => (bool) env('IS_USES_UUID', true),
+        'uuid'             => (bool) env('IS_USES_UUID', true),
 
         /**
          * * Использовать ли программное удаление для моделей. 
@@ -129,7 +129,7 @@ return [
          * 
          * @link https://clck.ru/36JNnr Программное удаление моделей
          */
-        'soft_deletes' => (bool) env('IS_USES_SOFT_DELETES', false),
+        'soft_deletes'     => (bool) env('IS_USES_SOFT_DELETES', false),
 
         /**
          * * Использовать ли временные метки для моделей. 
@@ -141,7 +141,7 @@ return [
          * 
          * @link https://clck.ru/36JNke Временные метки моделей
          */
-        'timestamps' => (bool) env('IS_USES_TIMESTAMPS', true),
+        'timestamps'       => (bool) env('IS_USES_TIMESTAMPS', true),
 
         /**
          * * Использовать ли миграции по умолчанию.
@@ -149,14 +149,14 @@ return [
          * Если вы не публикуете или не создаете свои миграции таблиц для этого пакета, 
          * то установите данный флаг в true.
          */
-        'migrations' => (bool) env('IS_USES_MIGRATIONS', false),
+        'migrations'       => (bool) env('IS_USES_MIGRATIONS', false),
 
         /**
          * * Использовать ли сидеры по умолчанию.
          * 
          * Если вы хотите использовать сидеры по умолчанию, установите данный флаг в true.
          */
-        'seeders' => (bool) env('IS_USES_SEED', false),
+        'seeders'          => (bool) env('IS_USES_SEED', false),
 
         /**
          * * Регистрировать ли директивы blade (is, endis, role, endrole, level, endlevel).
@@ -168,7 +168,7 @@ return [
          * 
          * @link https://clck.ru/36Ls42 Директивы Blade
          */
-        'blade' => (bool) env('IS_USES_BLADE', true),
+        'blade'            => (bool) env('IS_USES_BLADE', true),
 
         /**
          * * Регистрировать ли посредники (is, role, level).
@@ -180,7 +180,7 @@ return [
          * 
          * @link https://clck.ru/36LsKF Посредники
          */
-        'middlewares' => (bool) env('IS_USES_MIDDLEWARES', true),
+        'middlewares'      => (bool) env('IS_USES_MIDDLEWARES', true),
 
         /**
          * * Следует ли подгружать отношение модели после изменения. 
@@ -193,7 +193,7 @@ return [
          * Если вы делаете много операций с ролями, 
          * рекомендуется отключить данную функцию для увеличения производительности.
          */
-        'load_on_update' => (bool) env('IS_USES_LOAD_ON_UPDATE', true),
+        'load_on_update'   => (bool) env('IS_USES_LOAD_ON_UPDATE', true),
 
         /**
          * * Следует ли расширять метод "is" модели Eloquent.
@@ -224,7 +224,7 @@ return [
          * Если эта функция включена, то вам не придется добавлять пользователю все роли, 
          * которые ему необходимы, а будет достаточно добавить только одну вышестоящую в иерархии роль.
          */
-        'levels' => (bool) env('IS_USES_LEVELS', true),
+        'levels'           => (bool) env('IS_USES_LEVELS', true),
 
     ],
 ];

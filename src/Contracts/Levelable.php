@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Contracts;
 
@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Функционал иерархии ролей.
  */
-interface Levelable extends AbstractRoleable
+interface Levelable
 {
     /**
      * Получить роль с наибольшим уровнем.

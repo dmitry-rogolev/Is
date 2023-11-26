@@ -2,7 +2,7 @@
 
 namespace dmitryrogolev\Is\Database\Seeders;
 
-use dmitryrogolev\Is\Facades\Role;
+use dmitryrogolev\Is\Facades\Is;
 use Illuminate\Database\Seeder;
 
 /**
@@ -15,7 +15,7 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::createGroupIfNotExists($this->getRoles());
+        Is::createGroupIfNotExists($this->getRoles());
     }
 
     /**
@@ -23,13 +23,13 @@ class RoleSeeder extends Seeder
      *
      * @return array
      */
-    public function getRoles(): array 
+    public function getRoles(): array
     {
         return [
-            ['name' => 'Admin',     'slug' => 'admin',      'description' => 'Admin Role',      'level' => 5],
-            ['name' => 'Editor',    'slug' => 'editor',     'description' => 'Editor Role',     'level' => 3],
-            ['name' => 'Moderator', 'slug' => 'moderator',  'description' => 'Moderator Role',  'level' => 2],
-            ['name' => 'User',      'slug' => 'user',       'description' => 'User Role',       'level' => 1],
+            ['name' => 'Admin', 'slug' => 'admin', 'description' => 'Admin Role', 'level' => 5],
+            ['name' => 'Editor', 'slug' => 'editor', 'description' => 'Editor Role', 'level' => 3],
+            ['name' => 'Moderator', 'slug' => 'moderator', 'description' => 'Moderator Role', 'level' => 2],
+            ['name' => 'User', 'slug' => 'user', 'description' => 'User Role', 'level' => 1],
         ];
     }
 }

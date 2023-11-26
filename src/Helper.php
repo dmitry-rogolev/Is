@@ -1,12 +1,16 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is;
 
+use dmitryrogolev\Is\Facades\Is;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Stringable;
 
-class Helper 
+/**
+ * Помощник.
+ */
+class Helper
 {
     /**
      * Преобразует значение в объект "\Illuminate\Support\Stringable".
@@ -14,7 +18,7 @@ class Helper
      * @param mixed $value
      * @return \Illuminate\Support\Stringable
      */
-    public static function str($value = ''): Stringable 
+    public static function str($value = ''): Stringable
     {
         $value = value($value);
 
@@ -26,14 +30,14 @@ class Helper
     }
 
     /**
-     * Преобразует строку в slug
+     * Преобразует строку в slug.
      *
      * @param  mixed $value
      * @return string
      */
-    public static function slug($value): string 
+    public static function slug($value): string
     {
-        return static::str($value)->camel()->snake(config('is.separator'))->toString();
+        return static::str($value)->camel()->snake(Is::separator())->toString();
     }
 
     /**
@@ -43,7 +47,7 @@ class Helper
      * @param   string $delimiter
      * @return  array
      */
-    public static function split($value, string $delimiter = '/[,|\s_.-]+/'): array 
+    public static function split($value, string $delimiter = '/[,|\s_.-]+/'): array
     {
         return static::str($value)->split($delimiter)->toArray();
     }

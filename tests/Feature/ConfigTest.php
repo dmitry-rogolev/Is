@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Tests\Feature;
 
@@ -10,20 +10,21 @@ use ReflectionMethod;
 /**
  * Тестируем параметры конфигурации.
  */
-class ConfigTest extends TestCase 
+class ConfigTest extends TestCase
 {
     /**
      * Совпадает ли количество тестов с количеством параметров конфигурации?
      *
      * @return void
      */
-    public function test_count_tests(): void 
+    public function test_count_tests(): void
     {
         $count = collect(config('is'))->flatten()->count();
-        $tests = collect((new ReflectionClass($this))->getMethods(ReflectionMethod::IS_PUBLIC))
-            ->filter(fn ($method) => str_starts_with($method->name, 'test'))
+        $methods = (new ReflectionClass($this))->getMethods(ReflectionMethod::IS_PUBLIC);
+        $tests = collect($methods)
+            ->filter(fn($method) => str_starts_with($method->name, 'test'))
             ->where('name', '!=', __FUNCTION__);
-            
+
         $this->assertCount($count, $tests);
     }
 
@@ -32,10 +33,10 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_connection(): void 
+    public function test_connection(): void
     {
-        if (! config('is.connection')) {
-            $this->markTestSkipped('Отсутствует когфигурация "is.connection"');
+        if (!config('is.connection')) {
+            $this->markTestSkipped('Отсутствует конфигурация "is.connection"');
         }
 
         $result = DB::connection(config('is.connection'))->select('select "test" as test');
@@ -47,7 +48,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_tables_roles(): void 
+    public function test_tables_roles(): void
     {
         $this->assertTrue(is_string(config('is.tables.roles')));
         $this->assertNotEmpty(config('is.tables.roles'));
@@ -58,7 +59,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_tables_roleables(): void 
+    public function test_tables_roleables(): void
     {
         $this->assertTrue(is_string(config('is.tables.roleables')));
         $this->assertNotEmpty(config('is.tables.roleables'));
@@ -69,7 +70,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_relations_roleable(): void 
+    public function test_relations_roleable(): void
     {
         $this->assertTrue(is_string(config('is.relations.roleable')));
         $this->assertNotEmpty(config('is.relations.roleable'));
@@ -80,7 +81,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_primary_key(): void 
+    public function test_primary_key(): void
     {
         $this->assertTrue(is_string(config('is.primary_key')));
         $this->assertNotEmpty(config('is.primary_key'));
@@ -91,7 +92,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_models_role(): void 
+    public function test_models_role(): void
     {
         $this->assertTrue(class_exists(config('is.models.role')));
     }
@@ -101,7 +102,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_models_roleable(): void 
+    public function test_models_roleable(): void
     {
         $this->assertTrue(class_exists(config('is.models.roleable')));
     }
@@ -111,7 +112,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_models_user(): void 
+    public function test_models_user(): void
     {
         $this->assertTrue(class_exists(config('is.models.user')));
     }
@@ -121,7 +122,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_factories_role(): void 
+    public function test_factories_role(): void
     {
         $this->assertTrue(class_exists(config('is.factories.role')));
     }
@@ -131,7 +132,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_seeders_role(): void 
+    public function test_seeders_role(): void
     {
         $this->assertTrue(class_exists(config('is.seeders.role')));
     }
@@ -141,7 +142,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_separator(): void 
+    public function test_separator(): void
     {
         $this->assertTrue(is_string(config('is.separator')));
         $this->assertNotEmpty(config('is.separator'));
@@ -152,7 +153,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_uses_uuid(): void 
+    public function test_uses_uuid(): void
     {
         $this->assertTrue(is_bool(config('is.uses.uuid')));
     }
@@ -162,7 +163,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_uses_soft_deletes(): void 
+    public function test_uses_soft_deletes(): void
     {
         $this->assertTrue(is_bool(config('is.uses.soft_deletes')));
     }
@@ -172,7 +173,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_uses_timestamps(): void 
+    public function test_uses_timestamps(): void
     {
         $this->assertTrue(is_bool(config('is.uses.timestamps')));
     }
@@ -182,7 +183,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_uses_migrations(): void 
+    public function test_uses_migrations(): void
     {
         $this->assertTrue(is_bool(config('is.uses.migrations')));
     }
@@ -192,7 +193,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_uses_seeders(): void 
+    public function test_uses_seeders(): void
     {
         $this->assertTrue(is_bool(config('is.uses.seeders')));
     }
@@ -202,7 +203,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_uses_blade(): void 
+    public function test_uses_blade(): void
     {
         $this->assertTrue(is_bool(config('is.uses.blade')));
     }
@@ -212,17 +213,17 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_uses_middlewares(): void 
+    public function test_uses_middlewares(): void
     {
         $this->assertTrue(is_bool(config('is.uses.middlewares')));
     }
 
     /**
-     * Есть ли конфигурация флага подргузки отношений после обновления?
+     * Есть ли конфигурация флага подгрузки отношений после обновления?
      *
      * @return void
      */
-    public function test_uses_load_on_update(): void 
+    public function test_uses_load_on_update(): void
     {
         $this->assertTrue(is_bool(config('is.uses.load_on_update')));
     }
@@ -232,7 +233,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_uses_extend_is_method(): void 
+    public function test_uses_extend_is_method(): void
     {
         $this->assertTrue(is_bool(config('is.uses.extend_is_method')));
     }
@@ -242,7 +243,7 @@ class ConfigTest extends TestCase
      *
      * @return void
      */
-    public function test_uses_levels(): void 
+    public function test_uses_levels(): void
     {
         $this->assertTrue(is_bool(config('is.uses.levels')));
     }

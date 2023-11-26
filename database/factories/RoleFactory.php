@@ -14,12 +14,12 @@ class RoleFactory extends Factory
      *
      * @param mixed ...$parameters
      */
-    public function __construct(...$parameters) 
+    public function __construct(...$parameters)
     {
         parent::__construct(...$parameters);
         $this->model = config('is.models.role');
     }
-    
+
     /**
      * Устанавливает состояние модели по умолчанию.
      *
@@ -30,10 +30,10 @@ class RoleFactory extends Factory
         $name = fake()->unique()->name();
 
         return [
-            'name' => $name, 
-            'slug' => $name, 
-            'description' => $name.' role', 
-            'level' => config('is.uses.levels') ? fake()->randomNumber(1) : 0,
+            'name'        => $name,
+            'slug'        => $name,
+            'description' => $name . ' role',
+            'level'       => config('is.uses.levels') ? fake()->randomNumber(1) : 0,
         ];
     }
 }

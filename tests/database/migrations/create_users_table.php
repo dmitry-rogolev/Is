@@ -17,8 +17,8 @@ return new class extends Migration
     public function up(): void
     {
         $connection = Is::connection();
-        $table = app(Is::userModel())->getTable();
-        
+        $table      = app(Is::userModel())->getTable();
+
         if (! Schema::connection($connection)->hasTable($table)) {
             Schema::connection($connection)->create($table, function (Blueprint $table) {
 
@@ -32,7 +32,7 @@ return new class extends Migration
 
                 if (Is::usesTimestamps()) {
                     $table->timestamps();
-                } 
+                }
 
                 if (Is::usesSoftDeletes()) {
                     $table->softDeletes();

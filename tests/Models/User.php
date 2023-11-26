@@ -3,6 +3,7 @@
 namespace dmitryrogolev\Is\Tests\Models;
 
 use dmitryrogolev\Is\Contracts\Roleable;
+use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Models\Database;
 use dmitryrogolev\Is\Tests\Database\Factories\UserFactory;
 use dmitryrogolev\Is\Traits\HasRoles;
@@ -49,17 +50,17 @@ abstract class BaseUser extends Database implements Roleable, AuthenticatableCon
     }
 }
 
-if (config('is.uses.uuid') && config('is.uses.soft_deletes')) {
+if (Is::usesUuid() && Is::usesSoftDeletes()) {
     class User extends BaseUser
     {
         use HasUuids, SoftDeletes;
     }
-} else if (config('is.uses.uuid')) {
+} else if (Is::usesUuid()) {
     class User extends BaseUser
     {
         use HasUuids;
     }
-} else if (config('is.uses.soft_deletes')) {
+} else if (Is::usesSoftDeletes()) {
     class User extends BaseUser
     {
         use SoftDeletes;
@@ -67,6 +68,6 @@ if (config('is.uses.uuid') && config('is.uses.soft_deletes')) {
 } else {
     class User extends BaseUser
     {
-        
+
     }
 }
