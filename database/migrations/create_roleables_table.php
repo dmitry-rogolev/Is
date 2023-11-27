@@ -1,5 +1,6 @@
 <?php
 
+use dmitryrogolev\Is\Facades\Is;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,22 +17,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $table      = config('is.tables.roleables');
-        $connection = config('is.connection');
+        $table      = Is::roleablesTable();
+        $connection = Is::connection();
 
         if (! Schema::connection($connection)->hasTable($table)) {
             Schema::connection($connection)->create($table, function (Blueprint $table) {
-                $table->foreignIdFor(config('is.models.role'));
 
-                if (config('is.uses.uuid')) {
-                    $table->uuidMorphs(config('is.relations.roleable'));
-                } else {
-                    $table->morphs(config('is.relations.roleable'));
-                }
+                $table->foreignIdFor(Is::roleModel());
 
-                if (config('is.uses.timestamps')) {
+                Is::usesUuid() ? $table->uuidMorphs(Is::relationName()) : $table->morphs(Is::relationName());
+
+                if (Is::usesTimestamps()) {
                     $table->timestamps();
                 }
+
             });
         }
     }
@@ -41,6 +40,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::connection(config('is.connection'))->dropIfExists(config('is.tables.roleables'));
+        Schema::connection(Is::connection())->dropIfExists(Is::roleablesTable());
     }
 };

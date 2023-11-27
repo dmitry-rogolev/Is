@@ -2,6 +2,7 @@
 
 namespace dmitryrogolev\Is\Database\Factories;
 
+use dmitryrogolev\Is\Facades\Is;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,7 @@ class RoleFactory extends Factory
     public function __construct(...$parameters)
     {
         parent::__construct(...$parameters);
-        $this->model = config('is.models.role');
+        $this->model = Is::roleModel();
     }
 
     /**
@@ -27,13 +28,13 @@ class RoleFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->unique()->name();
+        $name = fake()->unique()->word();
 
         return [
-            'name' => $name,
-            'slug' => $name,
+            'name'        => $name,
+            'slug'        => $name,
             'description' => $name . ' role',
-            'level' => config('is.uses.levels') ? fake()->randomNumber(1) : 0,
+            'level'       => fake()->randomNumber(),
         ];
     }
 }

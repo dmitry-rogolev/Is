@@ -48,6 +48,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::connection(config('is.connection'))->dropIfExists(app(config('is.models.user'))->getTable());
+        Schema::connection(Is::connection())->dropIfExists(app(Is::userModel())->getTable());
     }
 };
