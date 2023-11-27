@@ -428,45 +428,4 @@ class HasRolesTest extends TestCase
         $this->assertTrue($user->is([$level1, $level2], true));
         $this->assertFalse($user->is([$level1, $level2, $level3], true));
     }
-
-    /**
-     * Возвращает пользователя, который относится к множеству ролей.
-     *
-     * @param int $count
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    private function getUserWithRoles(int $count = 3): Model
-    {
-        $roles = $this->getRole($count);
-        $user  = $this->getUser();
-        $roles->each(fn ($item) => $user->roles()->attach($item));
-
-        return $user;
-    }
-
-    /**
-     * Возвращает случайно сгенерированного пользователя.
-     *
-     * @param int $count
-     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection
-     */
-    private function getUser(int $count = 1): Model|Collection
-    {
-        $factory = config('is.models.user')::factory();
-
-        return $count > 1 ? $factory->count($count)->create() : $factory->create();
-    }
-
-    /**
-     * Возвращает случайно сгенерированную роль.
-     *
-     * @param int $count
-     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection
-     */
-    private function getRole(int $count = 1): Model|Collection
-    {
-        $factory = config('is.models.role')::factory();
-
-        return $count > 1 ? $factory->count($count)->create() : $factory->create();
-    }
 }

@@ -118,17 +118,4 @@ class VerifyRoleTest extends TestCase
         $response = $this->actingAs($user)->get('is/editor');
         $response->assertStatus(200);
     }
-
-    /**
-     * Возвращает случайно сгенерированного пользователя.
-     *
-     * @param int $count
-     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection
-     */
-    private function getUser(int $count = 1): Model|Collection
-    {
-        $factory = config('is.models.user')::factory();
-
-        return $count > 1 ? $factory->count($count)->create() : $factory->create();
-    }
 }
