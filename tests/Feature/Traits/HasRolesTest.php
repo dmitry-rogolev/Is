@@ -351,6 +351,85 @@ class HasRolesTest extends TestCase
     }
 
     /**
+     * Есть ли метод, возвращающий роль с наибольшим уровнем?
+     *
+     * @return void
+     */
+    public function test_role(): void
+    {
+        // Включаем авто подгрузку ролей.
+        Is::usesLoadOnUpdate(true);
+
+        // Включаем иерархию ролей.
+        Is::usesLevels(true);
+
+        $user = $this->getUser();
+        $user->attachRole(Is::generate(['level' => 1]));
+        $user->attachRole(Is::generate(['level' => 2]));
+        $role = Is::generate(['level' => 3]);
+        $user->attachRole($role);
+
+        $this->assertTrue($role->is($user->role()));
+    }
+
+    /**
+     * Есть ли метод, возвращающий наибольший уровень ролей, привязанных к модели?
+     *
+     * @return void
+     */
+    public function test_level(): void
+    {
+        // Включаем авто подгрузку ролей.
+        Is::usesLoadOnUpdate(true);
+
+        // Включаем иерархию ролей.
+        Is::usesLevels(true);
+
+        $user = $this->getUser();
+        $user->attachRole(Is::generate(['level' => 1]));
+        $user->attachRole(Is::generate(['level' => 2]));
+        $user->attachRole(Is::generate(['level' => 3]));
+
+        $this->assertEquals(3, $user->level());
+    }
+
+    /**
+     * Есть ли метод, расширяющий метод "is"?
+     *
+     * @return void
+     */
+    public function test_is(): void
+    {
+        // Включаем авто подгрузку ролей.
+        Is::usesLoadOnUpdate(true);
+
+        // Включаем иерархию ролей.
+        Is::usesLevels(true);
+
+        // Включаем расширение метода "is" модели Eloquent.
+        Is::usesExtendIsMethod(true);
+
+        $user   = $this->getUser();
+        $level1 = Is::generate(['level' => 1]);
+        $level2 = Is::generate(['level' => 2]);
+        $level3 = Is::generate(['level' => 3]);
+        $user->attachRole($level2);
+
+        // Проверяем возможность сравнения моделей.
+        $this->assertTrue($user->is($user));
+        $this->assertFalse($user->is($this->getUser()));
+
+        // Проверяем наличие роли.
+        $this->assertTrue($user->is($level2));
+        $this->assertTrue($user->is($level1->getKey()));
+        $this->assertFalse($user->is($level3));
+
+        // Проверяем наличие нескольких ролей.
+        $this->assertTrue($user->is([$level1, $level2], true));
+        $this->assertFalse($user->is([$level1, $level2, $level3], true));
+    }
+
+    /**
      * Возвращает пользователя, который относится к множеству ролей.
      *
      * @param int $count
