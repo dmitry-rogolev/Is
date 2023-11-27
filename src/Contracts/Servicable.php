@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Contracts;
 
@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Сервис работы с таблицей.
  */
-interface Servicable 
+interface Servicable
 {
     /**
      * Возвращает имя модели сервиса.
@@ -187,7 +187,7 @@ interface Servicable
     public function factory($count = null, $state = []): Factory;
 
     /**
-     * Геренирует модели с помощью фабрики.
+     * Генерирует модели с помощью фабрики.
      *
      * @param \Closure|array|integer|bool|null $attributes
      * @param \Closure|integer|bool|null $count
@@ -238,7 +238,7 @@ interface Servicable
     public function forceDelete(Model $model): bool|null;
 
     /**
-     * Востанавливает модель.
+     * Восстанавливает модель.
      *
      * @param \Illuminate\Database\Eloquent\Model $model
      * @return bool

@@ -2,7 +2,7 @@
 
 namespace dmitryrogolev\Is\Tests\Feature\Services;
 
-use dmitryrogolev\Is\Services\RoleService;
+use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;
 use Illuminate\Database\Eloquent\Collection;
@@ -15,23 +15,14 @@ class ServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    public RoleService $service;
-
-    public function setUp(): void 
-    {
-        parent::setUp();
-        $this->service = app(RoleService::class);
-        config(['is.uses.load_on_update' => true]);
-    }
-
     /**
      * Есть ли метод, возвращающий имя модели сервиса?
      *
      * @return void
      */
-    public function test_get_model(): void 
+    public function test_get_model(): void
     {
-        $this->assertEquals(config('is.models.role'), $this->service->getModel());
+        $this->assertEquals(Is::roleModel(), Is::getModel());
     }
 
     /**
@@ -39,9 +30,9 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_get_seeder(): void 
+    public function test_get_seeder(): void
     {
-        $this->assertEquals(config('is.seeders.role'), $this->service->getSeeder());
+        $this->assertEquals(Is::roleSeeder(), Is::getSeeder());
     }
 
     /**
@@ -49,9 +40,9 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_get_factory(): void 
+    public function test_get_factory(): void
     {
-        $this->assertEquals(config('is.factories.role'), $this->service->getFactory());
+        $this->assertEquals(Is::roleFactory(), Is::getFactory());
     }
 
     /**
@@ -59,12 +50,19 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_index(): void 
+    public function test_index(): void
     {
+        // Получаем все роли из таблицы.
         $count = random_int(1, 10);
         $this->getRole($count);
-        $this->assertCount($count, $this->service->index());
-        $this->assertCount($count, $this->service->all());
+        $this->assertCount($count, Is::index());
+        $this->assertCount($count, Is::all());
+
+        // Получаем все роли пользователя.
+        $user  = $this->getUserWithRoles(3);
+        $roles = Is::usesLevels() ? Is::getModel()::where('level', '<=', $user->level())->get() : $user->roles;
+        $this->assertCount($roles->count(), Is::index($user));
+        $this->assertCount($roles->count(), Is::all($user));
     }
 
     /**
@@ -72,10 +70,10 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_random(): void 
+    public function test_random(): void
     {
         $this->getRole(10);
-        $this->assertModelExists($this->service->random());
+        $this->assertModelExists(Is::random());
     }
 
     /**
@@ -83,13 +81,50 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_show(): void 
+    public function test_show(): void
     {
+        // Получаем роль из таблицы.
         $role = $this->getRole();
-        $this->assertEquals($role->getKey(), $this->service->show($role->getKey())->getKey());
-        $this->assertEquals($role->getKey(), $this->service->find($role->getKey())->getKey());
-        $this->assertEquals($role->getKey(), $this->service->find($role)->getKey());
-        $this->assertNull($this->service->find($this->getUser()));
+        $this->assertTrue($role->is(Is::show($role->getKey())));
+        $this->assertTrue($role->is(Is::show($role)));
+        $this->assertNull(Is::show($this->getUser()));
+
+        $this->assertTrue($role->is(Is::find($role->getKey())));
+        $this->assertTrue($role->is(Is::find($role)));
+        $this->assertNull(Is::find($this->getUser()));
+
+        // Получаем роль пользователя.
+        Is::usesLevels(false);
+
+        $user = $this->getUser();
+        $role = $this->getRole();
+        $user->roles()->attach($role);
+
+        $this->assertTrue($role->is(Is::show($role->getKey(), $user)));
+        $this->assertTrue($role->is(Is::show($role->getSlug(), $user)));
+        $this->assertTrue($role->is(Is::show($role, $user)));
+        $this->assertNull(Is::show($this->getRole(), $user));
+
+        $this->assertTrue($role->is(Is::find($role->getKey(), $user)));
+        $this->assertTrue($role->is(Is::find($role->getSlug(), $user)));
+        $this->assertTrue($role->is(Is::find($role, $user)));
+        $this->assertNull(Is::find($this->getRole(), $user));
+
+        Is::usesLevels(true);
+
+        $user = $this->getUser();
+        $role = Is::getModel()::factory()->create(['level' => 1]);
+        $user->roles()->attach(Is::getModel()::factory()->create(['level' => 5]));
+
+        $this->assertTrue($role->is(Is::show($role->getKey(), $user)));
+        $this->assertTrue($role->is(Is::show($role->getSlug(), $user)));
+        $this->assertTrue($role->is(Is::show($role, $user)));
+        $this->assertNull(Is::show(Is::getModel()::factory()->create(['level' => 7]), $user));
+
+        $this->assertTrue($role->is(Is::find($role->getKey(), $user)));
+        $this->assertTrue($role->is(Is::find($role->getSlug(), $user)));
+        $this->assertTrue($role->is(Is::find($role, $user)));
+        $this->assertNull(Is::find(Is::getModel()::factory()->create(['level' => 7]), $user));
     }
 
     /**
@@ -97,13 +132,37 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_has(): void 
+    public function test_has(): void
     {
+        // Проверяем наличие роли в таблице.
         $role = $this->getRole();
-        $this->assertTrue($this->service->has($role));
-        $this->assertTrue($this->service->has($role->getKey()));
-        $this->assertFalse($this->service->has('my_key'));
-        $this->assertFalse($this->service->has(config('is.models.role')::factory()->make()));
+        $this->assertTrue(Is::has($role));
+        $this->assertTrue(Is::has($role->getKey()));
+        $this->assertFalse(Is::has('my_key'));
+        $this->assertFalse(Is::has(Is::getModel()::factory()->make()));
+
+        // Проверяем наличие роли у пользователя.
+        Is::usesLevels(false);
+
+        $user = $this->getUser();
+        $role = $this->getRole();
+        $user->roles()->attach($role);
+
+        $this->assertTrue(Is::has($role->getKey(), $user));
+        $this->assertTrue(Is::has($role->getSlug(), $user));
+        $this->assertTrue(Is::has($role, $user));
+        $this->assertFalse(Is::has($this->getRole(), $user));
+
+        Is::usesLevels(true);
+
+        $user = $this->getUser();
+        $role = Is::getModel()::factory()->create(['level' => 1]);
+        $user->roles()->attach(Is::getModel()::factory()->create(['level' => 5]));
+
+        $this->assertTrue(Is::has($role->getKey(), $user));
+        $this->assertTrue(Is::has($role->getSlug(), $user));
+        $this->assertTrue(Is::has($role, $user));
+        $this->assertFalse(Is::has(Is::getModel()::factory()->create(['level' => 7]), $user));
     }
 
     /**
@@ -111,12 +170,10 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_make(): void 
+    public function test_make(): void
     {
-        $model = $this->service->make([
-            'name' => 'Admin', 
-            'slug' => 'admin', 
-        ]);
+        $model = Is::make(['name' => 'Admin', 'slug' => 'admin']);
+
         $this->assertEquals('admin', $model->getSlug());
         $this->assertModelMissing($model);
     }
@@ -126,20 +183,13 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_make_if_not_exists(): void 
+    public function test_make_if_not_exists(): void
     {
-        $this->assertNotNull($this->service->makeIfNotExists([
-            'name' => 'Admin', 
-            'slug' => 'admin', 
-        ]));
-        config('is.models.role')::create([
-            'name' => 'Admin', 
-            'slug' => 'admin',  
-        ]);
-        $this->assertNull($this->service->makeIfNotExists([
-            'name' => 'Admin', 
-            'slug' => 'admin',  
-        ]));
+        $attributes = ['name' => 'Admin', 'slug' => 'admin'];
+
+        $this->assertNotNull(Is::makeIfNotExists($attributes));
+        Is::roleModel()::create($attributes);
+        $this->assertNull(Is::makeIfNotExists($attributes));
     }
 
     /**
@@ -147,23 +197,18 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_make_group(): void 
+    public function test_make_group(): void
     {
         $group = [
-            ['name' => 'User', 'slug' => 'user'], 
-            ['name' => 'Moderator', 'slug' => 'moderator'], 
-            ['name' => 'Editor', 'slug' => 'editor'], 
-            ['name' => 'Admin', 'slug' => 'admin'], 
+            ['name' => 'User', 'slug' => 'user'],
+            ['name' => 'Moderator', 'slug' => 'moderator'],
+            ['name' => 'Editor', 'slug' => 'editor'],
+            ['name' => 'Admin', 'slug' => 'admin'],
         ];
 
-        $models = $this->service->makeGroup($group);
-        $this->assertNotCount(0, $models);
-        $models->each(fn ($item) => $this->assertModelMissing($item));
-
-        collect($group)->each(fn ($item) => $this->service->getModel()::create($item));
-
-        $models = $this->service->makeGroup($group);
-        $this->assertNotCount(0, $models);
+        $models = Is::makeGroup($group);
+        $this->assertCount(4, $models);
+        $this->assertTrue($models->every(fn ($item) => ! $item->exists));
     }
 
     /**
@@ -171,22 +216,22 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_make_group_if_not_exists(): void 
+    public function test_make_group_if_not_exists(): void
     {
         $group = [
-            ['name' => 'User', 'slug' => 'user'], 
-            ['name' => 'Moderator', 'slug' => 'moderator'], 
-            ['name' => 'Editor', 'slug' => 'editor'], 
-            ['name' => 'Admin', 'slug' => 'admin'], 
+            ['name' => 'User', 'slug' => 'user'],
+            ['name' => 'Moderator', 'slug' => 'moderator'],
+            ['name' => 'Editor', 'slug' => 'editor'],
+            ['name' => 'Admin', 'slug' => 'admin'],
         ];
 
-        $models = $this->service->makeGroupIfNotExists($group);
-        $this->assertNotCount(0, $models);
-        $models->each(fn ($item) => $this->assertModelMissing($item));
+        $models = Is::makeGroupIfNotExists($group);
+        $this->assertCount(4, $models);
+        $this->assertTrue($models->every(fn ($item) => ! $item->exists));
 
-        collect($group)->each(fn ($item) => $this->service->getModel()::create($item));
+        collect($group)->each(fn ($item) => Is::getModel()::create($item));
 
-        $models = $this->service->makeGroupIfNotExists($group);
+        $models = Is::makeGroupIfNotExists($group);
         $this->assertCount(0, $models);
     }
 
@@ -195,16 +240,10 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_store(): void 
+    public function test_store(): void
     {
-        $this->assertModelExists($this->service->store([
-            'name' => 'Admin', 
-            'slug' => 'admin', 
-        ]));
-        $this->assertModelExists($this->service->create([
-            'name' => 'User', 
-            'slug' => 'user', 
-        ]));
+        $this->assertModelExists(Is::store(['name' => 'Admin', 'slug' => 'admin']));
+        $this->assertModelExists(Is::create(['name' => 'User', 'slug' => 'user']));
     }
 
     /**
@@ -213,24 +252,13 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_store_if_not_exists(): void 
+    public function test_store_if_not_exists(): void
     {
-        $this->assertModelExists($this->service->storeIfNotExists([
-            'name' => 'Admin', 
-            'slug' => 'admin', 
-        ]));
-        $this->assertNull($this->service->storeIfNotExists([
-            'name' => 'Admin', 
-            'slug' => 'admin', 
-        ]));
-        $this->assertModelExists($this->service->createIfNotExists([
-            'name' => 'User', 
-            'slug' => 'user', 
-        ]));
-        $this->assertNull($this->service->createIfNotExists([
-            'name' => 'User', 
-            'slug' => 'user', 
-        ]));
+        $this->assertModelExists(Is::store(['name' => 'Admin', 'slug' => 'admin']));
+        $this->assertNull(Is::storeIfNotExists(['name' => 'Admin', 'slug' => 'admin']));
+
+        $this->assertModelExists(Is::create(['name' => 'User', 'slug' => 'user']));
+        $this->assertNull(Is::createIfNotExists(['name' => 'User', 'slug' => 'user']));
     }
 
     /**
@@ -238,24 +266,24 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_store_group(): void 
+    public function test_store_group(): void
     {
         $group = [
-            ['name' => 'User', 'slug' => 'user'], 
-            ['name' => 'Moderator', 'slug' => 'moderator'], 
-            ['name' => 'Editor', 'slug' => 'editor'], 
-            ['name' => 'Admin', 'slug' => 'admin'], 
+            ['name' => 'User', 'slug' => 'user'],
+            ['name' => 'Moderator', 'slug' => 'moderator'],
+            ['name' => 'Editor', 'slug' => 'editor'],
+            ['name' => 'Admin', 'slug' => 'admin'],
         ];
 
-        $models = $this->service->storeGroup($group);
-        $this->assertNotCount(0, $models);
-        $models->each(fn ($item) => $this->assertModelExists($item));
+        $models = Is::storeGroup($group);
+        $this->assertCount(4, $models);
+        $this->assertTrue($models->every(fn ($item) => $item->exists));
 
-        config('is.models.role')::truncate();
+        Is::roleModel()::truncate();
 
-        $models = $this->service->createGroup($group);
-        $this->assertNotCount(0, $models);
-        $models->each(fn ($item) => $this->assertModelExists($item));
+        $models = Is::createGroup($group);
+        $this->assertCount(4, $models);
+        $this->assertTrue($models->every(fn ($item) => $item->exists));
     }
 
     /**
@@ -263,29 +291,29 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_store_group_if_not_exists(): void 
+    public function test_store_group_if_not_exists(): void
     {
         $group = [
-            ['name' => 'User', 'slug' => 'user'], 
-            ['name' => 'Moderator', 'slug' => 'moderator'], 
-            ['name' => 'Editor', 'slug' => 'editor'], 
-            ['name' => 'Admin', 'slug' => 'admin'], 
+            ['name' => 'User', 'slug' => 'user'],
+            ['name' => 'Moderator', 'slug' => 'moderator'],
+            ['name' => 'Editor', 'slug' => 'editor'],
+            ['name' => 'Admin', 'slug' => 'admin'],
         ];
 
-        $models = $this->service->storeGroupIfNotExists($group);
-        $this->assertNotCount(0, $models);
-        $models->each(fn ($item) => $this->assertModelExists($item));
+        $models = Is::storeGroupIfNotExists($group);
+        $this->assertCount(4, $models);
+        $this->assertTrue($models->every(fn ($item) => $item->exists));
 
-        $models = $this->service->storeGroupIfNotExists($group);
+        $models = Is::storeGroupIfNotExists($group);
         $this->assertCount(0, $models);
 
-        config('is.models.role')::truncate();
+        Is::roleModel()::truncate();
 
-        $models = $this->service->createGroupIfNotExists($group);
+        $models = Is::createGroupIfNotExists($group);
         $this->assertNotCount(0, $models);
         $models->each(fn ($item) => $this->assertModelExists($item));
 
-        $models = $this->service->createGroupIfNotExists($group);
+        $models = Is::createGroupIfNotExists($group);
         $this->assertCount(0, $models);
     }
 
@@ -294,41 +322,41 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_factory(): void 
+    public function test_factory(): void
     {
-        $this->assertEquals($this->service->getFactory(), $this->service->factory()::class);
+        $this->assertInstanceOf(Is::getFactory(), Is::factory());
     }
 
     /**
-     * Есть ли метод, генерирующий модели с помошью фабрики?
+     * Есть ли метод, генерирующий модели с помощью фабрики?
      *
      * @return void
      */
-    public function test_generate(): void 
+    public function test_generate(): void
     {
         // Создаем модель со случайными данными.
-        $this->assertModelExists($this->service->generate());
+        $this->assertModelExists(Is::generate());
 
         // Создаем модель с указанными аттрибутами.
-        $role = $this->service->generate(['slug' => 'admin']);
+        $role = Is::generate(['slug' => 'admin']);
         $this->assertEquals('admin', $role->getSlug());
         $this->assertModelExists($role);
 
         // Создаем сразу несколько моделей.
-        $roles = $this->service->generate(3);
+        $roles = Is::generate(3);
         $this->assertCount(3, $roles);
         $this->assertModelExists($roles->first());
 
         // Создаем модель, но не сохраняем ее в таблицу.
-        $this->assertModelMissing($this->service->generate(false));
+        $this->assertModelMissing(Is::generate(false));
 
         // Создаем сразу несколько моделей с указанными аттрибутами.
-        $roles = $this->service->generate(['description' => 'Role'], 3);
+        $roles = Is::generate(['description' => 'Role'], 3);
         $this->assertCount(3, $roles);
         $this->assertTrue($roles->every(fn ($item) => $item->description === 'Role' && $item->exists));
 
         // Создаем сразу несколько моделей с указанными аттрибутами, но не сохраняем их в таблице.
-        $roles = $this->service->generate(['description' => 'Role'], 3, false);
+        $roles = Is::generate(['description' => 'Role'], 3, false);
         $this->assertCount(3, $roles);
         $this->assertTrue($roles->every(fn ($item) => $item->description === 'Role' && ! $item->exists));
     }
@@ -338,12 +366,15 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_update(): void 
+    public function test_update(): void
     {
-        $role = $this->service->generate(['slug' => 'user']);
-        $this->service->update($role, ['slug' => 'admin']);
-
+        $role = Is::generate(['slug' => 'user']);
+        Is::update($role, ['slug' => 'admin']);
         $this->assertEquals('admin', $role->getSlug());
+
+        $role = Is::generate(['slug' => 'moderator']);
+        Is::fill($role, ['slug' => 'editor']);
+        $this->assertEquals('editor', $role->getSlug());
     }
 
     /**
@@ -351,12 +382,12 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_delete(): void 
+    public function test_delete(): void
     {
-        $role = $this->service->generate();
-        $this->assertTrue($this->service->delete($role));
-        
-        if (config('is.uses.soft_deletes')) {
+        $role = Is::generate();
+        $this->assertTrue(Is::delete($role));
+
+        if (Is::usesSoftDeletes()) {
             $this->assertSoftDeleted($role);
         } else {
             $this->assertModelMissing($role);
@@ -368,12 +399,12 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_truncate(): void 
+    public function test_truncate(): void
     {
-        $this->service->generate(3);
-        $this->assertCount(3, $this->service->all());
-        $this->service->truncate();
-        $this->assertCount(0, $this->service->all());
+        Is::generate(3);
+        $this->assertCount(3, Is::all());
+        Is::truncate();
+        $this->assertCount(0, Is::all());
     }
 
     /**
@@ -381,29 +412,29 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_force_delete(): void 
+    public function test_force_delete(): void
     {
-        $role = $this->service->generate();
+        $role = Is::generate();
         $this->assertModelExists($role);
-        $this->service->forceDelete($role);
+        Is::forceDelete($role);
         $this->assertModelMissing($role);
     }
 
     /**
-     * Есть ли метод, востанавливающий модель после программного удаления?
+     * Есть ли метод, восстанавливающий модель после программного удаления?
      *
      * @return void
      */
-    public function test_restore(): void 
+    public function test_restore(): void
     {
-        if (! config('is.uses.soft_deletes')) {
+        if (! Is::usesSoftDeletes()) {
             $this->markTestSkipped('Программное удаление моделей отключено.');
         }
 
-        $role = $this->service->generate();
-        $this->service->delete($role);
+        $role = Is::generate();
+        Is::delete($role);
         $this->assertSoftDeleted($role);
-        $this->service->restore($role);
+        Is::restore($role);
         $this->assertNotSoftDeleted($role);
     }
 
@@ -412,11 +443,11 @@ class ServiceTest extends TestCase
      *
      * @return void
      */
-    public function test_seed(): void 
+    public function test_seed(): void
     {
-        $this->assertCount(0, $this->service->all());
-        $this->service->seed();
-        $this->assertNotCount(0, $this->service->all());
+        $this->assertCount(0, Is::all());
+        Is::seed();
+        $this->assertNotCount(0, Is::all());
     }
 
     /**
@@ -428,7 +459,7 @@ class ServiceTest extends TestCase
     private function getUserWithRoles(int $count = 3): Model
     {
         $roles = $this->getRole($count);
-        $user = $this->getUser();
+        $user  = $this->getUser();
         $roles->each(fn ($item) => $user->roles()->attach($item));
 
         return $user;
@@ -455,7 +486,7 @@ class ServiceTest extends TestCase
      */
     private function getRole(int $count = 1): Model|Collection
     {
-        $factory = config('is.models.role')::factory();
+        $factory = Is::roleModel()::factory();
 
         return $count > 1 ? $factory->count($count)->create() : $factory->create();
     }

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Services;
 
@@ -39,7 +39,7 @@ abstract class Service implements Servicable
      *
      * @return string
      */
-    public function getModel(): string 
+    public function getModel(): string
     {
         return $this->model;
     }
@@ -50,7 +50,7 @@ abstract class Service implements Servicable
      * @param string $model
      * @return static
      */
-    protected function setModel(string $model): static 
+    protected function setModel(string $model): static
     {
         if (class_exists($model)) {
             $this->model = $model;
@@ -64,7 +64,7 @@ abstract class Service implements Servicable
      *
      * @return string
      */
-    public function getSeeder(): string 
+    public function getSeeder(): string
     {
         return $this->seeder;
     }
@@ -75,7 +75,7 @@ abstract class Service implements Servicable
      * @param string $seeder
      * @return static
      */
-    protected function setSeeder(string $seeder): static 
+    protected function setSeeder(string $seeder): static
     {
         if (class_exists($seeder)) {
             $this->seeder = $seeder;
@@ -89,7 +89,7 @@ abstract class Service implements Servicable
      *
      * @return string
      */
-    public function getFactory(): string 
+    public function getFactory(): string
     {
         return $this->factory;
     }
@@ -100,7 +100,7 @@ abstract class Service implements Servicable
      * @param string $factory
      * @return static
      */
-    protected function setFactory(string $factory): static 
+    protected function setFactory(string $factory): static
     {
         if (class_exists($factory)) {
             $this->factory = $factory;
@@ -134,7 +134,7 @@ abstract class Service implements Servicable
      *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function random(): Model|null 
+    public function random(): Model|null
     {
         return $this->model::query()->inRandomOrder()->first();
     }
@@ -145,17 +145,19 @@ abstract class Service implements Servicable
      * @param int|string|\Illuminate\Database\Eloquent\Model $key
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function show($key): Model|null 
+    public function show($key): Model|null
     {
+        $role = null;
+
         if ($key instanceof ($this->model) && $key->exists) {
-            return $key;
+            $role = $key;
         }
 
         if (is_int($key) || is_string($key)) {
-            return $this->model::find($key);
+            $role = $this->model::find($key);
         }
 
-        return null;
+        return $role;
     }
 
     /**
@@ -164,7 +166,7 @@ abstract class Service implements Servicable
      * @param int|string|\Illuminate\Database\Eloquent\Model $key
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function find($key): Model|null 
+    public function find($key): Model|null
     {
         return $this->show($key);
     }
@@ -175,7 +177,7 @@ abstract class Service implements Servicable
      * @param int|string|\Illuminate\Database\Eloquent\Model $key
      * @return bool
      */
-    public function has($key): bool 
+    public function has($key): bool
     {
         return (bool) $this->show($key);
     }
@@ -186,7 +188,7 @@ abstract class Service implements Servicable
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function make(array $attributes = []): Model 
+    public function make(array $attributes = []): Model
     {
         return $this->model::make($attributes);
     }
@@ -197,7 +199,7 @@ abstract class Service implements Servicable
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function makeIfNotExists(array $attributes = []): Model|null 
+    public function makeIfNotExists(array $attributes = []): Model|null
     {
         return $this->make($attributes);
     }
@@ -228,7 +230,7 @@ abstract class Service implements Servicable
      * @param \ArrayAccess|array $group
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function makeGroupIfNotExists(ArrayAccess|array $group): Collection 
+    public function makeGroupIfNotExists(ArrayAccess|array $group): Collection
     {
         return $this->makeGroup($group, true);
     }
@@ -239,7 +241,7 @@ abstract class Service implements Servicable
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function store(array $attributes = []): Model 
+    public function store(array $attributes = []): Model
     {
         return $this->model::create($attributes);
     }
@@ -250,7 +252,7 @@ abstract class Service implements Servicable
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function create(array $attributes = []): Model 
+    public function create(array $attributes = []): Model
     {
         return $this->store($attributes);
     }
@@ -261,7 +263,7 @@ abstract class Service implements Servicable
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function storeIfNotExists(array $attributes = []): Model|null 
+    public function storeIfNotExists(array $attributes = []): Model|null
     {
         return $this->store($attributes);
     }
@@ -272,7 +274,7 @@ abstract class Service implements Servicable
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function createIfNotExists(array $attributes = []): Model|null 
+    public function createIfNotExists(array $attributes = []): Model|null
     {
         return $this->storeIfNotExists($attributes);
     }
@@ -304,7 +306,7 @@ abstract class Service implements Servicable
      * @param boolean $ifNotExists
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function createGroup(ArrayAccess|array $group, bool $ifNotExists = false): Collection 
+    public function createGroup(ArrayAccess|array $group, bool $ifNotExists = false): Collection
     {
         return $this->storeGroup($group, $ifNotExists);
     }
@@ -315,7 +317,7 @@ abstract class Service implements Servicable
      * @param \ArrayAccess|array $group
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function storeGroupIfNotExists(ArrayAccess|array $group): Collection 
+    public function storeGroupIfNotExists(ArrayAccess|array $group): Collection
     {
         return $this->storeGroup($group, true);
     }
@@ -326,7 +328,7 @@ abstract class Service implements Servicable
      * @param \ArrayAccess|array $group
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function createGroupIfNotExists(ArrayAccess|array $group): Collection 
+    public function createGroupIfNotExists(ArrayAccess|array $group): Collection
     {
         return $this->storeGroupIfNotExists($group);
     }
@@ -344,7 +346,7 @@ abstract class Service implements Servicable
     }
 
     /**
-     * Геренирует модели с помощью фабрики.
+     * Генерирует модели с помощью фабрики.
      *
      * @param \Closure|array|integer|bool|null $attributes
      * @param \Closure|integer|bool|null $count
@@ -354,25 +356,25 @@ abstract class Service implements Servicable
     public function generate($attributes = [], $count = null, bool $create = true): Model|Collection
     {
         $attributes = value($attributes);
-        $count = value($count);
+        $count      = value($count);
 
         if (is_int($attributes)) {
-            $count = $attributes;
+            $count      = $attributes;
             $attributes = [];
         }
 
         if (is_bool($attributes)) {
-            $create = $attributes;
+            $create     = $attributes;
             $attributes = [];
         }
 
         if (is_bool($count)) {
             $create = $count;
-            $count = null;
+            $count  = null;
         }
 
         $factory = $this->factory($count);
-        
+
         return $create ? $factory->create($attributes) : $factory->make($attributes);
     }
 
@@ -383,7 +385,7 @@ abstract class Service implements Servicable
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function update(Model $model, array $attributes): Model 
+    public function update(Model $model, array $attributes): Model
     {
         $model->fill($attributes);
         $model->save();
@@ -398,7 +400,7 @@ abstract class Service implements Servicable
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function fill(Model $model, array $attributes): Model 
+    public function fill(Model $model, array $attributes): Model
     {
         return $this->update($model, $attributes);
     }
@@ -436,7 +438,7 @@ abstract class Service implements Servicable
     }
 
     /**
-     * Востанавливает модель.
+     * Восстанавливает модель.
      *
      * @param \Illuminate\Database\Eloquent\Model $model
      * @return bool
@@ -451,7 +453,7 @@ abstract class Service implements Servicable
      *
      * @return void
      */
-    public function seed(): void 
+    public function seed(): void
     {
         app($this->seeder)->run();
     }

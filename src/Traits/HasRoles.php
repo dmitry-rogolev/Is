@@ -1,8 +1,8 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Traits;
 
-use dmitryrogolev\Is\Facades\Role;
+use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Helper;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 /**
  * Функционал ролей.
  */
-trait HasRoles 
+trait HasRoles
 {
     use HasLevels, ExtendIsMethod;
 
@@ -32,9 +32,9 @@ trait HasRoles
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getRoles(): Collection 
+    public function getRoles(): Collection
     {
-        return Role::all($this);
+        return Is::all($this);
     }
 
     /**
@@ -42,7 +42,7 @@ trait HasRoles
      * 
      * @return static
      */
-    public function loadRoles(): static 
+    public function loadRoles(): static
     {
         return $this->load('roles');
     }
@@ -58,7 +58,7 @@ trait HasRoles
         $attached = false;
 
         foreach (Helper::toArray($role) as $value) {
-            if ($model = Role::find($value) && ! Role::has($model, $this)) {
+            if ($model = Is::find($value) && ! Is::has($model, $this)) {
                 $this->roles()->attach($model);
                 $attached = true;
             }
@@ -79,7 +79,7 @@ trait HasRoles
      */
     public function detachRole(...$role): bool
     {
-        $roles = Helper::toArray($role);
+        $roles    = Helper::toArray($role);
         $detached = false;
 
         if (empty($roles)) {
@@ -87,7 +87,7 @@ trait HasRoles
         }
 
         foreach ($roles as $value) {
-            if ($model = Role::find($value) && Role::has($model, $this)) {
+            if ($model = Is::find($value) && Is::has($model, $this)) {
                 $this->roles()->detach($model);
                 $detached = true;
             }
@@ -105,7 +105,7 @@ trait HasRoles
      *
      * @return bool
      */
-    public function detachAllRoles(): bool 
+    public function detachAllRoles(): bool
     {
         $detached = false;
 
@@ -127,7 +127,7 @@ trait HasRoles
      * @param int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection ...$roles
      * @return void
      */
-    public function syncRoles(...$roles): void 
+    public function syncRoles(...$roles): void
     {
         $this->detachAllRoles();
         $this->attachRole($roles);
@@ -139,10 +139,10 @@ trait HasRoles
      * @param int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection ...$role
      * @return bool
      */
-    public function hasOneRole(...$role): bool 
+    public function hasOneRole(...$role): bool
     {
         foreach (Helper::toArray($role) as $value) {
-            if (Role::has($value, $this)) {
+            if (Is::has($value, $this)) {
                 return true;
             }
         }
@@ -156,10 +156,10 @@ trait HasRoles
      * @param int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection ...$role
      * @return bool
      */
-    public function hasAllRoles(...$role): bool 
+    public function hasAllRoles(...$role): bool
     {
         foreach (Helper::toArray($role) as $value) {
-            if (! Role::has($value, $this)) {
+            if (! Is::has($value, $this)) {
                 return false;
             }
         }
@@ -174,15 +174,15 @@ trait HasRoles
      * @param bool $all Проверить наличие всех ролей?
      * @return bool
      */
-    public function hasRole($role, bool $all = false): bool 
+    public function hasRole($role, bool $all = false): bool
     {
         return $all ? $this->hasAllRoles($role) : $this->hasOneRole($role);
     }
 
-    public function __call($method, $parameters) 
+    public function __call($method, $parameters)
     {
         try {
-            return parent::__call($method, $parameters); 
+            return parent::__call($method, $parameters);
         } catch (\BadMethodCallException $e) {
             if (is_bool($is = $this->callMagicIsRole($method))) {
                 return $is;

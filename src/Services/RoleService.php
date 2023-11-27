@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Services;
 
@@ -13,8 +13,8 @@ use Illuminate\Database\Eloquent\Model;
 class RoleService extends Service
 {
     use HasConfig;
-    
-    public function __construct() 
+
+    public function __construct()
     {
         $this->setModel(config('is.models.role'));
         $this->setSeeder(config('is.seeders.role'));
@@ -50,7 +50,7 @@ class RoleService extends Service
      * @param \dmitryrogolev\Is\Contracts\Roleable $roleable
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function show($key, Roleable $roleable = null): Model|null 
+    public function show($key, Roleable $roleable = null): Model|null
     {
         $role = $this->role($key);
 
@@ -68,9 +68,9 @@ class RoleService extends Service
      * @param \dmitryrogolev\Is\Contracts\Roleable $roleable
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function find($key, Roleable $roleable = null): Model|null 
+    public function find($key, Roleable $roleable = null): Model|null
     {
-        return $this->show($key);
+        return $this->show($key, $roleable);
     }
 
     /**
@@ -79,7 +79,7 @@ class RoleService extends Service
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function makeIfNotExists(array $attributes = []): Model|null 
+    public function makeIfNotExists(array $attributes = []): Model|null
     {
         $model = app($this->model);
 
@@ -96,7 +96,7 @@ class RoleService extends Service
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function storeIfNotExists(array $attributes = []): Model|null 
+    public function storeIfNotExists(array $attributes = []): Model|null
     {
         $model = app($this->model);
 
@@ -114,7 +114,7 @@ class RoleService extends Service
      * @param \dmitryrogolev\Is\Contracts\Roleable $roleable
      * @return bool
      */
-    public function has($key, Roleable $roleable = null): bool 
+    public function has($key, Roleable $roleable = null): bool
     {
         return (bool) $this->show($key, $roleable);
     }
@@ -126,15 +126,16 @@ class RoleService extends Service
      * @param int|string|\Illuminate\Database\Eloquent\Model $role
      * @return bool
      */
-    private function checkRole(Roleable $roleable, $role): bool 
+    private function checkRole(Roleable $roleable, $role): bool
     {
         if ($this->usesLevels()) {
             return $this->checkLevel($roleable, $role);
         }
 
-        return $roleable->getRoles()->contains(fn ($item) => 
-            $item->getKey() == $role 
-            || $item->getSlug() == $role 
+        return $roleable->getRoles()->contains(
+            fn ($item) =>
+            $item->getKey() == $role
+            || $item->getSlug() == $role
             || ($role instanceof ($this->model) && $item->is($role))
         );
     }
@@ -146,7 +147,7 @@ class RoleService extends Service
      * @param int|string|\Illuminate\Database\Eloquent\Model $role
      * @return boolean
      */
-    private function checkLevel(Roleable $roleable, $role): bool 
+    private function checkLevel(Roleable $roleable, $role): bool
     {
         if (! $this->usesLevels()) {
             return $this->checkRole($roleable, $role);
@@ -165,16 +166,16 @@ class RoleService extends Service
      * @param int|string|\Illuminate\Database\Eloquent\Model $key
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    private function role($key): Model|null 
+    private function role($key): Model|null
     {
         $role = $key;
 
         if (is_int($key) || is_string($key)) {
             $model = app($this->model);
-            $role = $this->model
-                    ::where($model->getKeyName(), '=', $key)
-                    ->orWhere($model->getSlugKey(), '=', $key)
-                    ->first();
+            $role  = $this->model
+                ::where($model->getKeyName(), '=', $key)
+                ->orWhere($model->getSlugKey(), '=', $key)
+                ->first();
         }
 
         return $role instanceof ($this->model) && $role->exists ? $role : null;
