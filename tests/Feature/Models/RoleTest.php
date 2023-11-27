@@ -4,6 +4,7 @@ namespace dmitryrogolev\Is\Tests\Feature\Models;
 
 use dmitryrogolev\Is\Contracts\RoleHasRelations;
 use dmitryrogolev\Is\Contracts\Sluggable;
+use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Models\Database;
 use dmitryrogolev\Is\Tests\TestCase;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -19,9 +20,9 @@ class RoleTest extends TestCase
      *
      * @return void
      */
-    public function test_extends_database(): void 
+    public function test_extends_database(): void
     {
-        $this->assertInstanceOf(Database::class, app(config('is.models.role')));
+        $this->assertInstanceOf(Database::class, app(Is::roleModel()));
     }
 
     /**
@@ -29,9 +30,9 @@ class RoleTest extends TestCase
      *
      * @return void
      */
-    public function test_implements_role_has_relations(): void 
+    public function test_implements_role_has_relations(): void
     {
-        $this->assertInstanceOf(RoleHasRelations::class, app(config('is.models.role')));
+        $this->assertInstanceOf(RoleHasRelations::class, app(Is::roleModel()));
     }
 
     /**
@@ -39,9 +40,9 @@ class RoleTest extends TestCase
      *
      * @return void
      */
-    public function test_implements_sluggable(): void 
+    public function test_implements_sluggable(): void
     {
-        $this->assertInstanceOf(Sluggable::class, app(config('is.models.role')));
+        $this->assertInstanceOf(Sluggable::class, app(Is::roleModel()));
     }
 
     /**
@@ -49,9 +50,9 @@ class RoleTest extends TestCase
      *
      * @return void
      */
-    public function test_table(): void 
+    public function test_table(): void
     {
-        $this->assertEquals(config('is.tables.roles'), app(config('is.models.role'))->getTable());
+        $this->assertEquals(Is::rolesTable(), app(Is::roleModel())->getTable());
     }
 
     /**
@@ -59,12 +60,12 @@ class RoleTest extends TestCase
      *
      * @return void
      */
-    public function test_factory(): void 
+    public function test_factory(): void
     {
         $this->runLaravelMigrations();
 
-        $this->assertTrue(class_exists(config('is.factories.role')));
-        $this->assertModelExists(config('is.models.role')::factory()->create());
+        $this->assertTrue(class_exists(Is::roleFactory()));
+        $this->assertModelExists(Is::roleModel()::factory()->create());
     }
 
     /**
@@ -73,27 +74,27 @@ class RoleTest extends TestCase
      *
      * @return void
      */
-    public function test_uses_traits(): void 
+    public function test_uses_traits(): void
     {
-        $traits = collect(class_uses_recursive(app(config('is.models.role'))));
-        $hasUuids = $traits->contains(HasUuids::class);
+        $traits      = collect(class_uses_recursive(app(Is::roleModel())));
+        $hasUuids    = $traits->contains(HasUuids::class);
         $softDeletes = $traits->contains(SoftDeletes::class);
-        $hasTraits = function () use ($hasUuids, $softDeletes) {
-            if (config('is.uses.uuid') && config('is.uses.soft_deletes')) {
+        $hasTraits   = function () use ($hasUuids, $softDeletes) {
+            if (Is::usesUuid() && Is::usesSoftDeletes()) {
                 return $hasUuids && $softDeletes;
-            } 
-            
-            if (config('is.uses.uuid')) {
+            }
+
+            if (Is::usesUuid()) {
                 return $hasUuids && ! $softDeletes;
-            } 
-            
-            if (config('is.uses.soft_deletes')) {
+            }
+
+            if (Is::usesSoftDeletes()) {
                 return ! $hasUuids && $softDeletes;
             }
-            
+
             return ! $hasUuids && ! $softDeletes;
         };
-        
+
         $this->assertTrue($hasTraits());
     }
 }

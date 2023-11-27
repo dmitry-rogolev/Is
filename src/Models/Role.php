@@ -1,9 +1,10 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Models;
 
 use dmitryrogolev\Is\Contracts\RoleHasRelations as ContractRoleHasRelations;
 use dmitryrogolev\Is\Contracts\Sluggable;
+use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Traits\HasSlug;
 use dmitryrogolev\Is\Traits\RoleHasRelations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * Модель роли.
  */
-abstract class Model extends Database implements Sluggable, ContractRoleHasRelations 
+abstract class Model extends Database implements Sluggable, ContractRoleHasRelations
 {
     use HasFactory, HasSlug, RoleHasRelations;
 
@@ -23,20 +24,16 @@ abstract class Model extends Database implements Sluggable, ContractRoleHasRelat
      * @var array<string>
      */
     protected $fillable = [
-        'name', 
-        'slug', 
-        'description', 
+        'name',
+        'slug',
+        'description',
+        'level',
     ];
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-
-        $this->setTable(config('is.tables.roles'));
-
-        if (config('is.uses.levels')) {
-            array_push($this->fillable, 'level');
-        }
+        $this->setTable(Is::rolesTable());
     }
 
     /**
@@ -46,21 +43,21 @@ abstract class Model extends Database implements Sluggable, ContractRoleHasRelat
      */
     protected static function newFactory()
     {
-        return config('is.factories.role')::new();
+        return Is::roleFactory()::new();
     }
 }
 
-if (config('is.uses.uuid') && config('is.uses.soft_deletes')) {
+if (Is::usesUuid() && Is::usesSoftDeletes()) {
     class Role extends Model
     {
         use HasUuids, SoftDeletes;
     }
-} else if (config('is.uses.uuid')) {
+} else if (Is::usesUuid()) {
     class Role extends Model
     {
         use HasUuids;
     }
-} else if (config('is.uses.soft_deletes')) {
+} else if (Is::usesSoftDeletes()) {
     class Role extends Model
     {
         use SoftDeletes;
@@ -68,6 +65,6 @@ if (config('is.uses.uuid') && config('is.uses.soft_deletes')) {
 } else {
     class Role extends Model
     {
-        
+
     }
 }

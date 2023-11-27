@@ -1,7 +1,8 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Models;
 
+use dmitryrogolev\Is\Facades\Is;
 use Illuminate\Database\Eloquent\Relations\MorphPivot;
 
 /**
@@ -15,8 +16,8 @@ class Roleable extends MorphPivot
     {
         parent::__construct($attributes);
 
-        $this->setConnection(config('is.connection'));
-        $this->setTable(config('is.tables.roleables'));
-        $this->timestamps = config('is.uses.timestamps');
+        $this->setConnection(Is::connection());
+        $this->setTable(Is::roleablesTable());
+        $this->timestamps = Is::usesTimestamps();
     }
 }

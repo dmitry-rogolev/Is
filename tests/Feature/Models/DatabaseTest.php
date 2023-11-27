@@ -1,23 +1,24 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Tests\Feature\Models;
 
+use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Models\Database;
 use dmitryrogolev\Is\Tests\TestCase;
 
 /**
  * Тестирование базового класса для всех моделей пакета.
  */
-class DatabaseTest extends TestCase 
+class DatabaseTest extends TestCase
 {
     /**
      * Совпадает ли имя соединения с БД в модели с конфигом?
      *
      * @return void
      */
-    public function test_connection(): void 
+    public function test_connection(): void
     {
-        $this->assertEquals(config('is.connection'), app(Item::class)->getConnectionName());
+        $this->assertEquals(Is::connection(), app(Item::class)->getConnectionName());
     }
 
     /**
@@ -25,9 +26,9 @@ class DatabaseTest extends TestCase
      *
      * @return void
      */
-    public function test_primary_key(): void 
+    public function test_primary_key(): void
     {
-        $this->assertEquals(config('is.primary_key'), app(Item::class)->getKeyName());
+        $this->assertEquals(Is::primaryKey(), app(Item::class)->getKeyName());
     }
 
     /**
@@ -35,13 +36,13 @@ class DatabaseTest extends TestCase
      *
      * @return void
      */
-    public function test_timestamps(): void 
+    public function test_timestamps(): void
     {
-        $this->assertEquals(config('is.uses.timestamps'), app(Item::class)->usesTimestamps());
+        $this->assertEquals(Is::usesTimestamps(), app(Item::class)->usesTimestamps());
     }
 }
 
-class Item extends Database 
+class Item extends Database
 {
 
 }

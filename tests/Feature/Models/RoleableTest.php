@@ -1,23 +1,24 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Tests\Feature\Models;
 
+use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Tests\TestCase;
 use Illuminate\Database\Eloquent\Relations\MorphPivot;
 
 /**
  * Тестируем модель промежуточной таблицы ролей.
  */
-class RoleableTest extends TestCase 
+class RoleableTest extends TestCase
 {
     /**
      * Расширяет ли модель класс "\Illuminate\Database\Eloquent\Relations\MorphPivot"?
      *
      * @return void
      */
-    public function test_extends_morph_pivot(): void 
+    public function test_extends_morph_pivot(): void
     {
-        $this->assertInstanceOf(MorphPivot::class, app(config('is.models.roleable')));
+        $this->assertInstanceOf(MorphPivot::class, app(Is::roleableModel()));
     }
 
     /**
@@ -25,9 +26,9 @@ class RoleableTest extends TestCase
      *
      * @return void
      */
-    public function test_connection(): void 
+    public function test_connection(): void
     {
-        $this->assertEquals(config('is.connection'), app(config('is.models.roleable'))->getConnectionName());
+        $this->assertEquals(Is::connection(), app(Is::roleableModel())->getConnectionName());
     }
 
     /**
@@ -35,9 +36,9 @@ class RoleableTest extends TestCase
      *
      * @return void
      */
-    public function test_table(): void 
+    public function test_table(): void
     {
-        $this->assertEquals(config('is.tables.roleables'), app(config('is.models.roleable'))->getTable());
+        $this->assertEquals(Is::roleablesTable(), app(Is::roleableModel())->getTable());
     }
 
     /**
@@ -45,8 +46,8 @@ class RoleableTest extends TestCase
      *
      * @return void
      */
-    public function test_timestamps(): void 
+    public function test_timestamps(): void
     {
-        $this->assertEquals(config('is.uses.timestamps'), app(config('is.models.roleable'))->usesTimestamps());
+        $this->assertEquals(Is::usesTimestamps(), app(Is::roleableModel())->usesTimestamps());
     }
 }
