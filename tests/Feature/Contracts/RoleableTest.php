@@ -1,27 +1,25 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Tests\Feature\Contracts;
 
-use dmitryrogolev\Is\Contracts\AbstractRoleable;
 use dmitryrogolev\Is\Contracts\Levelable;
+use dmitryrogolev\Is\Contracts\Roleable;
+use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Tests\TestCase;
 
 /**
- * Тестируем интрерфейс функционала ролей.
+ * Тестируем интерфейс функционала ролей.
  */
 class RoleableTest extends TestCase
 {
     /**
-     * Наследуется ли интрерфейс согласно конфигурации?
+     * Наследуется ли интерфейс согласно конфигурации?
      *
      * @return void
      */
-    public function test_extends(): void 
+    public function test_extends(): void
     {
-        $this->assertInstanceOf(AbstractRoleable::class, app(config('is.models.user')));
-
-        if (config('is.uses.levels')) {
-            $this->assertInstanceOf(Levelable::class, app(config('is.models.user')));
-        }
+        $this->assertInstanceOf(Roleable::class, app(Is::userModel()));
+        $this->assertInstanceOf(Levelable::class, app(Is::userModel()));
     }
 }

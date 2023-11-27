@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Tests\Feature\Console\Commands;
 
@@ -14,7 +14,7 @@ class InstallCommandTest extends TestCase
      *
      * @return void
      */
-    public function test_run(): void 
+    public function test_run(): void
     {
         $this->artisan('is:install')->assertOk();
         $this->artisan('is:install --config')->assertOk();
