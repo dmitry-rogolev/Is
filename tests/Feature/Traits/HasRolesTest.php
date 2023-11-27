@@ -1,9 +1,12 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Tests\Feature\Traits;
 
+use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;
+use dmitryrogolev\Is\Traits\ExtendIsMethod;
+use dmitryrogolev\Is\Traits\HasLevels;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,24 +22,24 @@ class HasRolesTest extends TestCase
      *
      * @return void
      */
-    public function test_roles(): void 
+    public function test_roles(): void
     {
-        $user = $this->getUserWithRoles();
-        $roles = $user->roles()->get()->pluck(config('is.primary_key'));
-        $this->assertEquals($roles, $user->roles->pluck(config('is.primary_key')));
+        // Проверяем наличие метода связи модели с ролями.
+        $user  = $this->getUserWithRoles();
+        $roles = $user->roles()->get()->pluck(Is::primaryKey());
+        $this->assertEquals($roles, $user->roles->pluck(Is::primaryKey()));
 
-        // Есть ли временные метки у промежуточной таблицы ролей?
-        $createdAtColumn = app(config('is.models.roleable'))->getCreatedAtColumn();
-        $updatedAtColumn = app(config('is.models.roleable'))->getUpdatedAtColumn();
+        // Проверяем наличие временных меток у промежуточной модели ролей.
+        $createdAtColumn = app(Is::roleableModel())->getCreatedAtColumn();
+        $updatedAtColumn = app(Is::roleableModel())->getUpdatedAtColumn();
 
-        config(['is.uses.timestamps' => true]);
+        Is::usesTimestamps(true);
         $role = $user->roles()->first();
         $this->assertTrue($role->pivot->{$createdAtColumn} && $role->pivot->{$updatedAtColumn});
 
-        config(['is.uses.timestamps' => false]);
-        $this->refreshDatabase();
+        Is::usesTimestamps(false);
         $role = $user->roles()->first();
-        $this->assertFalse($role->pivot->{$createdAtColumn} && $role->pivot->{$updatedAtColumn});
+        $this->assertTrue(! $role->pivot->{$createdAtColumn} && ! $role->pivot->{$updatedAtColumn});
     }
 
     /**
@@ -44,20 +47,22 @@ class HasRolesTest extends TestCase
      *
      * @return void
      */
-    public function test_get_roles(): void 
+    public function test_get_roles(): void
     {
-        config(['is.uses.load_on_update' => true]);
-
-        config(['is.uses.levels' => true]);
+        // Включаем иерархию ролей.
+        Is::usesLevels(true);
         $user = $this->getUser();
-        config('is.models.role')::factory(3)->create(['level' => 2]);
-        $user->attachRole(config('is.models.role')::factory()->create(['level' => 3]));
-        $this->assertTrue($user->getRoles()->count() > 1);
+        $user->roles()->attach(Is::generate(['level' => 2]));
+        Is::generate(['level' => 1]);
+        $this->assertCount(2, $user->getRoles());
 
-        config(['is.uses.levels' => false]);
+        // Отключаем иерархию ролей.
+        Is::usesLevels(false);
         $user = $this->getUserWithRoles();
-        $this->assertEquals($user->roles->pluck(config('is.primary_key')), 
-                            $user->getRoles()->pluck(config('is.primary_key')));
+        $this->assertEquals(
+            $user->roles->pluck(Is::primaryKey()),
+            $user->getRoles()->pluck(Is::primaryKey()),
+        );
     }
 
     /**
@@ -65,11 +70,13 @@ class HasRolesTest extends TestCase
      *
      * @return void
      */
-    public function test_load_roles(): void 
+    public function test_load_roles(): void
     {
         $user = $this->getUserWithRoles();
+
         $user->loadRoles()->roles()->detach();
         $this->assertTrue($user->roles->isNotEmpty());
+
         $user->loadRoles();
         $this->assertTrue($user->roles->isEmpty());
     }
@@ -79,55 +86,79 @@ class HasRolesTest extends TestCase
      *
      * @return void
      */
-    public function test_attach_role(): void 
+    public function test_attach_role(): void
     {
-        config(['is.uses.load_on_update' => true]);
-        $user = $this->getUser();
-        $roles = $this->getRole(3);
-        $this->assertTrue($user->attachRole($roles));
-        $this->assertEquals($roles->pluck(config('is.primary_key')), $user->roles->pluck(config('is.primary_key')));
+        // Включаем авто подгрузку ролей.
+        Is::usesLoadOnUpdate(true);
 
-        // При попытке повторного присоединения роли вернется false.
-        $role = $this->getRole();
+        // Включаем иерархию ролей.
+        Is::usesLevels(true);
+        $user = $this->getUser();
+        $this->assertTrue($user->attachRole(Is::generate(['level' => 3])));
+        $this->assertFalse($user->attachRole(Is::generate(['level' => 2])));
+        $this->assertCount(2, $user->getRoles());
+
+        // Отключаем иерархию ролей.
+        Is::usesLevels(false);
+        $role = Is::generate();
         $this->assertTrue($user->attachRole($role));
         $this->assertFalse($user->attachRole($role));
+        $this->assertCount(2, $user->getRoles());
 
-        config(['is.uses.load_on_update' => false]);
-        $user = $this->getUser();
-        $roles = $this->getRole(3);
-        $this->assertTrue($user->attachRole($roles));
-        $this->assertCount(0, $user->roles);
+        // Отключаем авто подгрузку ролей.
+        Is::usesLoadOnUpdate(false);
+
+        $user->attachRole(Is::generate(3));
+        $this->assertCount(2, $user->getRoles());
         $user->loadRoles();
-        $this->assertCount(3, $user->roles);
+        $this->assertCount(5, $user->getRoles());
     }
 
     /**
-     * Есть ли метод, отсоединяющий роль?.
+     * Есть ли метод, отсоединяющий роль?
      *
      * @return void
      */
-    public function test_detach_role(): void 
+    public function test_detach_role(): void
     {
-        config(['is.uses.load_on_update' => true]);
-        $user = $this->getUserWithRoles(5);
-        $roles = $user->roles->slice(0, 3);
-        $this->assertTrue($user->detachRole($user->roles->slice(3)));
-        $this->assertEquals($roles->pluck(config('is.primary_key')), $user->roles->pluck(config('is.primary_key')));
+        // Включаем авто подгрузку ролей.
+        Is::usesLoadOnUpdate(true);
 
-        // При попытке отсоеднинения отсутствующей у пользователя роли вернется false.
-        $this->assertFalse($user->detachRole($this->getRole()));
+        // Включаем иерархию ролей.
+        Is::usesLevels(true);
+        $user = $this->getUser();
+        $role = Is::generate(['level' => 3]);
+        $user->attachRole($role);
+        $this->assertTrue($user->detachRole(Is::generate(['level' => 2])));
+        $this->assertFalse($user->detachRole(Is::generate(['level' => 4])));
+        $this->assertCount(2, $user->getRoles());
+        $this->assertTrue($user->detachRole($role));
+        $this->assertCount(0, $user->getRoles());
 
-        // Есть не передать аргрумент, то будут отсоединены все роли.
-        $user = $this->getUserWithRoles();
+        // Есть не передать аргумент, то будут отсоединены все роли.
+        $user->attachRole(Is::generate());
+        $this->assertNotCount(0, $user->getRoles());
         $this->assertTrue($user->detachRole());
-        $this->assertCount(0, $user->roles);
+        $this->assertCount(0, $user->getRoles());
 
-        config(['is.uses.load_on_update' => false]);
-        $user = $this->getUserWithRoles(5);
-        $this->assertTrue($user->detachRole());
-        $this->assertCount(5, $user->roles);
+        // Отключаем иерархию ролей.
+        Is::usesLevels(false);
+        $role = Is::generate();
+        $user->attachRole($role);
+        $this->assertFalse($user->detachRole(Is::generate()));
+        $this->assertTrue($user->detachRole($role));
+        $this->assertCount(0, $user->getRoles());
+
+        // Отключаем авто подгрузку ролей.
+        Is::usesLoadOnUpdate(false);
+
+        $user->attachRole(Is::generate(3));
         $user->loadRoles();
-        $this->assertCount(0, $user->roles);
+        $this->assertCount(3, $user->getRoles());
+        $user->detachRole();
+        $this->assertCount(3, $user->getRoles());
+        $user->loadRoles();
+        $this->assertCount(0, $user->getRoles());
     }
 
     /**
@@ -135,20 +166,24 @@ class HasRolesTest extends TestCase
      *
      * @return void
      */
-    public function test_detach_all_roles(): void 
+    public function test_detach_all_roles(): void
     {
-        config(['is.uses.load_on_update' => true]);
+        // Включаем авто подгрузку ролей.
+        Is::usesLoadOnUpdate(true);
+
         $user = $this->getUserWithRoles();
         $this->assertTrue($user->detachAllRoles());
-        $this->assertCount(0, $user->roles);
+        $this->assertCount(0, $user->getRoles());
         $this->assertFalse($user->detachAllRoles());
 
-        config(['is.uses.load_on_update' => false]);
+        // Отключаем авто подгрузку ролей.
+        Is::usesLoadOnUpdate(false);
+
         $user = $this->getUserWithRoles(5);
         $this->assertTrue($user->detachAllRoles());
-        $this->assertCount(5, $user->roles);
+        $this->assertNotCount(0, $user->getRoles());
         $user->loadRoles();
-        $this->assertCount(0, $user->roles);
+        $this->assertCount(0, $user->getRoles());
     }
 
     /**
@@ -156,13 +191,24 @@ class HasRolesTest extends TestCase
      *
      * @return void
      */
-    public function test_sync_roles(): void 
+    public function test_sync_roles(): void
     {
-        config(['is.uses.load_on_update' => true]);
-        $user = $this->getUserWithRoles();
-        $roles = $this->getRole(5);
+        // Включаем авто подгрузку ролей.
+        Is::usesLoadOnUpdate(true);
+
+        // Включаем иерархию ролей.
+        Is::usesLevels(true);
+        $user = $this->getUser();
+        $user->attachRole(Is::generate(['level' => 2]));
+        $role = Is::generate(['level' => 3]);
+        $user->syncRoles($role);
+        $this->assertCount(2, $user->getRoles());
+
+        // Отключаем иерархию ролей.
+        Is::usesLevels(false);
+        $roles = Is::generate(3);
         $user->syncRoles($roles);
-        $this->assertEquals($roles->pluck(config('is.primary_key')), $user->roles->pluck(config('is.primary_key')));
+        $this->assertEquals($roles->pluck(Is::primaryKey()), $user->getRoles()->pluck(Is::primaryKey()));
     }
 
     /**
@@ -170,14 +216,24 @@ class HasRolesTest extends TestCase
      *
      * @return void
      */
-    public function test_has_one_role(): void 
+    public function test_has_one_role(): void
     {
-        config(['is.uses.load_on_update' => true]);
+        // Включаем авто подгрузку ролей.
+        Is::usesLoadOnUpdate(true);
+
+        // Включаем иерархию ролей.
+        Is::usesLevels(true);
         $user = $this->getUser();
-        $role = $this->getRole();
+        $user->attachRole(Is::generate(['level' => 3]));
+        $this->assertTrue($user->hasOneRole(Is::generate(['level' => 2])));
+        $this->assertFalse($user->hasOneRole(Is::generate(['level' => 4])));
+
+        // Отключаем иерархию ролей.
+        Is::usesLevels(false);
+        $role = Is::generate();
         $user->attachRole($role);
         $this->assertTrue($user->hasOneRole($role));
-        $this->assertFalse($user->hasOneRole($this->getRole()));
+        $this->assertFalse($user->hasOneRole(Is::generate()));
     }
 
     /**
@@ -185,14 +241,26 @@ class HasRolesTest extends TestCase
      *
      * @return void
      */
-    public function test_has_all_roles(): void 
+    public function test_has_all_roles(): void
     {
-        config(['is.uses.load_on_update' => true]);
-        $user = $this->getUser();
-        $roles = $this->getRole(3);
-        $user->attachRole($roles);
-        $this->assertTrue($user->hasAllRoles($roles));
-        $this->assertFalse($user->hasAllRoles($this->getRole(2)));
+        // Включаем авто подгрузку ролей.
+        Is::usesLoadOnUpdate(true);
+
+        // Включаем иерархию ролей.
+        Is::usesLevels(true);
+        $user   = $this->getUser();
+        $level1 = Is::generate(['level' => 1]);
+        $level2 = Is::generate(['level' => 2]);
+        $level3 = Is::generate(['level' => 3]);
+        $user->attachRole($level2);
+        $this->assertTrue($user->hasAllRoles($level1, $level2));
+        $this->assertFalse($user->hasAllRoles($level1, $level2, $level3));
+
+        // Отключаем иерархию ролей.
+        Is::usesLevels(false);
+        $user->attachRole($level3);
+        $this->assertTrue($user->hasAllRoles($level2, $level3));
+        $this->assertFalse($user->hasAllRoles($level1, $level2, $level3));
     }
 
     /**
@@ -200,21 +268,44 @@ class HasRolesTest extends TestCase
      *
      * @return void
      */
-    public function test_has_role(): void 
+    public function test_has_role(): void
     {
-        config(['is.uses.load_on_update' => true]);
+        // Включаем авто подгрузку ролей.
+        Is::usesLoadOnUpdate(true);
 
+        // Включаем иерархию ролей.
+        Is::usesLevels(true);
+
+        // Проверяем наличие хотябы одной роли.
         $user = $this->getUser();
-        $role = $this->getRole();
+        $user->attachRole(Is::generate(['level' => 3]));
+        $this->assertTrue($user->hasRole(Is::generate(['level' => 2])));
+        $this->assertFalse($user->hasRole(Is::generate(['level' => 4])));
+        $user->detachAllRoles();
+
+        // Проверяем наличие нескольких ролей.
+        $level1 = Is::generate(['level' => 1]);
+        $level2 = Is::generate(['level' => 2]);
+        $level3 = Is::generate(['level' => 3]);
+        $user->attachRole($level2);
+        $this->assertTrue($user->hasRole([$level1, $level2], true));
+        $this->assertFalse($user->hasAllRoles([$level1, $level2, $level3], true));
+        $user->detachAllRoles();
+
+        // Отключаем иерархию ролей.
+        Is::usesLevels(false);
+
+        // Проверяем наличие хотябы одной роли.
+        $role = Is::generate();
         $user->attachRole($role);
         $this->assertTrue($user->hasRole($role));
-        $this->assertFalse($user->hasRole($this->getRole()));
+        $this->assertFalse($user->hasRole(Is::generate()));
+        $user->detachAllRoles();
 
-        $user = $this->getUser();
-        $roles = $this->getRole(3);
-        $user->attachRole($roles);
-        $this->assertTrue($user->hasRole($roles, true));
-        $this->assertFalse($user->hasRole($this->getRole(2), true));
+        // Проверяем наличие нескольких ролей.
+        $user->attachRole($level2, $level3);
+        $this->assertTrue($user->hasRole([$level2, $level3], true));
+        $this->assertFalse($user->hasRole([$level1, $level2, $level3], true));
     }
 
     /**
@@ -222,14 +313,28 @@ class HasRolesTest extends TestCase
      *
      * @return void
      */
-    public function test_call_magic_is_role(): void 
+    public function test_call_magic_is_role(): void
     {
-        config(['is.uses.load_on_update' => true]);
-        $user = $this->getUser();
-        $role = $this->getRole();
+        // Включаем авто подгрузку ролей.
+        Is::usesLoadOnUpdate(true);
+
+        // Включаем иерархию ролей.
+        Is::usesLevels(true);
+        $level1 = Is::generate(['level' => 1]);
+        $level2 = Is::generate(['level' => 2]);
+        $level3 = Is::generate(['level' => 3]);
+        $user   = $this->getUser();
+        $user->attachRole($level2);
+        $this->assertTrue($user->{'is' . ucfirst($level2->slug)}());
+        $this->assertTrue($user->{'is' . ucfirst($level1->slug)}());
+        $this->assertFalse($user->{'is' . ucfirst($level3->slug)}());
+
+        // Отключаем иерархию ролей.
+        Is::usesLevels(false);
+        $role = Is::generate();
         $user->attachRole($role);
-        $this->assertTrue($user->{'is'.ucfirst($role->slug)}());
-        $this->assertFalse($user->isAdmin());
+        $this->assertTrue($user->{'is' . ucfirst($role->slug)}());
+        $this->assertFalse($user->{'is' . ucfirst(Is::generate()->slug)}());
     }
 
     /**
@@ -237,29 +342,12 @@ class HasRolesTest extends TestCase
      *
      * @return void
      */
-    public function test_uses_traits(): void 
+    public function test_uses_traits(): void
     {
-        // $traits = collect(class_uses_recursive(app(config('is.models.user'))));
-        // $abstractHasRoles = $traits->contains(AbstractHasRoles::class);
-        // $hasLevels = $traits->contains(HasLevels::class);
-        // $extendIsMethod = $traits->contains(ExtendIsMethod::class);
-        // $hasTraits = function () use ($abstractHasRoles, $hasLevels, $extendIsMethod) {
-        //     if (config('is.uses.levels') && config('is.uses.extend_is_method')) {
-        //         return $abstractHasRoles && $hasLevels && $extendIsMethod;
-        //     } 
-            
-        //     if (config('is.uses.levels')) {
-        //         return $abstractHasRoles && $hasLevels && ! $extendIsMethod;
-        //     } 
-            
-        //     if (config('is.uses.extend_is_method')) {
-        //         return $abstractHasRoles && ! $hasLevels && $extendIsMethod;
-        //     }
-            
-        //     return $abstractHasRoles && ! $hasLevels && ! $extendIsMethod;
-        // };
-        
-        // $this->assertTrue($hasTraits());
+        $traits = collect(class_uses_recursive(app(Is::userModel())));
+
+        $this->assertTrue($traits->contains(HasLevels::class));
+        $this->assertTrue($traits->contains(ExtendIsMethod::class));
     }
 
     /**
@@ -271,7 +359,7 @@ class HasRolesTest extends TestCase
     private function getUserWithRoles(int $count = 3): Model
     {
         $roles = $this->getRole($count);
-        $user = $this->getUser();
+        $user  = $this->getUser();
         $roles->each(fn ($item) => $user->roles()->attach($item));
 
         return $user;

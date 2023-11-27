@@ -2,12 +2,13 @@
 
 namespace dmitryrogolev\Is\Traits;
 
+use dmitryrogolev\Is\Facades\Is;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * Добавляет роли отношения с другими моделями.
  */
-trait RoleHasRelations 
+trait RoleHasRelations
 {
     /**
      * Роль относится к множеству моделей.
@@ -17,8 +18,8 @@ trait RoleHasRelations
      */
     public function roleables(string $related): MorphToMany
     {
-        $query = $this->morphedByMany($related, config('is.relations.roleable'))->using(config('is.models.roleable'));
+        $query = $this->morphedByMany($related, Is::relationName())->using(Is::roleableModel());
 
-        return config('is.uses.timestamps') ? $query->withTimestamps() : $query;
+        return Is::usesTimestamps() ? $query->withTimestamps() : $query;
     }
 }

@@ -22,9 +22,9 @@ trait HasRoles
      */
     public function roles(): MorphToMany
     {
-        $query = $this->morphToMany(config('is.models.role'), config('is.relations.roleable'))->using(config('is.models.roleable'));
+        $query = $this->morphToMany(Is::roleModel(), Is::relationName())->using(Is::roleableModel());
 
-        return config('is.uses.timestamps') ? $query->withTimestamps() : $query;
+        return Is::usesTimestamps() ? $query->withTimestamps() : $query;
     }
 
     /**
@@ -58,13 +58,13 @@ trait HasRoles
         $attached = false;
 
         foreach (Helper::toArray($role) as $value) {
-            if ($model = Is::find($value) && ! Is::has($model, $this)) {
+            if (($model = Is::find($value)) && ! Is::has($model, $this)) {
                 $this->roles()->attach($model);
                 $attached = true;
             }
         }
 
-        if (config('is.uses.load_on_update') && $attached) {
+        if (Is::usesLoadOnUpdate() && $attached) {
             $this->loadRoles();
         }
 
@@ -87,13 +87,13 @@ trait HasRoles
         }
 
         foreach ($roles as $value) {
-            if ($model = Is::find($value) && Is::has($model, $this)) {
+            if (($model = Is::find($value)) && Is::has($model, $this)) {
                 $this->roles()->detach($model);
                 $detached = true;
             }
         }
 
-        if (config('is.uses.load_on_update') && $detached) {
+        if (Is::usesLoadOnUpdate() && $detached) {
             $this->loadRoles();
         }
 
@@ -114,7 +114,7 @@ trait HasRoles
             $detached = true;
         }
 
-        if (config('is.uses.load_on_update') && $detached) {
+        if (Is::usesLoadOnUpdate() && $detached) {
             $this->loadRoles();
         }
 
