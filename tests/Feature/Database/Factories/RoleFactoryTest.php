@@ -1,7 +1,8 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Tests\Feature\Database\Factories;
 
+use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Tests\TestCase;
 
 /**
@@ -14,21 +15,16 @@ class RoleFactoryTest extends TestCase
      *
      * @return void
      */
-    public function test_definition(): void 
+    public function test_definition(): void
     {
-        $checkFields = function () { 
-            $state = app(config('is.factories.role'))->definition();
-            return array_key_exists('name', $state) 
-                    && array_key_exists('slug', $state) 
-                    && array_key_exists('definition', $state) 
-                    && config('is.uses.levels') ? array_key_exists('level', $state) : true;
-        };
+        $state = app(Is::roleFactory())->definition();
 
-        config(['is.uses.levels' => false]);
-        $this->assertTrue($checkFields());
+        $hasFields = array_key_exists('name', $state)
+            && array_key_exists('slug', $state)
+            && array_key_exists('description', $state)
+            && array_key_exists('level', $state);
 
-        config(['is.uses.levels' => true]);
-        $this->assertTrue($checkFields());
+        $this->assertTrue($hasFields);
     }
 
     /**
@@ -36,10 +32,10 @@ class RoleFactoryTest extends TestCase
      *
      * @return void
      */
-    public function test_created(): void 
+    public function test_created(): void
     {
         $this->runLaravelMigrations();
 
-        $this->assertModelExists(app(config('is.factories.role'))->create());
+        $this->assertModelExists(app(Is::roleFactory())->create());
     }
 }

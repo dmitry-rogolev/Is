@@ -1,39 +1,31 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Tests\Feature\Database\Seeders;
 
-use dmitryrogolev\Is\Facades\Role;
-use dmitryrogolev\Is\Tests\RefreshDatabase;
+use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Tests\TestCase;
 
 /**
  * Тестируем сидер роли.
  */
-class RoleSeederTest extends TestCase 
+class RoleSeederTest extends TestCase
 {
-    use RefreshDatabase;
-
     /**
      * Есть ли метод, возвращающий роли?
      *
      * @return void
      */
-    public function test_get_roles(): void 
+    public function test_get_roles(): void
     {
-        $seeder = app(config('is.seeders.role'));
-
-        $checkFields = fn () => collect($seeder->getRoles())->every(fn ($item) => 
+        $checkFields = collect(app(Is::roleSeeder())->getRoles())->every(
+            fn ($item) =>
             array_key_exists('name', $item)
             && array_key_exists('slug', $item)
-            && array_key_exists('definition', $item) 
-            && config('is.uses.levels') ? array_key_exists('level', $item) : true 
+            && array_key_exists('description', $item)
+            && array_key_exists('level', $item)
         );
-        
-        config(['is.uses.levels' => false]);
-        $this->assertTrue($checkFields());
 
-        config(['is.uses.levels' => true]);
-        $this->assertTrue($checkFields());
+        $this->assertTrue($checkFields);
     }
 
     /**
@@ -41,10 +33,11 @@ class RoleSeederTest extends TestCase
      *
      * @return void
      */
-    public function test_run(): void 
+    public function test_run(): void
     {
-        app(config('is.seeders.role'))->run();
+        $this->runLaravelMigrations();
+        app(Is::roleSeeder())->run();
 
-        $this->assertNotCount(0, Role::all());
+        $this->assertCount(count(app(Is::roleSeeder())->getRoles()), Is::all());
     }
 }

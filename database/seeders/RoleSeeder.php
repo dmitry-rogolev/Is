@@ -26,10 +26,10 @@ class RoleSeeder extends Seeder
     public function getRoles(): array
     {
         return [
-            ['name' => 'Admin', 'slug' => 'admin', 'description' => 'Admin Role', 'level' => 5],
-            ['name' => 'Editor', 'slug' => 'editor', 'description' => 'Editor Role', 'level' => 3],
-            ['name' => 'Moderator', 'slug' => 'moderator', 'description' => 'Moderator Role', 'level' => 2],
-            ['name' => 'User', 'slug' => 'user', 'description' => 'User Role', 'level' => 1],
+            ['name' => 'Admin', 'slug' => 'admin', 'description' => 'Admin role', 'level' => 5],
+            ['name' => 'Editor', 'slug' => 'editor', 'description' => 'Editor role', 'level' => 3],
+            ['name' => 'Moderator', 'slug' => 'moderator', 'description' => 'Moderator role', 'level' => 2],
+            ['name' => 'User', 'slug' => 'user', 'description' => 'User role', 'level' => 1],
         ];
     }
 }
