@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Providers;
 
@@ -56,20 +56,20 @@ class IsServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    private function mergeConfig(): void 
+    private function mergeConfig(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../../config/is.php', 'is');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/is.php', 'is');
     }
 
     /**
-     * Регистируем миграции пакета.
+     * Регистрируем миграции пакета.
      *
      * @return void
      */
-    private function loadMigrations(): void 
+    private function loadMigrations(): void
     {
         if (config('is.uses.migrations')) {
-            $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
+            $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
         }
     }
 
@@ -78,24 +78,24 @@ class IsServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    private function publishFiles(): void 
+    private function publishFiles(): void
     {
         $this->publishes([
-            __DIR__.'/../../config/is.php' => config_path('is.php'), 
-        ], $this->packageTag.'-config');
+            __DIR__ . '/../../config/is.php' => config_path('is.php'),
+        ], $this->packageTag . '-config');
 
         $this->publishes([
-            __DIR__.'/../../database/migrations' => database_path('migrations'), 
-        ], $this->packageTag.'-migrations');
+            __DIR__ . '/../../database/migrations' => database_path('migrations'),
+        ], $this->packageTag . '-migrations');
 
         $this->publishes([
-            __DIR__.'/../../database/seeders/publish' => database_path('seeders'), 
-        ], $this->packageTag.'-seeders');
+            __DIR__ . '/../../database/seeders/publish' => database_path('seeders'),
+        ], $this->packageTag . '-seeders');
 
         $this->publishes([
-            __DIR__.'/../../config/is.php' => config_path('is.php'), 
-            __DIR__.'/../../database/migrations' => database_path('migrations'), 
-            __DIR__.'/../../database/seeders/publish' => database_path('seeders'), 
+            __DIR__ . '/../../config/is.php' => config_path('is.php'),
+            __DIR__ . '/../../database/migrations' => database_path('migrations'),
+            __DIR__ . '/../../database/seeders/publish' => database_path('seeders'),
         ], $this->packageTag);
     }
 
@@ -104,7 +104,7 @@ class IsServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    private function loadSeedsFrom(): void 
+    private function loadSeedsFrom(): void
     {
         if (config('is.uses.seeders')) {
             $this->app->afterResolving('seed.handler', function ($handler) {
@@ -118,7 +118,7 @@ class IsServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    private function registerBladeExtensions(): void 
+    private function registerBladeExtensions(): void
     {
         if (config('is.uses.blade')) {
             $blade = $this->app['view']->getEngineResolver()->resolve('blade')->getCompiler();
@@ -136,11 +136,11 @@ class IsServiceProvider extends ServiceProvider
             $blade->directive('endrole', function () {
                 return '<?php endif; ?>';
             });
-            
+
             if (config('is.uses.levels')) {
                 $blade->directive('level', function ($expression) {
                     $level = trim($expression, '()');
-        
+
                     return "<?php if (Auth::check() && Auth::user()->level() >= {$level}): ?>";
                 });
                 $blade->directive('endlevel', function () {
@@ -151,15 +151,15 @@ class IsServiceProvider extends ServiceProvider
     }
 
     /**
-     * Регистрируем комманды.
+     * Регистрируем команды.
      *
      * @return void
      */
-    private function registerCommands(): void 
+    private function registerCommands(): void
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                InstallCommand::class, 
+                InstallCommand::class,
             ]);
         }
     }
@@ -169,7 +169,7 @@ class IsServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    private function registerServices(): void 
+    private function registerServices(): void
     {
         $this->app->singleton(RoleService::class);
         $this->app->alias(RoleService::class, 'role');

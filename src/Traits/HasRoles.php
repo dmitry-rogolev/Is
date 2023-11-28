@@ -4,9 +4,9 @@ namespace dmitryrogolev\Is\Traits;
 
 use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Helper;
+use dmitryrogolev\Slug\Facades\Slug;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Illuminate\Support\Str;
 
 /**
  * Функционал ролей.
@@ -203,7 +203,8 @@ trait HasRoles
     protected function callMagicIsRole($method): bool|null
     {
         if (str_starts_with($method, 'is')) {
-            return $this->hasRole(Helper::slug(Str::after($method, 'is')));
+            $slug = str($method)->after('is')->snake(Slug::separator())->toString();
+            return $this->hasRole(Slug::from($slug));
         }
 
         return null;

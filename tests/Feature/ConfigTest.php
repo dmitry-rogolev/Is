@@ -4,30 +4,12 @@ namespace dmitryrogolev\Is\Tests\Feature;
 
 use dmitryrogolev\Is\Tests\TestCase;
 use Illuminate\Support\Facades\DB;
-use ReflectionClass;
-use ReflectionMethod;
 
 /**
  * Тестируем параметры конфигурации.
  */
 class ConfigTest extends TestCase
 {
-    /**
-     * Совпадает ли количество тестов с количеством параметров конфигурации?
-     *
-     * @return void
-     */
-    public function test_count_tests(): void
-    {
-        $count   = collect(config('is'))->flatten()->count();
-        $methods = (new ReflectionClass($this))->getMethods(ReflectionMethod::IS_PUBLIC);
-        $tests   = collect($methods)
-            ->filter(fn ($method) => str_starts_with($method->name, 'test'))
-            ->where('name', '!=', __FUNCTION__);
-
-        $this->assertCount($count, $tests);
-    }
-
     /**
      * Есть ли подключение к базе данных?
      *
@@ -135,17 +117,6 @@ class ConfigTest extends TestCase
     public function test_seeders_role(): void
     {
         $this->assertTrue(class_exists(config('is.seeders.role')));
-    }
-
-    /**
-     * Есть ли конфигурация разделителя строк?
-     *
-     * @return void
-     */
-    public function test_separator(): void
-    {
-        $this->assertTrue(is_string(config('is.separator')));
-        $this->assertNotEmpty(config('is.separator'));
     }
 
     /**

@@ -4,6 +4,7 @@ namespace dmitryrogolev\Is\Tests;
 
 use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Providers\IsServiceProvider;
+use dmitryrogolev\Slug\Providers\SlugServiceProvider;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,6 +19,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
     protected function getPackageProviders($app): array
     {
         return [
+            SlugServiceProvider::class,
             IsServiceProvider::class,
         ];
     }

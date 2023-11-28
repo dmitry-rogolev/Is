@@ -3,7 +3,7 @@
 namespace dmitryrogolev\Is\Database\Factories;
 
 use dmitryrogolev\Is\Facades\Is;
-use dmitryrogolev\Is\Helper;
+use dmitryrogolev\Slug\Facades\Slug;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -33,7 +33,7 @@ class RoleFactory extends Factory
 
         return [
             'name'        => ucfirst($name),
-            'slug'        => Helper::slug($name),
+            'slug'        => Slug::from($name),
             'description' => ucfirst($name) . ' role',
             'level'       => fake()->numberBetween(1, 9),
         ];

@@ -30,17 +30,6 @@ class Helper
     }
 
     /**
-     * Преобразует строку в slug.
-     *
-     * @param  mixed $value
-     * @return string
-     */
-    public static function slug($value): string
-    {
-        return static::str($value)->camel()->snake(Is::separator())->toString();
-    }
-
-    /**
      * Разбивает строку на массив по регулярному выражению.
      *
      * @param   mixed $value

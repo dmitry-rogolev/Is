@@ -83,7 +83,7 @@ class RoleService extends Service
     {
         $model = app($this->model);
 
-        if (array_key_exists($model->getSlugKey(), $attributes) && $this->has($attributes[$model->getSlugKey()])) {
+        if (array_key_exists($model->getSlugName(), $attributes) && $this->has($attributes[$model->getSlugName()])) {
             return null;
         }
 
@@ -100,7 +100,7 @@ class RoleService extends Service
     {
         $model = app($this->model);
 
-        if (array_key_exists($model->getSlugKey(), $attributes) && $this->has($attributes[$model->getSlugKey()])) {
+        if (array_key_exists($model->getSlugName(), $attributes) && $this->has($attributes[$model->getSlugName()])) {
             return null;
         }
 
@@ -174,7 +174,7 @@ class RoleService extends Service
             $model = app($this->model);
             $role  = $this->model
                 ::where($model->getKeyName(), '=', $key)
-                ->orWhere($model->getSlugKey(), '=', $key)
+                ->orWhere($model->getSlugName(), '=', $key)
                 ->first();
         }
 

@@ -179,23 +179,6 @@ trait HasConfig
     }
 
     /**
-     * Строковый разделитель. 
-     * 
-     * Используется для разделения строк на подстроки для поля slug.
-     *
-     * @param string|null $value
-     * @return string
-     */
-    public function separator(string|null $value = null): string
-    {
-        if (! is_null($value)) {
-            config(['is.separator' => $value]);
-        }
-
-        return config('is.separator');
-    }
-
-    /**
      * Использовать ли в моделях uuid вместо обычного id.
      * 
      * UUID — это универсальные уникальные буквенно-цифровые идентификаторы длиной 36 символов.

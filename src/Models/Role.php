@@ -3,10 +3,11 @@
 namespace dmitryrogolev\Is\Models;
 
 use dmitryrogolev\Is\Contracts\RoleHasRelations as ContractRoleHasRelations;
-use dmitryrogolev\Is\Contracts\Sluggable;
 use dmitryrogolev\Is\Facades\Is;
-use dmitryrogolev\Is\Traits\HasSlug;
 use dmitryrogolev\Is\Traits\RoleHasRelations;
+use dmitryrogolev\Slug\Contracts\Sluggable;
+use dmitryrogolev\Slug\Facades\Slug;
+use dmitryrogolev\Slug\Traits\HasSlug;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -25,7 +26,6 @@ abstract class Model extends Database implements Sluggable, ContractRoleHasRelat
      */
     protected $fillable = [
         'name',
-        'slug',
         'description',
         'level',
     ];
@@ -34,6 +34,7 @@ abstract class Model extends Database implements Sluggable, ContractRoleHasRelat
     {
         parent::__construct($attributes);
         $this->setTable(Is::rolesTable());
+        array_push($this->fillable, Slug::default());
     }
 
     /**

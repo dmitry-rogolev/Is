@@ -3,10 +3,10 @@
 namespace dmitryrogolev\Is\Tests\Feature\Models;
 
 use dmitryrogolev\Is\Contracts\RoleHasRelations;
-use dmitryrogolev\Is\Contracts\Sluggable;
 use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Models\Database;
 use dmitryrogolev\Is\Tests\TestCase;
+use dmitryrogolev\Slug\Contracts\Sluggable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
