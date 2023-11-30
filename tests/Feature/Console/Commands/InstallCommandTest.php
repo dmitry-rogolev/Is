@@ -20,5 +20,8 @@ class InstallCommandTest extends TestCase
         $this->artisan('is:install --config')->assertOk();
         $this->artisan('is:install --migrations')->assertOk();
         $this->artisan('is:install --seeders')->assertOk();
+
+        $this->artisan('slug:install')->assertOk();
+        $this->artisan('slug:install --config')->assertOk();
     }
 }

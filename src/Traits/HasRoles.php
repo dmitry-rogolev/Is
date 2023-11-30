@@ -3,10 +3,10 @@
 namespace dmitryrogolev\Is\Traits;
 
 use dmitryrogolev\Is\Facades\Is;
-use dmitryrogolev\Is\Helper;
 use dmitryrogolev\Slug\Facades\Slug;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Arr;
 
 /**
  * Функционал ролей.
@@ -55,10 +55,11 @@ trait HasRoles
      */
     public function attachRole(...$role): bool
     {
+        $roles    = Arr::flatten($role);
         $attached = false;
 
-        foreach (Helper::toArray($role) as $value) {
-            if (($model = Is::find($value)) && ! Is::has($model, $this)) {
+        foreach ($roles as $v) {
+            if (($model = Is::find($v)) && ! Is::has($model, $this)) {
                 $this->roles()->attach($model);
                 $attached = true;
             }
@@ -79,15 +80,15 @@ trait HasRoles
      */
     public function detachRole(...$role): bool
     {
-        $roles    = Helper::toArray($role);
+        $roles    = Arr::flatten($role);
         $detached = false;
 
         if (empty($roles)) {
             return $this->detachAllRoles();
         }
 
-        foreach ($roles as $value) {
-            if (($model = Is::find($value)) && Is::has($model, $this)) {
+        foreach ($roles as $v) {
+            if (($model = Is::find($v)) && Is::has($model, $this)) {
                 $this->roles()->detach($model);
                 $detached = true;
             }
@@ -141,8 +142,10 @@ trait HasRoles
      */
     public function hasOneRole(...$role): bool
     {
-        foreach (Helper::toArray($role) as $value) {
-            if (Is::has($value, $this)) {
+        $roles = Arr::flatten($role);
+
+        foreach ($roles as $v) {
+            if (Is::has($v, $this)) {
                 return true;
             }
         }
@@ -158,8 +161,10 @@ trait HasRoles
      */
     public function hasAllRoles(...$role): bool
     {
-        foreach (Helper::toArray($role) as $value) {
-            if (! Is::has($value, $this)) {
+        $roles = Arr::flatten($role);
+
+        foreach ($roles as $v) {
+            if (! Is::has($v, $this)) {
                 return false;
             }
         }

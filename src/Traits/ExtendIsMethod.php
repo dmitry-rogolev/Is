@@ -2,12 +2,13 @@
 
 namespace dmitryrogolev\Is\Traits;
 
+use dmitryrogolev\Is\Facades\Is;
 use Illuminate\Support\Collection;
 
 /**
  * Расширение метода "is", добавляющий ему проверку наличия роли у модели.
  */
-trait ExtendIsMethod 
+trait ExtendIsMethod
 {
     /**
      * Определите, имеют ли две модели одинаковый идентификатор и принадлежат ли они к одной таблице.
@@ -21,11 +22,11 @@ trait ExtendIsMethod
     public function is($model, bool $all = false): bool
     {
         if (
-            config('is.uses.extend_is_method') && (
-                is_int($model) 
-                || is_string($model) 
-                || $model instanceof (config('is.models.role')) 
-                || is_array($model) 
+            Is::usesExtendIsMethod() && (
+                is_int($model)
+                || is_string($model)
+                || $model instanceof (Is::roleModel())
+                || is_array($model)
                 || $model instanceof Collection
             )
         ) {
