@@ -2,20 +2,18 @@
 
 namespace dmitryrogolev\Is\Models;
 
+use dmitryrogolev\Contracts\Sluggable;
 use dmitryrogolev\Is\Contracts\RoleHasRelations as ContractRoleHasRelations;
-use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Traits\RoleHasRelations;
-use dmitryrogolev\Slug\Contracts\Sluggable;
-use dmitryrogolev\Slug\Facades\Slug;
-use dmitryrogolev\Slug\Traits\HasSlug;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use dmitryrogolev\Traits\HasSlug;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Модель роли.
  */
-abstract class Model extends Database implements Sluggable, ContractRoleHasRelations
+abstract class Model extends Database implements ContractRoleHasRelations, Sluggable
 {
     use HasFactory, HasSlug, RoleHasRelations;
 
@@ -33,8 +31,21 @@ abstract class Model extends Database implements Sluggable, ContractRoleHasRelat
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->setTable(Is::rolesTable());
-        array_push($this->fillable, Slug::default());
+        $this->setTable(config('is.tables.roles'));
+        array_push($this->fillable, $this->getSlugName());
+    }
+
+    /**
+     * Возвращает столбцы, которые содержат уникальные данные.
+     *
+     * @return array<int, string>
+     */
+    public function uniqueKeys()
+    {
+        return [
+            'name',
+            $this->getSlugName(),
+        ];
     }
 
     /**
@@ -44,21 +55,21 @@ abstract class Model extends Database implements Sluggable, ContractRoleHasRelat
      */
     protected static function newFactory()
     {
-        return Is::roleFactory()::new();
+        return config('is.factories.role')::new();
     }
 }
 
-if (Is::usesUuid() && Is::usesSoftDeletes()) {
+if (config('is.uses.uuid') && config('is.uses.soft_deletes')) {
     class Role extends Model
     {
         use HasUuids, SoftDeletes;
     }
-} else if (Is::usesUuid()) {
+} elseif (config('is.uses.uuid')) {
     class Role extends Model
     {
         use HasUuids;
     }
-} else if (Is::usesSoftDeletes()) {
+} elseif (config('is.uses.soft_deletes')) {
     class Role extends Model
     {
         use SoftDeletes;
@@ -66,6 +77,5 @@ if (Is::usesUuid() && Is::usesSoftDeletes()) {
 } else {
     class Role extends Model
     {
-
     }
 }

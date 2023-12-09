@@ -2,12 +2,11 @@
 
 namespace dmitryrogolev\Is\Models;
 
-use dmitryrogolev\Is\Facades\Is;
 use Illuminate\Database\Eloquent\Relations\MorphPivot;
 
 /**
  * Промежуточная модель полиморфного отношения многие-ко-многим.
- * 
+ *
  * @link https://clck.ru/36JLPn Полиморфные отношения многие-ко-многим
  */
 class Roleable extends MorphPivot
@@ -16,8 +15,8 @@ class Roleable extends MorphPivot
     {
         parent::__construct($attributes);
 
-        $this->setConnection(Is::connection());
-        $this->setTable(Is::roleablesTable());
-        $this->timestamps = Is::usesTimestamps();
+        $this->setConnection(config('is.connection'));
+        $this->setTable(config('is.tables.roleables'));
+        $this->timestamps = config('is.uses.timestamps');
     }
 }

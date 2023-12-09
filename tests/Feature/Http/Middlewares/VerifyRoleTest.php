@@ -5,8 +5,6 @@ namespace dmitryrogolev\Is\Tests\Feature\Http\Middlewares;
 use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Тестируем посредника, проверяющего наличие роли у пользователя.
@@ -17,8 +15,6 @@ class VerifyRoleTest extends TestCase
 
     /**
      * Можно ли посетить страницу без аутентификации, но с необходимой ролью?
-     *
-     * @return void
      */
     public function test_without_auth(): void
     {
@@ -34,8 +30,6 @@ class VerifyRoleTest extends TestCase
 
     /**
      * Можно ли посетить страницу с аутентификацией и со случайной ролью?
-     *
-     * @return void
      */
     public function test_with_some_role(): void
     {
@@ -51,8 +45,6 @@ class VerifyRoleTest extends TestCase
 
     /**
      * Можно ли посетить страницу с необходимой ролью?
-     *
-     * @return void
      */
     public function test_with_role(): void
     {
@@ -68,8 +60,6 @@ class VerifyRoleTest extends TestCase
 
     /**
      * Можно ли посетить страницу, имея одну из требуемых ролей?
-     *
-     * @return void
      */
     public function test_with_several_roles(): void
     {
@@ -85,8 +75,6 @@ class VerifyRoleTest extends TestCase
 
     /**
      * Можно ли посетить страницу с меньшим уровнем?
-     *
-     * @return void
      */
     public function test_with_lower_level(): void
     {
@@ -103,8 +91,6 @@ class VerifyRoleTest extends TestCase
 
     /**
      * Можно ли посетить страницу с большим уровнем?
-     *
-     * @return void
      */
     public function test_with_large_level(): void
     {

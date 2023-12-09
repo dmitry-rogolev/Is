@@ -12,10 +12,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-                // Сначала добавляем роли.
+            // Сначала добавляем роли.
             \dmitryrogolev\Is\Database\Seeders\RoleSeeder::class,
 
-                // Потом создаем пользователей и связываем их с ролями.
+            // Потом создаем пользователей и связываем их с ролями.
             \dmitryrogolev\Is\Tests\Database\Seeders\UserSeeder::class,
         ]);
     }

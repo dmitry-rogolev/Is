@@ -1,6 +1,5 @@
 <?php
 
-use dmitryrogolev\Is\Facades\Is;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,27 +14,29 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $table      = Is::rolesTable();
-        $connection = Is::connection();
+        $table = config('is.tables.roles');
+        $connection = config('is.connection');
 
         if (! Schema::connection($connection)->hasTable($table)) {
             Schema::connection($connection)->create($table, function (Blueprint $table) {
-
-                Is::usesUuid() ? $table->uuid(Is::primaryKey()) : $table->id(Is::primaryKey());
+                if (config('is.uses.uuid')) {
+                    $table->uuid(config('is.primary_key'));
+                } else {
+                    $table->id(config('is.primary_key'));
+                }
 
                 $table->string('name', 255)->unique();
                 $table->string('slug', 255)->unique();
                 $table->text('description')->nullable();
                 $table->tinyInteger('level')->default(0);
 
-                if (Is::usesTimestamps()) {
+                if (config('is.uses.timestamps')) {
                     $table->timestamps();
                 }
 
-                if (Is::usesSoftDeletes()) {
+                if (config('is.uses.soft_deletes')) {
                     $table->softDeletes();
                 }
-
             });
         }
     }
@@ -45,6 +46,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::connection(Is::connection())->dropIfExists(Is::rolesTable());
+        Schema::connection(config('is.connection'))->dropIfExists(config('is.tables.roles'));
     }
 };

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Http\Middlewares;
 
@@ -9,17 +9,12 @@ use Illuminate\Http\Request;
 /**
  * Посредник, проверяющий наличие роли у пользователя.
  */
-class VerifyRole 
+class VerifyRole
 {
-    /**
-     * @var \Illuminate\Contracts\Auth\Guard
-     */
     protected Guard $auth;
 
     /**
      * Создать новый экземпляр посредника.
-     *
-     * @param \Illuminate\Contracts\Auth\Guard $auth
      */
     public function __construct(Guard $auth)
     {
@@ -29,18 +24,14 @@ class VerifyRole
     /**
      * Обработать входящий запрос.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
-     * @param int|string $role
-     *
-     * @return mixed
+     * @param  int|string  $role
      */
-    public function handle(Request $request, \Closure $next, ...$role): mixed 
+    public function handle(Request $request, \Closure $next, ...$role): mixed
     {
         if ($this->auth->check() && $this->auth->user() instanceof Roleable && $this->auth->user()->hasRole($role)) {
             return $next($request);
         }
 
-        abort(403, sprintf("Доступ запрещен. Нет требуемой роли \"%s\".", join(',', $role)));
+        abort(403, sprintf('Доступ запрещен. Нет требуемой роли "%s".', implode(',', $role)));
     }
 }

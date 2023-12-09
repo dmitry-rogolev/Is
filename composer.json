@@ -26,14 +26,20 @@
         {
             "type": "vcs",
             "url": "git@github.com:dmitry-rogolev/Slug.git"
+        }, 
+        {
+            "type": "vcs",
+            "url": "git@github.com:dmitry-rogolev/Service.git"
         }
     ],
     "require": {
         "laravel/framework": "^10.30",
+        "dmitryrogolev/service": "^0.0.1",
         "dmitryrogolev/slug": "^0.0.1"
     },
     "require-dev": {
-        "orchestra/testbench": "^8.15"
+        "orchestra/testbench": "^8.15",
+        "laravel/pint": "^1.13"
     },
     "autoload": {
         "psr-4": {
@@ -47,8 +53,6 @@
     "autoload-dev": {
         "psr-4": {
             "dmitryrogolev\\Is\\Tests\\": "tests/",
-            "dmitryrogolev\\Is\\Tests\\Seeders\\": "tests/seeders/",
-            "dmitryrogolev\\Is\\Tests\\Database\\": "tests/database/",
             "dmitryrogolev\\Is\\Tests\\Database\\Migrations\\": "tests/database/migrations/",
             "dmitryrogolev\\Is\\Tests\\Database\\Factories\\": "tests/database/factories/",
             "dmitryrogolev\\Is\\Tests\\Database\\Seeders\\": "tests/database/seeders/"
@@ -64,6 +68,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "scripts": {
-        "test": "vendor/bin/phpunit"
+        "test": "vendor/bin/phpunit", 
+        "pint": "vendor/bin/pint"
     }
 }

@@ -12,20 +12,18 @@ trait ExtendIsMethod
 {
     /**
      * Определите, имеют ли две модели одинаковый идентификатор и принадлежат ли они к одной таблице.
-     * 
+     *
      * Если передать роль, то будет вызван метод hasRole, проверяющий наличие роли у модели.
      *
-     * @param int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection $model
-     * @param bool $all
-     * @return bool
+     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  $model
      */
     public function is($model, bool $all = false): bool
     {
         if (
-            Is::usesExtendIsMethod() && (
+            config('is.uses.extend_is_method') && (
                 is_int($model)
                 || is_string($model)
-                || $model instanceof (Is::roleModel())
+                || $model instanceof (config('is.models.role'))
                 || is_array($model)
                 || $model instanceof Collection
             )

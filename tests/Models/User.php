@@ -3,27 +3,26 @@
 namespace dmitryrogolev\Is\Tests\Models;
 
 use dmitryrogolev\Is\Contracts\Roleable;
-use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Models\Database;
 use dmitryrogolev\Is\Tests\Database\Factories\UserFactory;
 use dmitryrogolev\Is\Traits\HasRoles;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\Access\Authorizable;
 
 /**
- * Модель пользователя. 
+ * Модель пользователя.
  */
-abstract class BaseUser extends Database implements Roleable, AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
+abstract class BaseUser extends Database implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, Roleable
 {
-    use Authenticatable, Authorizable, CanResetPassword, MustVerifyEmail, HasFactory, HasRoles;
+    use Authenticatable, Authorizable, CanResetPassword, HasFactory, HasRoles, MustVerifyEmail;
 
     /**
      * Таблица БД, ассоциированная с моделью.
@@ -50,17 +49,17 @@ abstract class BaseUser extends Database implements Roleable, AuthenticatableCon
     }
 }
 
-if (Is::usesUuid() && Is::usesSoftDeletes()) {
+if (config('is.uses.uuid') && config('is.uses.soft_deletes')) {
     class User extends BaseUser
     {
         use HasUuids, SoftDeletes;
     }
-} else if (Is::usesUuid()) {
+} elseif (config('is.uses.uuid')) {
     class User extends BaseUser
     {
         use HasUuids;
     }
-} else if (Is::usesSoftDeletes()) {
+} elseif (config('is.uses.soft_deletes')) {
     class User extends BaseUser
     {
         use SoftDeletes;
@@ -68,6 +67,5 @@ if (Is::usesUuid() && Is::usesSoftDeletes()) {
 } else {
     class User extends BaseUser
     {
-
     }
 }

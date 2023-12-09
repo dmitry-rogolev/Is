@@ -5,7 +5,6 @@ namespace dmitryrogolev\Is\Providers;
 use dmitryrogolev\Is\Console\Commands\InstallCommand;
 use dmitryrogolev\Is\Http\Middlewares\VerifyLevel;
 use dmitryrogolev\Is\Http\Middlewares\VerifyRole;
-use dmitryrogolev\Is\Services\RoleService;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -15,15 +14,11 @@ class IsServiceProvider extends ServiceProvider
 {
     /**
      * Имя тега пакета.
-     *
-     * @var string
      */
     private string $packageTag = 'is';
 
     /**
      * Регистрация любых служб пакета.
-     * 
-     * @return void
      */
     public function register(): void
     {
@@ -31,13 +26,10 @@ class IsServiceProvider extends ServiceProvider
         $this->loadMigrations();
         $this->publishFiles();
         $this->registerCommands();
-        $this->registerServices();
     }
 
     /**
      * Загрузка любых служб пакета.
-     * 
-     * @return void
      */
     public function boot(): void
     {
@@ -53,56 +45,48 @@ class IsServiceProvider extends ServiceProvider
 
     /**
      * Объединяем конфигурацию пакета с конфигурацией приложения.
-     *
-     * @return void
      */
     private function mergeConfig(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../../config/is.php', 'is');
+        $this->mergeConfigFrom(__DIR__.'/../../config/is.php', 'is');
     }
 
     /**
      * Регистрируем миграции пакета.
-     *
-     * @return void
      */
     private function loadMigrations(): void
     {
         if (config('is.uses.migrations')) {
-            $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
+            $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
         }
     }
 
     /**
      * Публикуем файлы пакета.
-     *
-     * @return void
      */
     private function publishFiles(): void
     {
         $this->publishes([
-            __DIR__ . '/../../config/is.php' => config_path('is.php'),
-        ], $this->packageTag . '-config');
+            __DIR__.'/../../config/is.php' => config_path('is.php'),
+        ], $this->packageTag.'-config');
 
         $this->publishes([
-            __DIR__ . '/../../database/migrations' => database_path('migrations'),
-        ], $this->packageTag . '-migrations');
+            __DIR__.'/../../database/migrations' => database_path('migrations'),
+        ], $this->packageTag.'-migrations');
 
         $this->publishes([
-            __DIR__ . '/../../database/seeders/publish' => database_path('seeders'),
-        ], $this->packageTag . '-seeders');
+            __DIR__.'/../../database/seeders/publish' => database_path('seeders'),
+        ], $this->packageTag.'-seeders');
 
         $this->publishes([
-            __DIR__ . '/../../config/is.php' => config_path('is.php'),
-            __DIR__ . '/../../database/migrations' => database_path('migrations'),
-            __DIR__ . '/../../database/seeders/publish' => database_path('seeders'),
+            __DIR__.'/../../config/is.php' => config_path('is.php'),
+            __DIR__.'/../../database/migrations' => database_path('migrations'),
+            __DIR__.'/../../database/seeders/publish' => database_path('seeders'),
         ], $this->packageTag);
     }
 
     /**
      * Регистрируем сидеры.
-     *
-     * @return void
      */
     private function loadSeedsFrom(): void
     {
@@ -115,8 +99,6 @@ class IsServiceProvider extends ServiceProvider
 
     /**
      * Регистрируем директивы Blade.
-     *
-     * @return void
      */
     private function registerBladeExtensions(): void
     {
@@ -152,8 +134,6 @@ class IsServiceProvider extends ServiceProvider
 
     /**
      * Регистрируем команды.
-     *
-     * @return void
      */
     private function registerCommands(): void
     {
@@ -162,16 +142,5 @@ class IsServiceProvider extends ServiceProvider
                 InstallCommand::class,
             ]);
         }
-    }
-
-    /**
-     * Регистрируем сервисы.
-     *
-     * @return void
-     */
-    private function registerServices(): void
-    {
-        $this->app->singleton(RoleService::class);
-        $this->app->alias(RoleService::class, 'role');
     }
 }

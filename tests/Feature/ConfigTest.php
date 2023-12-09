@@ -12,8 +12,6 @@ class ConfigTest extends TestCase
 {
     /**
      * Есть ли подключение к базе данных?
-     *
-     * @return void
      */
     public function test_connection(): void
     {
@@ -27,8 +25,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация имени таблицы ролей?
-     *
-     * @return void
      */
     public function test_tables_roles(): void
     {
@@ -38,8 +34,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация имени промежуточной таблицы ролей?
-     *
-     * @return void
      */
     public function test_tables_roleables(): void
     {
@@ -49,8 +43,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация имени полиморфной связи промежуточной таблицы?
-     *
-     * @return void
      */
     public function test_relations_roleable(): void
     {
@@ -60,8 +52,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация имени первичного ключа?
-     *
-     * @return void
      */
     public function test_primary_key(): void
     {
@@ -71,8 +61,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация имени модели роли?
-     *
-     * @return void
      */
     public function test_models_role(): void
     {
@@ -81,8 +69,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация имени модели промежуточной таблицы?
-     *
-     * @return void
      */
     public function test_models_roleable(): void
     {
@@ -91,8 +77,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация имени модели пользователя?
-     *
-     * @return void
      */
     public function test_models_user(): void
     {
@@ -101,8 +85,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация имени фабрики модели роли?
-     *
-     * @return void
      */
     public function test_factories_role(): void
     {
@@ -111,8 +93,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация имени сидера модели роли?
-     *
-     * @return void
      */
     public function test_seeders_role(): void
     {
@@ -120,9 +100,16 @@ class ConfigTest extends TestCase
     }
 
     /**
+     * Есть ли конфигурация разделителя строк?
+     */
+    public function test_separator(): void
+    {
+        $this->assertTrue(is_string(config('is.separator')));
+        $this->assertNotEmpty(config('is.separator'));
+    }
+
+    /**
      * Есть ли конфигурация флага использования UUID?
-     *
-     * @return void
      */
     public function test_uses_uuid(): void
     {
@@ -131,8 +118,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация флага программного удаления моделей?
-     *
-     * @return void
      */
     public function test_uses_soft_deletes(): void
     {
@@ -141,8 +126,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация флага временных меток моделей?
-     *
-     * @return void
      */
     public function test_uses_timestamps(): void
     {
@@ -151,8 +134,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация флага регистрации миграций?
-     *
-     * @return void
      */
     public function test_uses_migrations(): void
     {
@@ -161,8 +142,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация флага регистрации сидеров?
-     *
-     * @return void
      */
     public function test_uses_seeders(): void
     {
@@ -171,8 +150,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация флага регистрации директив blade'а?
-     *
-     * @return void
      */
     public function test_uses_blade(): void
     {
@@ -181,8 +158,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация флага регистрации посредников?
-     *
-     * @return void
      */
     public function test_uses_middlewares(): void
     {
@@ -191,8 +166,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация флага подгрузки отношений после обновления?
-     *
-     * @return void
      */
     public function test_uses_load_on_update(): void
     {
@@ -201,8 +174,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация флага расширения метода "is"?
-     *
-     * @return void
      */
     public function test_uses_extend_is_method(): void
     {
@@ -211,8 +182,6 @@ class ConfigTest extends TestCase
 
     /**
      * Есть ли конфигурация флага использования иерархии ролей?
-     *
-     * @return void
      */
     public function test_uses_levels(): void
     {

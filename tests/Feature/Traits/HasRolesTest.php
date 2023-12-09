@@ -7,8 +7,6 @@ use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;
 use dmitryrogolev\Is\Traits\ExtendIsMethod;
 use dmitryrogolev\Is\Traits\HasLevels;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Тестируем функционал ролей.
@@ -19,33 +17,29 @@ class HasRolesTest extends TestCase
 
     /**
      * Есть ли метод, возвращающий отношений модели с ролями?
-     *
-     * @return void
      */
     public function test_roles(): void
     {
         // Проверяем наличие метода связи модели с ролями.
-        $user  = $this->getUserWithRoles();
-        $roles = $user->roles()->get()->pluck(Is::primaryKey());
-        $this->assertEquals($roles, $user->roles->pluck(Is::primaryKey()));
+        $user = $this->getUserWithRoles();
+        $roles = $user->roles()->get()->pluck(config('is.primary_key'));
+        $this->assertEquals($roles, $user->roles->pluck(config('is.primary_key')));
 
         // Проверяем наличие временных меток у промежуточной модели ролей.
-        $createdAtColumn = app(Is::roleableModel())->getCreatedAtColumn();
-        $updatedAtColumn = app(Is::roleableModel())->getUpdatedAtColumn();
+        $createdAtColumn = app(config('is.models.roleable'))->getCreatedAtColumn();
+        $updatedAtColumn = app(config('is.models.roleable'))->getUpdatedAtColumn();
 
-        Is::usesTimestamps(true);
+        config(['is.uses.timestamps' => true]);
         $role = $user->roles()->first();
         $this->assertTrue($role->pivot->{$createdAtColumn} && $role->pivot->{$updatedAtColumn});
 
-        Is::usesTimestamps(false);
+        config(['is.uses.timestamps' => false]);
         $role = $user->roles()->first();
         $this->assertTrue(! $role->pivot->{$createdAtColumn} && ! $role->pivot->{$updatedAtColumn});
     }
 
     /**
      * Есть ли метод, возвращающий коллекцию ролей модели?
-     *
-     * @return void
      */
     public function test_get_roles(): void
     {
@@ -60,15 +54,13 @@ class HasRolesTest extends TestCase
         Is::usesLevels(false);
         $user = $this->getUserWithRoles();
         $this->assertEquals(
-            $user->roles->pluck(Is::primaryKey()),
-            $user->getRoles()->pluck(Is::primaryKey()),
+            $user->roles->pluck(config('is.primary_key')),
+            $user->getRoles()->pluck(config('is.primary_key')),
         );
     }
 
     /**
      * Есть ли метод, подгружающий отношение модели с ролями?
-     *
-     * @return void
      */
     public function test_load_roles(): void
     {
@@ -83,8 +75,6 @@ class HasRolesTest extends TestCase
 
     /**
      * Есть ли метод, присоединяющий роль к модели?
-     *
-     * @return void
      */
     public function test_attach_role(): void
     {
@@ -116,8 +106,6 @@ class HasRolesTest extends TestCase
 
     /**
      * Есть ли метод, отсоединяющий роль?
-     *
-     * @return void
      */
     public function test_detach_role(): void
     {
@@ -163,8 +151,6 @@ class HasRolesTest extends TestCase
 
     /**
      * Есть ли метод, отсоединяющий все роли?
-     *
-     * @return void
      */
     public function test_detach_all_roles(): void
     {
@@ -188,8 +174,6 @@ class HasRolesTest extends TestCase
 
     /**
      * Есть ли метод, синхронизирующий роли?
-     *
-     * @return void
      */
     public function test_sync_roles(): void
     {
@@ -208,13 +192,11 @@ class HasRolesTest extends TestCase
         Is::usesLevels(false);
         $roles = Is::generate(3);
         $user->syncRoles($roles);
-        $this->assertEquals($roles->pluck(Is::primaryKey()), $user->getRoles()->pluck(Is::primaryKey()));
+        $this->assertEquals($roles->pluck(config('is.primary_key')), $user->getRoles()->pluck(config('is.primary_key')));
     }
 
     /**
      * Есть ли метод, проверяющий наличие хотябы одной переданной роли?
-     *
-     * @return void
      */
     public function test_has_one_role(): void
     {
@@ -238,8 +220,6 @@ class HasRolesTest extends TestCase
 
     /**
      * Есть ли метод, проверяющий наличие всех переданных ролей?
-     *
-     * @return void
      */
     public function test_has_all_roles(): void
     {
@@ -248,7 +228,7 @@ class HasRolesTest extends TestCase
 
         // Включаем иерархию ролей.
         Is::usesLevels(true);
-        $user   = $this->getUser();
+        $user = $this->getUser();
         $level1 = Is::generate(['level' => 1]);
         $level2 = Is::generate(['level' => 2]);
         $level3 = Is::generate(['level' => 3]);
@@ -265,8 +245,6 @@ class HasRolesTest extends TestCase
 
     /**
      * Есть ли метод, проверяющий наличие ролей?
-     *
-     * @return void
      */
     public function test_has_role(): void
     {
@@ -310,8 +288,6 @@ class HasRolesTest extends TestCase
 
     /**
      * Есть ли магический метод, проверяющий наличие роли по его slug'у?
-     *
-     * @return void
      */
     public function test_call_magic_is_role(): void
     {
@@ -323,28 +299,26 @@ class HasRolesTest extends TestCase
         $level1 = Is::generate(['level' => 1]);
         $level2 = Is::generate(['level' => 2]);
         $level3 = Is::generate(['level' => 3]);
-        $user   = $this->getUser();
+        $user = $this->getUser();
         $user->attachRole($level2);
-        $this->assertTrue($user->{'is' . ucfirst($level2->slug)}());
-        $this->assertTrue($user->{'is' . ucfirst($level1->slug)}());
-        $this->assertFalse($user->{'is' . ucfirst($level3->slug)}());
+        $this->assertTrue($user->{'is'.ucfirst($level2->slug)}());
+        $this->assertTrue($user->{'is'.ucfirst($level1->slug)}());
+        $this->assertFalse($user->{'is'.ucfirst($level3->slug)}());
 
         // Отключаем иерархию ролей.
         Is::usesLevels(false);
         $role = Is::generate();
         $user->attachRole($role);
-        $this->assertTrue($user->{'is' . ucfirst($role->slug)}());
-        $this->assertFalse($user->{'is' . ucfirst(Is::generate()->slug)}());
+        $this->assertTrue($user->{'is'.ucfirst($role->slug)}());
+        $this->assertFalse($user->{'is'.ucfirst(Is::generate()->slug)}());
     }
 
     /**
      * Подключены ли трейты согласно конфигурации?
-     *
-     * @return void
      */
     public function test_uses_traits(): void
     {
-        $traits = collect(class_uses_recursive(app(Is::userModel())));
+        $traits = collect(class_uses_recursive(app(config('is.models.user'))));
 
         $this->assertTrue($traits->contains(HasLevels::class));
         $this->assertTrue($traits->contains(ExtendIsMethod::class));
@@ -352,8 +326,6 @@ class HasRolesTest extends TestCase
 
     /**
      * Есть ли метод, возвращающий роль с наибольшим уровнем?
-     *
-     * @return void
      */
     public function test_role(): void
     {
@@ -374,8 +346,6 @@ class HasRolesTest extends TestCase
 
     /**
      * Есть ли метод, возвращающий наибольший уровень ролей, привязанных к модели?
-     *
-     * @return void
      */
     public function test_level(): void
     {
@@ -395,8 +365,6 @@ class HasRolesTest extends TestCase
 
     /**
      * Есть ли метод, расширяющий метод "is"?
-     *
-     * @return void
      */
     public function test_is(): void
     {
@@ -409,7 +377,7 @@ class HasRolesTest extends TestCase
         // Включаем расширение метода "is" модели Eloquent.
         Is::usesExtendIsMethod(true);
 
-        $user   = $this->getUser();
+        $user = $this->getUser();
         $level1 = Is::generate(['level' => 1]);
         $level2 = Is::generate(['level' => 2]);
         $level3 = Is::generate(['level' => 3]);

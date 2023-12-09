@@ -2,14 +2,25 @@
 
 namespace dmitryrogolev\Is\Tests;
 
-use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Providers\IsServiceProvider;
-use dmitryrogolev\Slug\Providers\SlugServiceProvider;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
+    /**
+     * Количество выполненных запросов к БД.
+     */
+    protected int $queryExecutedCount = 0;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->registerListeners();
+    }
+
     /**
      * Получить поставщиков пакета.
      *
@@ -19,7 +30,6 @@ class TestCase extends \Orchestra\Testbench\TestCase
     protected function getPackageProviders($app): array
     {
         return [
-            SlugServiceProvider::class,
             IsServiceProvider::class,
         ];
     }
@@ -32,47 +42,55 @@ class TestCase extends \Orchestra\Testbench\TestCase
      */
     protected function defineRoutes($router)
     {
-        $router->middleware('web')->group(__DIR__ . '/routes/web.php');
+        $router->middleware('web')->group(__DIR__.'/routes/web.php');
     }
 
     /**
-     * Возвращает пользователя, который относится к множеству ролей.
-     *
-     * @param int $count
-     * @return \Illuminate\Database\Eloquent\Model
+     * Возвращает сгенерированную с помощью фабрики модель.
      */
-    protected function getUserWithRoles(int $count = 3): Model
+    protected function generate(string $class, array|int|bool|null $count = null, array|bool $state = [], bool $create = true): Model|Collection
     {
-        $roles = $this->getRole($count);
-        $user  = $this->getUser();
-        $roles->each(fn ($item) => $user->roles()->attach($item));
+        if (is_bool($state)) {
+            $create = $state;
+            $state = [];
+        }
 
-        return $user;
+        if (is_array($count)) {
+            $state = $count;
+            $count = null;
+        }
+
+        if (is_bool($count)) {
+            $create = $count;
+            $count = null;
+        }
+
+        $factory = $class::factory($count, $state);
+
+        return $create ? $factory->create() : $factory->make();
     }
 
     /**
-     * Возвращает случайно сгенерированного пользователя.
-     *
-     * @param int $count
-     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection
+     * Зарегистрировать слушатели событий.
      */
-    protected function getUser(int $count = 1): Model|Collection
+    protected function registerListeners(): void
     {
-        $factory = Is::userModel()::factory();
-
-        return $count > 1 ? $factory->count($count)->create() : $factory->create();
+        DB::listen(fn () => $this->queryExecutedCount++);
     }
 
     /**
-     * Возвращает случайно сгенерированную роль.
-     *
-     * @param int $count
-     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection
+     * Сбросить количество выполненных запросов к БД.
      */
-    protected function getRole(int $count = 1): Model|Collection
+    protected function resetQueryExecutedCount(): void
     {
-        $factory = Is::factory();
+        $this->queryExecutedCount = 0;
+    }
 
-        return $count > 1 ? $factory->count($count)->create() : $factory->create();
+    /**
+     * Подтвердить количество выполненных запросов к БД.
+     */
+    protected function assertQueryExecutedCount(int $expectedCount, ?string $message = ''): void
+    {
+        $this->assertEquals($expectedCount, $this->queryExecutedCount, $message);
     }
 }

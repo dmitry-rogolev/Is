@@ -3,7 +3,7 @@
 namespace dmitryrogolev\Is\Services;
 
 use dmitryrogolev\Is\Contracts\Roleable;
-use dmitryrogolev\Is\Traits\HasConfig;
+use dmitryrogolev\Services\Service;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,183 +12,136 @@ use Illuminate\Database\Eloquent\Model;
  */
 class RoleService extends Service
 {
-    use HasConfig;
-
     public function __construct()
     {
+        parent::__construct();
+
         $this->setModel(config('is.models.role'));
         $this->setSeeder(config('is.seeders.role'));
-        $this->setFactory(config('is.factories.role'));
     }
 
-    /**
-     * Возвращает все модели.
-     *
-     * @param \dmitryrogolev\Is\Contracts\Roleable $roleable
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function index(Roleable $roleable = null): Collection
-    {
-        return $roleable ? $this->getAllRoles($roleable) : parent::index();
-    }
+    // /**
+    //  * Возвращает все модели.
+    //  */
+    // public function index(?Roleable $roleable = null): Collection
+    // {
+    //     return $roleable ? $this->getAllRoles($roleable) : parent::index();
+    // }
 
-    /**
-     * Возвращает все модели.
-     *
-     * @param \dmitryrogolev\Is\Contracts\Roleable $roleable
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function all(Roleable $roleable = null): Collection
-    {
-        return $this->index($roleable);
-    }
+    // /**
+    //  * Возвращает модель по ее идентификатору.
+    //  *
+    //  * @param  int|string|\Illuminate\Database\Eloquent\Model  $key
+    //  */
+    // public function show($key, ?Roleable $roleable = null): ?Model
+    // {
+    //     $role = $this->role($key);
 
-    /**
-     * Возвращает модель по ее идентификатору.
-     *
-     * @param int|string|\Illuminate\Database\Eloquent\Model $key
-     * @param \dmitryrogolev\Is\Contracts\Roleable $roleable
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function show($key, Roleable $roleable = null): Model|null
-    {
-        $role = $this->role($key);
+    //     if ($role && $roleable && ! $this->checkRole($roleable, $role)) {
+    //         return null;
+    //     }
 
-        if ($role && $roleable && ! $this->checkRole($roleable, $role)) {
-            return null;
-        }
+    //     return $role;
+    // }
 
-        return $role;
-    }
+    // /**
+    //  * Создать модель и сохранить ее в таблицу, если ее не существует.
+    //  */
+    // public function makeIfNotExists(array $attributes = []): ?Model
+    // {
+    //     $model = app($this->model);
 
-    /**
-     * Возвращает модель по ее идентификатору.
-     *
-     * @param int|string|\Illuminate\Database\Eloquent\Model $key
-     * @param \dmitryrogolev\Is\Contracts\Roleable $roleable
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function find($key, Roleable $roleable = null): Model|null
-    {
-        return $this->show($key, $roleable);
-    }
+    //     if (array_key_exists($model->getSlugName(), $attributes) && $this->has($attributes[$model->getSlugName()])) {
+    //         return null;
+    //     }
 
-    /**
-     * Создать модель и сохранить ее в таблицу, если ее не существует.
-     *
-     * @param array $attributes
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function makeIfNotExists(array $attributes = []): Model|null
-    {
-        $model = app($this->model);
+    //     return $this->make($attributes);
+    // }
 
-        if (array_key_exists($model->getSlugName(), $attributes) && $this->has($attributes[$model->getSlugName()])) {
-            return null;
-        }
+    // /**
+    //  * Создать модель и сохранить ее в таблицу, если ее не существует.
+    //  */
+    // public function storeIfNotExists(array $attributes = []): ?Model
+    // {
+    //     $model = app($this->model);
 
-        return $this->make($attributes);
-    }
+    //     if (array_key_exists($model->getSlugName(), $attributes) && $this->has($attributes[$model->getSlugName()])) {
+    //         return null;
+    //     }
 
-    /**
-     * Создать модель и сохранить ее в таблицу, если ее не существует.
-     *
-     * @param array $attributes
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function storeIfNotExists(array $attributes = []): Model|null
-    {
-        $model = app($this->model);
+    //     return $this->store($attributes);
+    // }
 
-        if (array_key_exists($model->getSlugName(), $attributes) && $this->has($attributes[$model->getSlugName()])) {
-            return null;
-        }
+    // /**
+    //  * Проверяет наличие роли у модели.
+    //  *
+    //  * @param  int|string|\Illuminate\Database\Eloquent\Model  $key
+    //  */
+    // public function has($key, ?Roleable $roleable = null): bool
+    // {
+    //     return (bool) $this->show($key, $roleable);
+    // }
 
-        return $this->store($attributes);
-    }
+    // /**
+    //  * Проверить наличие роли у модели.
+    //  *
+    //  * @param  int|string|\Illuminate\Database\Eloquent\Model  $role
+    //  */
+    // private function checkRole(Roleable $roleable, $role): bool
+    // {
+    //     if ($this->usesLevels()) {
+    //         return $this->checkLevel($roleable, $role);
+    //     }
 
-    /**
-     * Проверяет наличие роли у модели.
-     *
-     * @param int|string|\Illuminate\Database\Eloquent\Model $key
-     * @param \dmitryrogolev\Is\Contracts\Roleable $roleable
-     * @return bool
-     */
-    public function has($key, Roleable $roleable = null): bool
-    {
-        return (bool) $this->show($key, $roleable);
-    }
+    //     return $roleable->getRoles()->contains(
+    //         fn ($item) => $item->getKey() == $role
+    //         || $item->getSlug() == $role
+    //         || ($role instanceof ($this->model) && $item->is($role))
+    //     );
+    // }
 
-    /**
-     * Проверить наличие роли у модели.
-     *
-     * @param \dmitryrogolev\Is\Contracts\Roleable $roleable
-     * @param int|string|\Illuminate\Database\Eloquent\Model $role
-     * @return bool
-     */
-    private function checkRole(Roleable $roleable, $role): bool
-    {
-        if ($this->usesLevels()) {
-            return $this->checkLevel($roleable, $role);
-        }
+    // /**
+    //  * Проверить уровень доступа модели.
+    //  *
+    //  * @param  int|string|\Illuminate\Database\Eloquent\Model  $role
+    //  */
+    // private function checkLevel(Roleable $roleable, $role): bool
+    // {
+    //     if (! $this->usesLevels()) {
+    //         return $this->checkRole($roleable, $role);
+    //     }
 
-        return $roleable->getRoles()->contains(
-            fn ($item) =>
-            $item->getKey() == $role
-            || $item->getSlug() == $role
-            || ($role instanceof ($this->model) && $item->is($role))
-        );
-    }
+    //     if (is_null($role = $this->role($role))) {
+    //         return false;
+    //     }
 
-    /**
-     * Проверить уровень доступа модели.
-     *
-     * @param \dmitryrogolev\Is\Contracts\Roleable $roleable
-     * @param int|string|\Illuminate\Database\Eloquent\Model $role
-     * @return boolean
-     */
-    private function checkLevel(Roleable $roleable, $role): bool
-    {
-        if (! $this->usesLevels()) {
-            return $this->checkRole($roleable, $role);
-        }
+    //     return $roleable->level() >= $role->level;
+    // }
 
-        if (is_null($role = $this->role($role))) {
-            return false;
-        }
+    // /**
+    //  * Возвращает роль по идентификатору или slug'у.
+    //  *
+    //  * @param  int|string|\Illuminate\Database\Eloquent\Model  $key
+    //  */
+    // private function role($key): ?Model
+    // {
+    //     $role = $key;
 
-        return $roleable->level() >= $role->level;
-    }
+    //     if (is_int($key) || is_string($key)) {
+    //         $model = app($this->model);
+    //         $role = $this->model::where($model->getKeyName(), '=', $key)
+    //                 ->orWhere($model->getSlugName(), '=', $key)
+    //                 ->first();
+    //     }
 
-    /**
-     * Возвращает роль по идентификатору или slug'у.
-     *
-     * @param int|string|\Illuminate\Database\Eloquent\Model $key
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    private function role($key): Model|null
-    {
-        $role = $key;
+    //     return $role instanceof ($this->model) && $role->exists ? $role : null;
+    // }
 
-        if (is_int($key) || is_string($key)) {
-            $model = app($this->model);
-            $role  = $this->model
-                ::where($model->getKeyName(), '=', $key)
-                ->orWhere($model->getSlugName(), '=', $key)
-                ->first();
-        }
-
-        return $role instanceof ($this->model) && $role->exists ? $role : null;
-    }
-
-    /**
-     * Возвращает все роли модели.
-     *
-     * @param \dmitryrogolev\Is\Contracts\Roleable $roleable
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    private function getAllRoles(Roleable $roleable): Collection
-    {
-        return $this->usesLevels() ? $this->model::where('level', '<=', $roleable->level())->get() : $roleable->roles;
-    }
+    // /**
+    //  * Возвращает все роли модели.
+    //  */
+    // private function getAllRoles(Roleable $roleable): Collection
+    // {
+    //     return $this->usesLevels() ? $this->model::where('level', '<=', $roleable->level())->get() : $roleable->roles;
+    // }
 }

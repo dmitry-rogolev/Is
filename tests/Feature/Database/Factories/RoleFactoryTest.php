@@ -2,7 +2,6 @@
 
 namespace dmitryrogolev\Is\Tests\Feature\Database\Factories;
 
-use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Tests\TestCase;
 
 /**
@@ -12,12 +11,10 @@ class RoleFactoryTest extends TestCase
 {
     /**
      * Есть ли метод, возвращающий поля модели согласно конфигурации?
-     *
-     * @return void
      */
     public function test_definition(): void
     {
-        $state = app(Is::roleFactory())->definition();
+        $state = app(config('is.factories.role'))->definition();
 
         $hasFields = array_key_exists('name', $state)
             && array_key_exists('slug', $state)
@@ -29,13 +26,11 @@ class RoleFactoryTest extends TestCase
 
     /**
      * Создает ли фабрика модель?
-     *
-     * @return void
      */
     public function test_created(): void
     {
         $this->runLaravelMigrations();
 
-        $this->assertModelExists(app(Is::roleFactory())->create());
+        $this->assertModelExists(app(config('is.factories.role'))->create());
     }
 }

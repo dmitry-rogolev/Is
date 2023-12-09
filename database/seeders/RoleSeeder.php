@@ -20,8 +20,6 @@ class RoleSeeder extends Seeder
 
     /**
      * Возвращает роли.
-     *
-     * @return array
      */
     public function getRoles(): array
     {

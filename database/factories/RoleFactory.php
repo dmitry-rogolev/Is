@@ -2,8 +2,6 @@
 
 namespace dmitryrogolev\Is\Database\Factories;
 
-use dmitryrogolev\Is\Facades\Is;
-use dmitryrogolev\Slug\Facades\Slug;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -14,12 +12,13 @@ class RoleFactory extends Factory
     /**
      * Создаем фабрику и указываем имя модели.
      *
-     * @param mixed ...$parameters
+     * @param  mixed  ...$parameters
      */
     public function __construct(...$parameters)
     {
         parent::__construct(...$parameters);
-        $this->model = Is::roleModel();
+
+        $this->model = config('is.models.role');
     }
 
     /**
@@ -32,10 +31,10 @@ class RoleFactory extends Factory
         $name = fake()->unique()->word();
 
         return [
-            'name'        => ucfirst($name),
-            'slug'        => Slug::from($name),
-            'description' => ucfirst($name) . ' role',
-            'level'       => fake()->numberBetween(1, 9),
+            'name' => ucfirst($name),
+            'slug' => config('is.models.role')::toSlug($name),
+            'description' => ucfirst($name).' role',
+            'level' => fake()->numberBetween(1, 9),
         ];
     }
 }

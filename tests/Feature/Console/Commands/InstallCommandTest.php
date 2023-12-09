@@ -11,8 +11,6 @@ class InstallCommandTest extends TestCase
 {
     /**
      * Запускается ли команда?
-     *
-     * @return void
      */
     public function test_run(): void
     {
@@ -20,8 +18,5 @@ class InstallCommandTest extends TestCase
         $this->artisan('is:install --config')->assertOk();
         $this->artisan('is:install --migrations')->assertOk();
         $this->artisan('is:install --seeders')->assertOk();
-
-        $this->artisan('slug:install')->assertOk();
-        $this->artisan('slug:install --config')->assertOk();
     }
 }

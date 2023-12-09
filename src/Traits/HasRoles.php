@@ -13,24 +13,20 @@ use Illuminate\Support\Arr;
  */
 trait HasRoles
 {
-    use HasLevels, ExtendIsMethod;
+    use ExtendIsMethod, HasLevels;
 
     /**
      * Модель относится к множеству ролей.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
      */
     public function roles(): MorphToMany
     {
-        $query = $this->morphToMany(Is::roleModel(), Is::relationName())->using(Is::roleableModel());
+        $query = $this->morphToMany(config('is.models.role'), config('is.relations.roleable'))->using(config('is.models.roleable'));
 
-        return Is::usesTimestamps() ? $query->withTimestamps() : $query;
+        return config('is.uses.timestamps') ? $query->withTimestamps() : $query;
     }
 
     /**
      * Возвращает роли.
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getRoles(): Collection
     {
@@ -39,8 +35,6 @@ trait HasRoles
 
     /**
      * Подгружает отношение модели с ролями.
-     * 
-     * @return static
      */
     public function loadRoles(): static
     {
@@ -49,13 +43,12 @@ trait HasRoles
 
     /**
      * Присоединяет роль.
-     * 
-     * @param int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection ...$role
-     * @return bool
+     *
+     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  ...$role
      */
     public function attachRole(...$role): bool
     {
-        $roles    = Arr::flatten($role);
+        $roles = Arr::flatten($role);
         $attached = false;
 
         foreach ($roles as $v) {
@@ -74,13 +67,12 @@ trait HasRoles
 
     /**
      * Отсоединить роль.
-     * 
-     * @param int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection ...$role
-     * @return bool
+     *
+     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  ...$role
      */
     public function detachRole(...$role): bool
     {
-        $roles    = Arr::flatten($role);
+        $roles = Arr::flatten($role);
         $detached = false;
 
         if (empty($roles)) {
@@ -103,8 +95,6 @@ trait HasRoles
 
     /**
      * Отсоединить все роли.
-     *
-     * @return bool
      */
     public function detachAllRoles(): bool
     {
@@ -125,8 +115,7 @@ trait HasRoles
     /**
      * Синхронизировать роли.
      *
-     * @param int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection ...$roles
-     * @return void
+     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  ...$roles
      */
     public function syncRoles(...$roles): void
     {
@@ -137,8 +126,7 @@ trait HasRoles
     /**
      * Проверяет наличие хотябы одной роли из переданных.
      *
-     * @param int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection ...$role
-     * @return bool
+     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  ...$role
      */
     public function hasOneRole(...$role): bool
     {
@@ -156,8 +144,7 @@ trait HasRoles
     /**
      * Проверяет наличие всех переданных ролей.
      *
-     * @param int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection ...$role
-     * @return bool
+     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  ...$role
      */
     public function hasAllRoles(...$role): bool
     {
@@ -175,9 +162,8 @@ trait HasRoles
     /**
      * Проверяет наличие роли.
      *
-     * @param int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection $role
-     * @param bool $all Проверить наличие всех ролей?
-     * @return bool
+     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  $role
+     * @param  bool  $all Проверить наличие всех ролей?
      */
     public function hasRole($role, bool $all = false): bool
     {
@@ -199,16 +185,16 @@ trait HasRoles
 
     /**
      * Магический метод. Проверяет наличие роли по его slug'у.
-     * 
+     *
      * Пример вызова: isAdmin(), isUser().
      *
-     * @param string $method
-     * @return bool|null
+     * @param  string  $method
      */
-    protected function callMagicIsRole($method): bool|null
+    protected function callMagicIsRole($method): ?bool
     {
         if (str_starts_with($method, 'is')) {
             $slug = str($method)->after('is')->snake(Slug::separator())->toString();
+
             return $this->hasRole(Slug::from($slug));
         }
 

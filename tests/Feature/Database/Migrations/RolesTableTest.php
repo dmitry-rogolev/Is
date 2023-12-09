@@ -16,17 +16,15 @@ class RolesTableTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->migration = require __DIR__ . '/../../../../database/migrations/create_roles_table.php';
+        $this->migration = require __DIR__.'/../../../../database/migrations/create_roles_table.php';
     }
 
     /**
      * Запускается и откатывается ли миграция?
-     *
-     * @return void
      */
     public function test_up_down(): void
     {
-        $checkTable = fn () => Schema::connection(Is::connection())->hasTable(Is::rolesTable());
+        $checkTable = fn () => Schema::connection(config('is.connection'))->hasTable(config('is.tables.roles'));
 
         $this->migration->up();
         $this->assertTrue($checkTable());
@@ -37,59 +35,51 @@ class RolesTableTest extends TestCase
 
     /**
      * Есть ли идентификатор у таблицы?
-     *
-     * @return void
      */
     public function test_has_id(): void
     {
         $this->migration->up();
-        $this->assertTrue(Schema::connection(Is::connection())->hasColumn(Is::rolesTable(), Is::primaryKey()));
+        $this->assertTrue(Schema::connection(config('is.connection'))->hasColumn(config('is.tables.roles'), config('is.primary_key')));
     }
 
     /**
      * Есть ли поле "level" у таблицы?
-     *
-     * @return void
      */
     public function test_has_level(): void
     {
         $this->migration->up();
-        $this->assertTrue(Schema::connection(Is::connection())->hasColumn(Is::rolesTable(), 'level'));
+        $this->assertTrue(Schema::connection(config('is.connection'))->hasColumn(config('is.tables.roles'), 'level'));
     }
 
     /**
      * Есть ли временные метки у таблицы?
-     *
-     * @return void
      */
     public function test_has_timestamps(): void
     {
-        $hasCreatedAt = fn () => Schema::connection(Is::connection())
-            ->hasColumn(Is::rolesTable(), app(Is::roleModel())->getCreatedAtColumn());
-        $hasUpdatedAt = fn () => Schema::connection(Is::connection())
-            ->hasColumn(Is::rolesTable(), app(Is::roleModel())->getUpdatedAtColumn());
+        $hasCreatedAt = fn () => Schema::connection(config('is.connection'))
+            ->hasColumn(config('is.tables.roles'), app(config('is.models.role'))->getCreatedAtColumn());
+        $hasUpdatedAt = fn () => Schema::connection(config('is.connection'))
+            ->hasColumn(config('is.tables.roles'), app(config('is.models.role'))->getUpdatedAtColumn());
 
         // Включаем временные метки
-        Is::usesTimestamps(true);
+        config(['is.uses.timestamps' => true]);
         $this->migration->up();
         $this->assertTrue($hasCreatedAt() && $hasUpdatedAt());
         $this->migration->down();
 
         // Отключаем временные метки.
-        Is::usesTimestamps(false);
+        config(['is.uses.timestamps' => false]);
         $this->migration->up();
         $this->assertTrue(! $hasCreatedAt() && ! $hasUpdatedAt());
     }
 
     /**
      * Есть ли у таблицы поле программного удаления?
-     *
-     * @return void
      */
     public function test_has_deleted_at(): void
     {
-        $checkDeletedAt = fn () => Schema::connection(Is::connection())
-            ->hasColumn(Is::rolesTable(), app(Is::roleModel())->getDeletedAtColumn());
+        $checkDeletedAt = fn () => Schema::connection(config('is.connection'))
+            ->hasColumn(config('is.tables.roles'), app(config('is.models.role'))->getDeletedAtColumn());
 
         // Включаем программное удаление.
         Is::usesSoftDeletes(true);
