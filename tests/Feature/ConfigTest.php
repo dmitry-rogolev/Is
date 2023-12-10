@@ -3,13 +3,30 @@
 namespace dmitryrogolev\Is\Tests\Feature;
 
 use dmitryrogolev\Is\Tests\TestCase;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use ReflectionClass;
+use ReflectionMethod;
 
 /**
  * Тестируем параметры конфигурации.
  */
 class ConfigTest extends TestCase
 {
+    /**
+     * Совпадает ли количество тестов с количеством переменных конфигурации?
+     */
+    public function test_count(): void
+    {
+        $FUNCTION = __FUNCTION__;
+        $count = count(Arr::flatten(config('is')));
+        $methods = (new ReflectionClass($this))->getMethods(ReflectionMethod::IS_PUBLIC);
+        $methods = array_values(array_filter($methods, fn ($method) => str_starts_with($method->name, 'test_') && $method->name !== $FUNCTION
+        ));
+
+        $this->assertCount($count, $methods);
+    }
+
     /**
      * Есть ли подключение к базе данных?
      */
@@ -60,6 +77,15 @@ class ConfigTest extends TestCase
     }
 
     /**
+     * Есть ли конфигурация разделителя строк?
+     */
+    public function test_separator(): void
+    {
+        $this->assertTrue(is_string(config('is.separator')));
+        $this->assertNotEmpty(config('is.separator'));
+    }
+
+    /**
      * Есть ли конфигурация имени модели роли?
      */
     public function test_models_role(): void
@@ -97,15 +123,6 @@ class ConfigTest extends TestCase
     public function test_seeders_role(): void
     {
         $this->assertTrue(class_exists(config('is.seeders.role')));
-    }
-
-    /**
-     * Есть ли конфигурация разделителя строк?
-     */
-    public function test_separator(): void
-    {
-        $this->assertTrue(is_string(config('is.separator')));
-        $this->assertNotEmpty(config('is.separator'));
     }
 
     /**

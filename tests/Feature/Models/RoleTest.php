@@ -4,7 +4,6 @@ namespace dmitryrogolev\Is\Tests\Feature\Models;
 
 use dmitryrogolev\Contracts\Sluggable;
 use dmitryrogolev\Is\Contracts\RoleHasRelations;
-use dmitryrogolev\Is\Models\Database;
 use dmitryrogolev\Is\Tests\TestCase;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -15,27 +14,33 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class RoleTest extends TestCase
 {
     /**
-     * Расширяет ли модель базовый класс для всех моделей?
+     * Совпадает ли имя соединения с БД в модели с конфигом?
      */
-    public function test_extends_database(): void
+    public function test_connection(): void
     {
-        $this->assertInstanceOf(Database::class, app(config('is.models.role')));
+        $role = $this->generate(config('is.models.role'), false);
+
+        $this->assertEquals(config('is.connection'), $role->getConnectionName());
     }
 
     /**
-     * Реализует ли модель интерфейс отношений роли?
+     * Совпадает ли имя первичного ключа модели с конфигом?
      */
-    public function test_implements_role_has_relations(): void
+    public function test_primary_key(): void
     {
-        $this->assertInstanceOf(RoleHasRelations::class, app(config('is.models.role')));
+        $role = $this->generate(config('is.models.role'), false);
+
+        $this->assertEquals(config('is.primary_key'), $role->getKeyName());
     }
 
     /**
-     * Реализует ли модель интерфейс функционала, облегчающего работу с аттрибутом "slug"?
+     * Совпадает ли флаг включения временных меток в модели с конфигом?
      */
-    public function test_implements_sluggable(): void
+    public function test_timestamps(): void
     {
-        $this->assertInstanceOf(Sluggable::class, app(config('is.models.role')));
+        $role = $this->generate(config('is.models.role'), false);
+
+        $this->assertEquals(config('is.uses.timestamps'), $role->usesTimestamps());
     }
 
     /**
@@ -43,18 +48,37 @@ class RoleTest extends TestCase
      */
     public function test_table(): void
     {
-        $this->assertEquals(config('is.tables.roles'), app(config('is.models.role'))->getTable());
+        $role = $this->generate(config('is.models.role'), false);
+
+        $this->assertEquals(config('is.tables.roles'), $role->getTable());
     }
 
     /**
-     * Существует ли фабрика для модели?
+     * Реализует ли модель интерфейс отношений роли?
+     */
+    public function test_implements_role_has_relations(): void
+    {
+        $role = $this->generate(config('is.models.role'), false);
+
+        $this->assertInstanceOf(RoleHasRelations::class, $role);
+    }
+
+    /**
+     * Реализует ли модель интерфейс функционала, облегчающего работу с аттрибутом "slug"?
+     */
+    public function test_implements_sluggable(): void
+    {
+        $role = $this->generate(config('is.models.role'), false);
+
+        $this->assertInstanceOf(Sluggable::class, $role);
+    }
+
+    /**
+     * Совпадает ли фабрика модели с конфигурацией?
      */
     public function test_factory(): void
     {
-        $this->runLaravelMigrations();
-
-        $this->assertTrue(class_exists(config('is.factories.role')));
-        $this->assertModelExists(config('is.models.role')::factory()->create());
+        $this->assertEquals(config('is.factories.role'), config('is.models.role')::factory()::class);
     }
 
     /**
@@ -63,25 +87,23 @@ class RoleTest extends TestCase
      */
     public function test_uses_traits(): void
     {
-        $traits = collect(class_uses_recursive(app(config('is.models.role'))));
+        $role = app(config('is.models.role'));
+        $traits = collect(class_uses_recursive($role));
         $hasUuids = $traits->contains(HasUuids::class);
         $softDeletes = $traits->contains(SoftDeletes::class);
-        $hasTraits = function () use ($hasUuids, $softDeletes) {
-            if (config('is.uses.uuid') && config('is.uses.soft_deletes')) {
-                return $hasUuids && $softDeletes;
-            }
 
-            if (config('is.uses.uuid')) {
-                return $hasUuids && ! $softDeletes;
-            }
-
-            if (config('is.uses.soft_deletes')) {
-                return ! $hasUuids && $softDeletes;
-            }
-
-            return ! $hasUuids && ! $softDeletes;
-        };
-
-        $this->assertTrue($hasTraits());
+        if (config('is.uses.uuid') && config('is.uses.soft_deletes')) {
+            $this->assertTrue($hasUuids);
+            $this->assertTrue($softDeletes);
+        } elseif (config('is.uses.uuid')) {
+            $this->assertTrue($hasUuids);
+            $this->assertFalse($softDeletes);
+        } elseif (config('is.uses.soft_deletes')) {
+            $this->assertFalse($hasUuids);
+            $this->assertTrue($softDeletes);
+        } else {
+            $this->assertFalse($hasUuids);
+            $this->assertFalse($softDeletes);
+        }
     }
 }

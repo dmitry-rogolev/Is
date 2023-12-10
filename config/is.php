@@ -63,6 +63,13 @@ return [
     'primary_key' => env('IS_PRIMARY_KEY', 'id'),
 
     /**
+     * * Разделитель строк.
+     *
+     * Используется для формирования slug'а роли.
+     */
+    'separator' => env('IS_SEPARATOR', '.'),
+
+    /**
      * * Имена моделей, которые используются в пакете.
      */
     'models' => [
@@ -97,13 +104,6 @@ return [
         'role' => env('IS_SEEDERS_ROLE', \dmitryrogolev\Is\Database\Seeders\RoleSeeder::class),
 
     ],
-
-    /**
-     * * Разделитель строк.
-     *
-     * Используется для формирования slug'а роли.
-     */
-    'separator' => env('IS_SEPARATOR', '.'),
 
     /**
      * * Флаги

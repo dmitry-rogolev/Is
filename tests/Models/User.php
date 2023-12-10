@@ -3,26 +3,20 @@
 namespace dmitryrogolev\Is\Tests\Models;
 
 use dmitryrogolev\Is\Contracts\Roleable;
-use dmitryrogolev\Is\Models\Database;
 use dmitryrogolev\Is\Tests\Database\Factories\UserFactory;
 use dmitryrogolev\Is\Traits\HasRoles;
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Auth\MustVerifyEmail;
-use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\Access\Authorizable;
+use Illuminate\Foundation\Auth\User as Model;
 
 /**
  * Модель пользователя.
  */
-abstract class BaseUser extends Database implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, Roleable
+abstract class BaseUser extends Model implements Roleable
 {
-    use Authenticatable, Authorizable, CanResetPassword, HasFactory, HasRoles, MustVerifyEmail;
+    use HasFactory;
+    use HasRoles;
 
     /**
      * Таблица БД, ассоциированная с моделью.

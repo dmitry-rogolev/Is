@@ -43,9 +43,8 @@
     },
     "autoload": {
         "psr-4": {
+            "dmitryrogolev\\": "src/",
             "dmitryrogolev\\Is\\": "src/",
-            "dmitryrogolev\\Is\\Database\\": "database/",
-            "dmitryrogolev\\Is\\Database\\Migrations\\": "database/migrations/",
             "dmitryrogolev\\Is\\Database\\Factories\\": "database/factories/",
             "dmitryrogolev\\Is\\Database\\Seeders\\": "database/seeders/"
         }
@@ -53,9 +52,7 @@
     "autoload-dev": {
         "psr-4": {
             "dmitryrogolev\\Is\\Tests\\": "tests/",
-            "dmitryrogolev\\Is\\Tests\\Database\\Migrations\\": "tests/database/migrations/",
-            "dmitryrogolev\\Is\\Tests\\Database\\Factories\\": "tests/database/factories/",
-            "dmitryrogolev\\Is\\Tests\\Database\\Seeders\\": "tests/database/seeders/"
+            "dmitryrogolev\\Is\\Tests\\Database\\Factories\\": "tests/database/factories/"
         }
     },
     "extra": {

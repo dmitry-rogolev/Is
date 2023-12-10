@@ -5,7 +5,9 @@ namespace dmitryrogolev\Is\Tests;
 use dmitryrogolev\Is\Providers\IsServiceProvider;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -92,5 +94,13 @@ class TestCase extends \Orchestra\Testbench\TestCase
     protected function assertQueryExecutedCount(int $expectedCount, ?string $message = ''): void
     {
         $this->assertEquals($expectedCount, $this->queryExecutedCount, $message);
+    }
+
+    /**
+     * Возвращает построитель SQL запросов к БД.
+     */
+    protected function schema(): Builder
+    {
+        return Schema::connection(config('is.connection'));
     }
 }
