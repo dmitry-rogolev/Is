@@ -3,6 +3,7 @@
 namespace dmitryrogolev\Is\Tests\Feature\Database\Seeders;
 
 use dmitryrogolev\Is\Facades\Is;
+use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;
 
 /**
@@ -10,12 +11,27 @@ use dmitryrogolev\Is\Tests\TestCase;
  */
 class RoleSeederTest extends TestCase
 {
+    use RefreshDatabase;
+
+    /**
+     * Имя класса сидера.
+     */
+    protected string $roleSeeder;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->roleSeeder = config('is.seeders.role');
+    }
+
     /**
      * Есть ли метод, возвращающий роли?
      */
     public function test_get_roles(): void
     {
-        $checkFields = collect(app(config('is.seeders.role'))->getRoles())->every(
+        $roles = app($this->roleSeeder)->getRoles();
+        $checkFields = collect($roles)->every(
             fn ($item) => array_key_exists('name', $item)
             && array_key_exists('slug', $item)
             && array_key_exists('description', $item)
@@ -30,9 +46,9 @@ class RoleSeederTest extends TestCase
      */
     public function test_run(): void
     {
-        $this->runLaravelMigrations();
-        app(config('is.seeders.role'))->run();
+        app($this->roleSeeder)->run();
 
-        $this->assertCount(count(app(config('is.seeders.role'))->getRoles()), Is::all());
+        $count = count(app($this->roleSeeder)->getRoles());
+        $this->assertCount($count, Is::all());
     }
 }

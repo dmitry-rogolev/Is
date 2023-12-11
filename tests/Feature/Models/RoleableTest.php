@@ -11,19 +11,25 @@ use Illuminate\Database\Eloquent\Relations\MorphPivot;
 class RoleableTest extends TestCase
 {
     /**
+     * Имя модели.
+     */
+    protected string $model;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->model = config('is.models.roleable');
+    }
+
+    /**
      * Расширяет ли модель класс "\Illuminate\Database\Eloquent\Relations\MorphPivot"?
      */
     public function test_extends_morph_pivot(): void
     {
-        $this->assertInstanceOf(MorphPivot::class, app(config('is.models.roleable')));
-    }
+        $roleable = app($this->model);
 
-    /**
-     * Совпадает ли имя соединения с БД в модели с конфигом?
-     */
-    public function test_connection(): void
-    {
-        $this->assertEquals(config('is.connection'), app(config('is.models.roleable'))->getConnectionName());
+        $this->assertInstanceOf(MorphPivot::class, $roleable);
     }
 
     /**
@@ -31,7 +37,9 @@ class RoleableTest extends TestCase
      */
     public function test_table(): void
     {
-        $this->assertEquals(config('is.tables.roleables'), app(config('is.models.roleable'))->getTable());
+        $roleable = app($this->model);
+
+        $this->assertEquals(config('is.tables.roleables'), $roleable->getTable());
     }
 
     /**
@@ -39,6 +47,8 @@ class RoleableTest extends TestCase
      */
     public function test_timestamps(): void
     {
-        $this->assertEquals(config('is.uses.timestamps'), app(config('is.models.roleable'))->usesTimestamps());
+        $roleable = app($this->model);
+
+        $this->assertEquals(config('is.uses.timestamps'), $roleable->usesTimestamps());
     }
 }

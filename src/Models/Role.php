@@ -36,7 +36,6 @@ abstract class BaseRole extends Model implements ContractRoleHasRelations, Slugg
     {
         parent::__construct($attributes);
 
-        $this->setConnection(config('is.connection'));
         $this->setKeyName(config('is.primary_key'));
         $this->timestamps = config('is.uses.timestamps');
         $this->setTable(config('is.tables.roles'));
@@ -52,7 +51,6 @@ abstract class BaseRole extends Model implements ContractRoleHasRelations, Slugg
     public function uniqueKeys()
     {
         return [
-            'name',
             $this->getSlugName(),
         ];
     }

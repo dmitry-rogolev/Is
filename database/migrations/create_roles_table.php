@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -17,7 +16,6 @@ return new class extends Migration
 
     public function __construct()
     {
-        $this->connection = config('is.connection');
         $this->table = config('is.tables.roles');
     }
 
@@ -26,10 +24,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $exists = $this->schema()->hasTable($this->table);
+        $exists = Schema::hasTable($this->table);
 
         if (! $exists) {
-            $this->schema()->create($this->table, function (Blueprint $table) {
+            Schema::create($this->table, function (Blueprint $table) {
                 // Первичный ключ.
                 if (config('is.uses.uuid')) {
                     $table->uuid(config('is.primary_key'));
@@ -68,11 +66,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        $this->schema()->dropIfExists($this->table);
-    }
-
-    private function schema(): Builder
-    {
-        return Schema::connection($this->connection);
+        Schema::dropIfExists($this->table);
     }
 };

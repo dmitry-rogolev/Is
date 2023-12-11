@@ -32,6 +32,14 @@ abstract class BaseUser extends Model implements Roleable
      */
     protected $guarded = [];
 
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        $this->setKeyName(config('is.primary_key'));
+        $this->timestamps = config('is.uses.timestamps');
+    }
+
     /**
      * Создайте новый экземпляр фабрики для модели.
      *

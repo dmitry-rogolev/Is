@@ -15,7 +15,6 @@
     <env name="QUEUE_DRIVER" value="sync"/>
     <env name="DB_FOREIGN_KEYS" value="true" />
 
-    <env name="IS_CONNECTION" value="testing" />
     <env name="IS_TABLES_ROLES" value="roles" />
     <env name="IS_TABLES_ROLEABLES" value="roleables" />
     <env name="IS_RELATIONS_ROLEABLE" value="roleable" />

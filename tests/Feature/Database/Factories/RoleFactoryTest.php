@@ -2,6 +2,7 @@
 
 namespace dmitryrogolev\Is\Tests\Feature\Database\Factories;
 
+use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;
 
 /**
@@ -9,12 +10,26 @@ use dmitryrogolev\Is\Tests\TestCase;
  */
 class RoleFactoryTest extends TestCase
 {
+    use RefreshDatabase;
+
+    /**
+     * Имя фабрики ролей.
+     */
+    protected string $factory;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->factory = config('is.factories.role');
+    }
+
     /**
      * Есть ли метод, возвращающий поля модели согласно конфигурации?
      */
     public function test_definition(): void
     {
-        $state = app(config('is.factories.role'))->definition();
+        $state = app($this->factory)->definition();
 
         $hasFields = array_key_exists('name', $state)
             && array_key_exists('slug', $state)
@@ -29,8 +44,7 @@ class RoleFactoryTest extends TestCase
      */
     public function test_created(): void
     {
-        $this->runLaravelMigrations();
-
-        $this->assertModelExists(app(config('is.factories.role'))->create());
+        $role = app($this->factory)->create();
+        $this->assertModelExists($role);
     }
 }

@@ -16,7 +16,7 @@ interface Roleable extends Levelable
     public function roles(): MorphToMany;
 
     /**
-     * Возвращает роли.
+     * Возвращает коллекцию ролей.
      */
     public function getRoles(): Collection;
 
@@ -26,11 +26,11 @@ interface Roleable extends Levelable
     public function loadRoles(): static;
 
     /**
-     * Присоединяет роль.
+     * Присоединяет роль(-и) к модели.
      *
-     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  ...$role
+     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role
      */
-    public function attachRole(...$role): bool;
+    public function attachRole(mixed ...$role): bool;
 
     /**
      * Отсоединить роль.

@@ -4,7 +4,6 @@ namespace dmitryrogolev\Is\Tests\Feature;
 
 use dmitryrogolev\Is\Tests\TestCase;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -21,23 +20,11 @@ class ConfigTest extends TestCase
         $FUNCTION = __FUNCTION__;
         $count = count(Arr::flatten(config('is')));
         $methods = (new ReflectionClass($this))->getMethods(ReflectionMethod::IS_PUBLIC);
-        $methods = array_values(array_filter($methods, fn ($method) => str_starts_with($method->name, 'test_') && $method->name !== $FUNCTION
+        $methods = array_values(array_filter($methods,
+            fn ($method) => str_starts_with($method->name, 'test_') && $method->name !== $FUNCTION
         ));
 
         $this->assertCount($count, $methods);
-    }
-
-    /**
-     * Есть ли подключение к базе данных?
-     */
-    public function test_connection(): void
-    {
-        if (! config('is.connection')) {
-            $this->markTestSkipped('Отсутствует конфигурация "is.connection"');
-        }
-
-        $result = DB::connection(config('is.connection'))->select('select "test" as test');
-        $this->assertEquals('test', $result[0]->test);
     }
 
     /**

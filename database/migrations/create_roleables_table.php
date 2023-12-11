@@ -12,18 +12,31 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
+     * Имя таблицы.
+     */
+    protected string $table;
+
+    public function __construct()
+    {
+        $this->table = config('is.tables.roleables');
+    }
+
+    /**
      * Запустить миграцию
      */
     public function up(): void
     {
-        $table = config('is.tables.roleables');
-        $connection = config('is.connection');
+        $exists = Schema::hasTable($this->table);
 
-        if (! Schema::connection($connection)->hasTable($table)) {
-            Schema::connection($connection)->create($table, function (Blueprint $table) {
+        if (! $exists) {
+            Schema::create($this->table, function (Blueprint $table) {
+                // Внешний ключ роли.
                 $table->foreignIdFor(config('is.models.role'));
+
+                // Внешний ключ модели, связанной с ролями.
                 $table->morphs(config('is.relations.roleable'));
 
+                // Временные метки.
                 if (config('is.uses.timestamps')) {
                     $table->timestamps();
                 }
@@ -36,6 +49,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::connection(config('is.connection'))->dropIfExists(config('is.tables.roleables'));
+        Schema::dropIfExists($this->table);
     }
 };

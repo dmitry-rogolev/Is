@@ -3,6 +3,7 @@
 namespace dmitryrogolev\Is\Tests\Feature\Database\Migrations;
 
 use dmitryrogolev\Is\Tests\TestCase;
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -10,12 +11,46 @@ use Illuminate\Support\Facades\Schema;
  */
 class RoleablesTableTest extends TestCase
 {
-    protected $migration;
+    /**
+     * Класс миграции.
+     */
+    protected Migration $migration;
+
+    /**
+     * Имя таблицы.
+     */
+    protected string $table;
+
+    /**
+     * Имя полиморфной связи.
+     */
+    protected string $relationName;
+
+    /**
+     * Имя модели.
+     */
+    protected string $model;
+
+    /**
+     * Имя временной метки создания записи.
+     */
+    protected string $createdAt;
+
+    /**
+     * Имя временной метки обновления записи.
+     */
+    protected string $updatedAt;
 
     public function setUp(): void
     {
         parent::setUp();
+
         $this->migration = require __DIR__.'/../../../../database/migrations/create_roleables_table.php';
+        $this->table = config('is.tables.roleables');
+        $this->relationName = config('is.relations.roleable');
+        $this->model = config('is.models.roleable');
+        $this->createdAt = app($this->model)->getCreatedAtColumn();
+        $this->updatedAt = app($this->model)->getUpdatedAtColumn();
     }
 
     /**
@@ -23,23 +58,34 @@ class RoleablesTableTest extends TestCase
      */
     public function test_up_down(): void
     {
-        $checkTable = fn () => Schema::connection(config('is.connection'))->hasTable(config('is.tables.roleables'));
+        $checkTable = fn () => Schema::hasTable($this->table);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                         Подтверждаем создание таблицы.                         ||
+        // ! ||--------------------------------------------------------------------------------||
 
         $this->migration->up();
         $this->assertTrue($checkTable());
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                         Подтверждаем удаление таблицы.                         ||
+        // ! ||--------------------------------------------------------------------------------||
 
         $this->migration->down();
         $this->assertFalse($checkTable());
     }
 
     /**
-     * Есть ли внешний ключ таблицы ролей у таблицы?
+     * Есть ли внешний ключ таблицы ролей?
      */
     public function test_has_foreign_key(): void
     {
         $this->migration->up();
+
         $foreignKey = app(config('is.models.role'))->getForeignKey();
-        $this->assertTrue(Schema::connection(config('is.connection'))->hasColumn(config('is.tables.roleables'), $foreignKey));
+        $hasForeignKey = Schema::hasColumn($this->table, $foreignKey);
+
+        $this->assertTrue($hasForeignKey);
     }
 
     /**
@@ -49,10 +95,10 @@ class RoleablesTableTest extends TestCase
     {
         $this->migration->up();
 
-        $roleable_id = config('is.relations.roleable').'_id';
-        $roleable_type = config('is.relations.roleable').'_type';
-        $checkId = Schema::connection(config('is.connection'))->hasColumn(config('is.tables.roleables'), $roleable_id);
-        $checkType = Schema::connection(config('is.connection'))->hasColumn(config('is.tables.roleables'), $roleable_type);
+        $roleable_id = $this->relationName.'_id';
+        $roleable_type = $this->relationName.'_type';
+        $checkId = Schema::hasColumn($this->table, $roleable_id);
+        $checkType = Schema::hasColumn($this->table, $roleable_type);
 
         $this->assertTrue($checkId && $checkType);
     }
@@ -62,18 +108,22 @@ class RoleablesTableTest extends TestCase
      */
     public function test_has_timestamps(): void
     {
-        $hasCreatedAt = fn () => Schema::connection(config('is.connection'))
-            ->hasColumn(config('is.tables.roleables'), app(config('is.models.roleable'))->getCreatedAtColumn());
-        $hasUpdatedAt = fn () => Schema::connection(config('is.connection'))
-            ->hasColumn(config('is.tables.roleables'), app(config('is.models.roleable'))->getUpdatedAtColumn());
+        $hasCreatedAt = fn () => Schema::hasColumn($this->table, $this->createdAt);
+        $hasUpdatedAt = fn () => Schema::hasColumn($this->table, $this->updatedAt);
 
-        // Включаем временные метки.
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                      Подтверждаем наличие временных меток.                     ||
+        // ! ||--------------------------------------------------------------------------------||
+
         config(['is.uses.timestamps' => true]);
         $this->migration->up();
         $this->assertTrue($hasCreatedAt() && $hasUpdatedAt());
         $this->migration->down();
 
-        // Отключаем временные метки.
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                    Подтверждаем отсутствие временных меток.                    ||
+        // ! ||--------------------------------------------------------------------------------||
+
         config(['is.uses.timestamps' => false]);
         $this->migration->up();
         $this->assertTrue(! $hasCreatedAt() && ! $hasUpdatedAt());

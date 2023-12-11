@@ -11,10 +11,8 @@ class RoleFactory extends Factory
 {
     /**
      * Создаем фабрику и указываем имя модели.
-     *
-     * @param  mixed  ...$parameters
      */
-    public function __construct(...$parameters)
+    public function __construct(mixed ...$parameters)
     {
         parent::__construct(...$parameters);
 
@@ -29,7 +27,6 @@ class RoleFactory extends Factory
     public function definition(): array
     {
         $name = fake()->unique()->word();
-        $slugName = app(config('is.models.role'))->getSlugName();
 
         $definition = [
             'name' => ucfirst($name),
@@ -37,7 +34,8 @@ class RoleFactory extends Factory
             'level' => fake()->numberBetween(1, 9),
         ];
 
-        $definition[$slugName] = config('is.models.role')::toSlug($name);
+        $slugName = app($this->model)->getSlugName();
+        $definition[$slugName] = $this->model::toSlug($name);
 
         return $definition;
     }

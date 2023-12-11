@@ -5,9 +5,7 @@ namespace dmitryrogolev\Is\Tests;
 use dmitryrogolev\Is\Providers\IsServiceProvider;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -15,6 +13,13 @@ class TestCase extends \Orchestra\Testbench\TestCase
      * Количество выполненных запросов к БД.
      */
     protected int $queryExecutedCount = 0;
+
+    /**
+     * SQL-запросы, отправленные на выполнение.
+     *
+     * @var array<int, string>
+     */
+    protected array $queries;
 
     public function setUp(): void
     {
@@ -77,7 +82,10 @@ class TestCase extends \Orchestra\Testbench\TestCase
      */
     protected function registerListeners(): void
     {
-        DB::listen(fn () => $this->queryExecutedCount++);
+        DB::listen(function ($query) {
+            $this->queryExecutedCount++;
+            $this->queries[] = $query->sql;
+        });
     }
 
     /**
@@ -89,18 +97,20 @@ class TestCase extends \Orchestra\Testbench\TestCase
     }
 
     /**
+     * Сбрасывает список SQL-запросов, отправленных на выполнение.
+     *
+     * @return void
+     */
+    protected function resetQueries(): void 
+    {
+        $this->queries = [];
+    }
+
+    /**
      * Подтвердить количество выполненных запросов к БД.
      */
     protected function assertQueryExecutedCount(int $expectedCount, ?string $message = ''): void
     {
         $this->assertEquals($expectedCount, $this->queryExecutedCount, $message);
-    }
-
-    /**
-     * Возвращает построитель SQL запросов к БД.
-     */
-    protected function schema(): Builder
-    {
-        return Schema::connection(config('is.connection'));
     }
 }

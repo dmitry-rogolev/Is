@@ -5,6 +5,7 @@ namespace dmitryrogolev\Is\Traits;
 use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Slug\Facades\Slug;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Arr;
 
@@ -26,11 +27,11 @@ trait HasRoles
     }
 
     /**
-     * Возвращает роли.
+     * Возвращает коллекцию ролей.
      */
     public function getRoles(): Collection
     {
-        return Is::all($this);
+        return config('is.uses.levels') ? Is::where('level', '<=', $this->level()) : $this->roles;
     }
 
     /**
@@ -42,23 +43,28 @@ trait HasRoles
     }
 
     /**
-     * Присоединяет роль.
+     * Присоединяет роль(-и) к модели.
      *
-     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  ...$role
+     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role
      */
-    public function attachRole(...$role): bool
+    public function attachRole(mixed ...$role): bool
     {
         $roles = Arr::flatten($role);
         $attached = false;
 
-        foreach ($roles as $v) {
-            if (($model = Is::find($v)) && ! Is::has($model, $this)) {
+        foreach ($roles as $role) {
+            // Т.к. пользователь может передать slug, то требуется получить модель из таблицы.
+            $model = $this->getRole($role);
+
+            // Присоединяем те роли, которых нет у модели.
+            if (! is_null($model) && ! $this->checkRole($model)) {
                 $this->roles()->attach($model);
                 $attached = true;
             }
         }
 
-        if (Is::usesLoadOnUpdate() && $attached) {
+        // Подгружаем отношение, если были изменения и включена данная опция.
+        if (config('is.uses.load_on_update') && $attached) {
             $this->loadRoles();
         }
 
@@ -68,7 +74,7 @@ trait HasRoles
     /**
      * Отсоединить роль.
      *
-     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  ...$role
+     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Contracts\Support\Arrayable  ...$role
      */
     public function detachRole(...$role): bool
     {
@@ -115,7 +121,7 @@ trait HasRoles
     /**
      * Синхронизировать роли.
      *
-     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  ...$roles
+     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Contracts\Support\Arrayable  ...$roles
      */
     public function syncRoles(...$roles): void
     {
@@ -126,7 +132,7 @@ trait HasRoles
     /**
      * Проверяет наличие хотябы одной роли из переданных.
      *
-     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  ...$role
+     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Contracts\Support\Arrayable  ...$role
      */
     public function hasOneRole(...$role): bool
     {
@@ -144,7 +150,7 @@ trait HasRoles
     /**
      * Проверяет наличие всех переданных ролей.
      *
-     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  ...$role
+     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Contracts\Support\Arrayable  ...$role
      */
     public function hasAllRoles(...$role): bool
     {
@@ -162,7 +168,7 @@ trait HasRoles
     /**
      * Проверяет наличие роли.
      *
-     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  $role
+     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Contracts\Support\Arrayable  $role
      * @param  bool  $all Проверить наличие всех ролей?
      */
     public function hasRole($role, bool $all = false): bool
@@ -199,5 +205,43 @@ trait HasRoles
         }
 
         return null;
+    }
+
+    /**
+     * Проверяет наличие роли у модели.
+     */
+    protected function checkRole(Model $role): bool
+    {
+        if (config('is.uses.levels')) {
+            return $this->checkLevel($role);
+        }
+
+        return $this->roles->contains(
+            fn ($item) => $item->is($role)
+        );
+    }
+
+    /**
+     * Проверяет уровень доступа модели.
+     *
+     * @param  int|string|\Illuminate\Database\Eloquent\Model  $role
+     */
+    protected function checkLevel(Model $role): bool
+    {
+        if (! config('is.uses.levels')) {
+            return $this->checkRole($role);
+        }
+
+        return $this->level() >= $role->level;
+    }
+
+    /**
+     * Возвращает роль по ее идентификатору или slug'у.
+     *
+     * @param  int|string|\Illuminate\Database\Eloquent\Model  $role
+     */
+    protected function getRole(mixed $role): ?Model
+    {
+        return ! is_a($role, config('is.models.role')) ? Is::firstWhereUniqueKey($role) : $role;
     }
 }

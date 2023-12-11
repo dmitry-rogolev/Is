@@ -4,6 +4,7 @@ namespace dmitryrogolev\Is\Tests\Feature\Database\Migrations;
 
 use dmitryrogolev\Is\Tests\TestCase;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Тестируем миграцию таблицы ролей.
@@ -20,12 +21,42 @@ class RolesTableTest extends TestCase
      */
     protected string $table;
 
+    /**
+     * Имя модели ролей.
+     */
+    protected string $model;
+
+    /**
+     * Имя первичного ключа.
+     */
+    protected string $keyName;
+
+    /**
+     * Имя временной метки создания записи.
+     */
+    protected string $createdAt;
+
+    /**
+     * Имя временной метки обновления записи.
+     */
+    protected string $updatedAt;
+
+    /**
+     * Имя временной метки удаления записи.
+     */
+    protected string $deletedAt;
+
     public function setUp(): void
     {
         parent::setUp();
 
         $this->migration = require __DIR__.'/../../../../database/migrations/create_roles_table.php';
         $this->table = config('is.tables.roles');
+        $this->model = config('is.models.role');
+        $this->keyName = config('is.primary_key');
+        $this->createdAt = app($this->model)->getCreatedAtColumn();
+        $this->updatedAt = app($this->model)->getUpdatedAtColumn();
+        $this->deletedAt = app($this->model)->getDeletedAtColumn();
     }
 
     /**
@@ -33,7 +64,7 @@ class RolesTableTest extends TestCase
      */
     public function test_up_down(): void
     {
-        $checkTable = fn () => $this->schema()->hasTable($this->table);
+        $checkTable = fn () => Schema::hasTable($this->table);
 
         // ! ||--------------------------------------------------------------------------------||
         // ! ||                         Подтверждаем создание таблицы.                         ||
@@ -56,7 +87,7 @@ class RolesTableTest extends TestCase
     public function test_has_id(): void
     {
         $this->migration->up();
-        $hasPrimaryKey = $this->schema()->hasColumn($this->table, config('is.primary_key'));
+        $hasPrimaryKey = Schema::hasColumn($this->table, $this->keyName);
 
         $this->assertTrue($hasPrimaryKey);
     }
@@ -66,10 +97,8 @@ class RolesTableTest extends TestCase
      */
     public function test_has_timestamps(): void
     {
-        $hasCreatedAt = fn () => $this->schema()
-            ->hasColumn($this->table, app(config('is.models.role'))->getCreatedAtColumn());
-        $hasUpdatedAt = fn () => $this->schema()
-            ->hasColumn($this->table, app(config('is.models.role'))->getUpdatedAtColumn());
+        $hasCreatedAt = fn () => Schema::hasColumn($this->table, $this->createdAt);
+        $hasUpdatedAt = fn () => Schema::hasColumn($this->table, $this->updatedAt);
 
         // ! ||--------------------------------------------------------------------------------||
         // ! ||                      Подтверждаем наличие временных меток.                     ||
@@ -94,12 +123,12 @@ class RolesTableTest extends TestCase
      */
     public function test_has_deleted_at(): void
     {
-        $checkDeletedAt = fn () => $this->schema()
-            ->hasColumn($this->table, app(config('is.models.role'))->getDeletedAtColumn());
+        $checkDeletedAt = fn () => Schema::hasColumn($this->table, $this->deletedAt);
 
         // ! ||--------------------------------------------------------------------------------||
         // ! ||           Подтверждаем наличие временно метки программного удаления.           ||
         // ! ||--------------------------------------------------------------------------------||
+
         config(['is.uses.soft_deletes' => true]);
         $this->migration->up();
         $this->assertTrue($checkDeletedAt());
