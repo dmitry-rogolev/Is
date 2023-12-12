@@ -8,14 +8,13 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 /**
  * Функционал ролей.
  */
 trait HasRoles
 {
-    use ExtendIsMethod, HasLevels;
-
     /**
      * Модель относится к множеству ролей.
      */
@@ -45,30 +44,33 @@ trait HasRoles
     /**
      * Присоединяет роль(-и) к модели.
      *
-     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role
+     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
+     * @return bool Была ли присоединена хотябы одна роль?
      */
     public function attachRole(mixed ...$role): bool
     {
-        $roles = Arr::flatten($role);
-        $attached = false;
+        // Получаем модели ролей из переданных параметров.
+        // При этом переданные идентификаторы и slug'и будут заменены на модели.
+        //
+        // Затем фильтруем роли, оставляя те, которые еще не были присоединены к модели.
+        //
+        // Если используется иерархия ролей, из всех переданных ролей,
+        // будет присоединена одна с наибольшим уровнем доступа.
+        $roles = $this->getModelsForAttach($role);
 
-        foreach ($roles as $role) {
-            // Т.к. пользователь может передать slug, то требуется получить модель из таблицы.
-            $model = $this->getRole($role);
-
-            // Присоединяем те роли, которых нет у модели.
-            if (! is_null($model) && ! $this->checkRole($model)) {
-                $this->roles()->attach($model);
-                $attached = true;
-            }
+        if (empty($roles)) {
+            return false;
         }
 
-        // Подгружаем отношение, если были изменения и включена данная опция.
-        if (config('is.uses.load_on_update') && $attached) {
+        // Присоединяем роли.
+        array_walk($roles, fn ($role) => $this->roles()->attach($role));
+
+        // Обновляем роли, если данная опция включена.
+        if (config('is.uses.load_on_update')) {
             $this->loadRoles();
         }
 
-        return $attached;
+        return true;
     }
 
     /**
@@ -176,6 +178,46 @@ trait HasRoles
         return $all ? $this->hasAllRoles($role) : $this->hasOneRole($role);
     }
 
+    /**
+     * Получить роль с наибольшим уровнем.
+     */
+    public function role(): ?Model
+    {
+        return $this->roles->sortByDesc('level')->first();
+    }
+
+    /**
+     * Получить наибольший уровень ролей.
+     */
+    public function level(): int
+    {
+        return $this->role()?->level ?? 0;
+    }
+
+    /**
+     * Определите, имеют ли две модели одинаковый идентификатор и принадлежат ли они к одной таблице.
+     *
+     * Если передать роль, то будет вызван метод hasRole, проверяющий наличие роли у модели.
+     *
+     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Contracts\Support\Arrayable  $model
+     */
+    public function is($model, bool $all = false): bool
+    {
+        if (
+            config('is.uses.extend_is_method') && (
+                is_int($model)
+                || is_string($model)
+                || is_a($model, config('is.models.role'))
+                || is_array($model)
+                || $model instanceof Arrayable
+            )
+        ) {
+            return $this->hasRole($model, $all);
+        }
+
+        return parent::is($model);
+    }
+
     public function __call($method, $parameters)
     {
         try {
@@ -216,15 +258,11 @@ trait HasRoles
             return $this->checkLevel($role);
         }
 
-        return $this->roles->contains(
-            fn ($item) => $item->is($role)
-        );
+        return $this->roles->contains(fn ($item) => $item->is($role));
     }
 
     /**
      * Проверяет уровень доступа модели.
-     *
-     * @param  int|string|\Illuminate\Database\Eloquent\Model  $role
      */
     protected function checkLevel(Model $role): bool
     {
@@ -236,12 +274,114 @@ trait HasRoles
     }
 
     /**
-     * Возвращает роль по ее идентификатору или slug'у.
-     *
-     * @param  int|string|\Illuminate\Database\Eloquent\Model  $role
+     * Проверяет, является ли переданное значение идентификатором.
      */
-    protected function getRole(mixed $role): ?Model
+    protected function isId(mixed $value): bool
     {
-        return ! is_a($role, config('is.models.role')) ? Is::firstWhereUniqueKey($role) : $role;
+        return is_int($value) || is_string($value) && (Str::isUuid($value) || Str::isUlid($value));
+    }
+
+    /**
+     * Приводит переданное значение в выравненному массиву.
+     *
+     * @return array<int, mixed>
+     */
+    protected function toFlattenArray(mixed $value): array
+    {
+        return Arr::flatten([$value]);
+    }
+
+    /**
+     * Заменяет идентификаторы и slug'и на модели.
+     *
+     * @return array<int, \Illuminate\Database\Eloquent\Model>
+     */
+    protected function replaceIdsWithModels(array $roles): array
+    {
+        // Сортируем переданный массив. Складываем модели в один массив,
+        // а идентификаторы и slug'и в другой массив.
+        [$result, $ids] = $this->sortModelsAndIds($roles);
+
+        // Если были переданы идентификаторы и(или) slug'и, получаем по ним модели,
+        // а затем добавляем их в результирующий массив.
+        if (! empty($ids)) {
+            $models = Is::whereUniqueKey($ids);
+            $result = array_merge($result, $models->all());
+        }
+
+        return $result;
+    }
+
+    /**
+     * Сортируем переданный массив на модели ролей и на идентификаторы и slug'и.
+     *
+     * @return array<int, array<int, mixed>>
+     */
+    protected function sortModelsAndIds(array $roles): array
+    {
+        $ids = [];
+        $models = [];
+
+        foreach ($roles as $role) {
+            if (is_a($role, config('is.models.role')) && $role->exists) {
+                $models[] = $role;
+            } elseif ($this->isId($role) || is_string($role)) {
+                $ids[] = $role;
+            }
+        }
+
+        return [$models, $ids];
+    }
+
+    /**
+     * Возвращает модели ролей из переданных значений.
+     *
+     * @return array<int, \Illuminate\Database\Eloquent\Model>
+     */
+    protected function parseRoles(mixed $roles): array
+    {
+        return $this->replaceIdsWithModels(
+            $this->toFlattenArray($roles)
+        );
+    }
+
+    /**
+     * Возвращает только те роли, которых нет у модели.
+     */
+    protected function notAttachedFilter(array $roles): array
+    {
+        return array_values(array_filter($roles, fn ($role) => ! $this->checkRole($role)));
+    }
+
+    /**
+     * Возвращает роль с максимальным уровнем доступа из переданных моделей.
+     */
+    protected function getModelWithMaxLevel(array $roles): ?Model
+    {
+        return collect($roles)->sortByDesc('level')->first();
+    }
+
+    /**
+     * Если включена иерархия ролей, возвращает массив с одной ролью, имеющей максимальный уровень доступа, иначе возвращает роли без изменения.
+     *
+     * @return array<int, \Illuminate\Database\Eloquent\Model>
+     */
+    protected function useLevelsFilter(array $roles): array
+    {
+        return config('is.uses.levels') && ! empty($roles) ? [$this->getModelWithMaxLevel($roles)] : $roles;
+    }
+
+    /**
+     * Возвращает модели ролей, которые могут быть присоединены к модели.
+     *
+     * @return array<int, \Illuminate\Database\Eloquent\Model>
+     */
+    protected function getModelsForAttach(array $roles): array
+    {
+        return $this->useLevelsFilter(
+            $this->notAttachedFilter(
+                $this->parseRoles($roles)
+            )
+        );
     }
 }

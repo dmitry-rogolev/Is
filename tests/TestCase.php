@@ -98,10 +98,8 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
     /**
      * Сбрасывает список SQL-запросов, отправленных на выполнение.
-     *
-     * @return void
      */
-    protected function resetQueries(): void 
+    protected function resetQueries(): void
     {
         $this->queries = [];
     }

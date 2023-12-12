@@ -172,9 +172,9 @@ class HasRolesTest extends TestCase
      */
     public function test_attach_role_use_levels_with_one_param(): void
     {
-        $user = $this->generate($this->user);
-        config(['is.uses.load_on_update' => true]);
         config(['is.uses.levels' => true]);
+        config(['is.uses.load_on_update' => true]);
+        $user = $this->generate($this->user);
         $minLevel = 3;
         $level = 2;
 
@@ -244,6 +244,24 @@ class HasRolesTest extends TestCase
         $this->assertCount(0, $roles);
 
         // ! ||--------------------------------------------------------------------------------||
+        // ! ||                     Передаем отсутствующий в таблице slug.                     ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $role = 'my_slug';
+        $condition = $user->attachRole($role);
+        $this->assertFalse($condition);
+        $this->assertFalse($user->roles->contains(fn ($item) => $item->getSlug() === $role));
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                 Передаем отсутствующий в таблице идентификатор.                ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $role = 634569569;
+        $condition = $user->attachRole($role);
+        $this->assertFalse($condition);
+        $this->assertFalse($user->roles->contains(fn ($item) => $item->getKey() === $role));
+
+        // ! ||--------------------------------------------------------------------------------||
         // ! ||                Подтверждаем количество выполненных запросов к БД               ||
         // ! ||           при присоединении отсутствующей роли и при передачи модели.          ||
         // ! ||--------------------------------------------------------------------------------||
@@ -285,6 +303,269 @@ class HasRolesTest extends TestCase
         $this->resetQueryExecutedCount();
         $user->attachRole($role);
         $this->assertQueryExecutedCount(1);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                     Подтверждаем, что при отключении опции                     ||
+        // ! ||               авто обновления отношений, роли не были обновлены.               ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        config(['is.uses.load_on_update' => false]);
+        $role = $this->generate($this->model, ['level' => ++$level])->getKey();
+        $condition = $user->attachRole($role);
+        $this->assertTrue($condition);
+        $this->assertFalse($user->roles->contains(fn ($item) => $item->getKey() === $role));
+        $user->loadRoles();
+        $this->assertTrue($user->roles->contains(fn ($item) => $item->getKey() === $role));
+    }
+
+    /**
+     * Есть ли метод, присоединяющий множество ролей к модели?
+     */
+    public function test_attach_role_use_levels_with_many_params(): void
+    {
+        config(['is.uses.levels' => true]);
+        config(['is.uses.load_on_update' => true]);
+        $user = $this->generate($this->user);
+        $level = 2;
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                   Подтверждаем возврат логического значения.                   ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = [
+            $this->generate($this->model, ['level' => ++$level])->getKey(),
+            $this->generate($this->model, ['level' => ++$level])->getKey(),
+            $this->generate($this->model, ['level' => ++$level])->getKey(),
+        ];
+        $condition = $user->attachRole($roles);
+        $this->assertIsBool($condition);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                        Передаем массив идентификаторов.                        ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = [
+            $this->generate($this->model, ['level' => ++$level])->getKey(),
+            $this->generate($this->model, ['level' => ++$level])->getKey(),
+            $this->generate($this->model, ['level' => ++$level])->getKey(),
+        ];
+        $condition = $user->attachRole(...$roles);
+        $this->assertTrue($condition);
+        $this->assertTrue($user->roles->contains(fn ($item) => $item->getKey() === last($roles)));
+        $this->assertTrue(
+            collect($roles)->slice(0, count($roles) - 1)->every(
+                fn ($role) => ! $user->roles->contains(
+                    fn ($item) => $item->getKey() === $role
+                )
+            )
+        );
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                       Передаем коллекцию идентификаторов.                      ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = collect([
+            $this->generate($this->model, ['level' => ++$level])->getKey(),
+            $this->generate($this->model, ['level' => ++$level])->getKey(),
+            $this->generate($this->model, ['level' => ++$level])->getKey(),
+        ]);
+        $condition = $user->attachRole($roles);
+        $this->assertTrue($condition);
+        $this->assertTrue($user->roles->contains(fn ($item) => $item->getKey() === $roles->last()));
+        $this->assertTrue(
+            $roles->slice(0, $roles->count() - 1)->every(
+                fn ($role) => ! $user->roles->contains(
+                    fn ($item) => $item->getKey() === $role
+                )
+            )
+        );
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                            Передаем массив slug'ов.                            ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = [
+            $this->generate($this->model, ['level' => ++$level])->getSlug(),
+            $this->generate($this->model, ['level' => ++$level])->getSlug(),
+            $this->generate($this->model, ['level' => ++$level])->getSlug(),
+        ];
+        $condition = $user->attachRole(...$roles);
+        $this->assertTrue($condition);
+        $this->assertTrue($user->roles->contains(fn ($item) => $item->getSlug() === last($roles)));
+        $this->assertTrue(
+            collect($roles)->slice(0, count($roles) - 1)->every(
+                fn ($role) => ! $user->roles->contains(
+                    fn ($item) => $item->getSlug() === $role
+                )
+            )
+        );
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                            Передаем массив моделей.                            ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = [
+            $this->generate($this->model, ['level' => ++$level]),
+            $this->generate($this->model, ['level' => ++$level]),
+            $this->generate($this->model, ['level' => ++$level]),
+        ];
+        $condition = $user->attachRole($roles);
+        $this->assertTrue($condition);
+        $this->assertTrue($user->roles->contains(fn ($item) => $item->is(last($roles))));
+        $this->assertTrue(
+            collect($roles)->slice(0, count($roles) - 1)->every(
+                fn ($role) => ! $user->roles->contains(
+                    fn ($item) => $item->is($role)
+                )
+            )
+        );
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                    Передаем массив уже присоединенных ролей.                   ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $condition = $user->attachRole(...$roles);
+        $this->assertFalse($condition);
+        $this->assertTrue($user->roles->where($this->keyName, last($roles)->getKey())->count() === 1);
+        $this->assertTrue(
+            collect($roles)->slice(0, count($roles) - 1)->every(
+                fn ($role) => ! $user->roles->contains(
+                    fn ($item) => $item->is($role)
+                )
+            )
+        );
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                     Передаем массив ролей, у которых уровни                    ||
+        // ! ||                       равны максимальному уровню модели.                       ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = [
+            $this->generate($this->model, ['level' => $level]),
+            $this->generate($this->model, ['level' => $level]),
+            $this->generate($this->model, ['level' => $level]),
+        ];
+        $condition = $user->attachRole($roles);
+        $this->assertFalse($condition);
+        $this->assertTrue(
+            collect($roles)->every(
+                fn ($role) => $user->roles->contains(
+                    fn ($item) => ! $item->is($role)
+                )
+            )
+        );
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                     Передаем массив ролей, у которых уровни                    ||
+        // ! ||                        ниже максимального уровня модели.                       ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = [
+            $this->generate($this->model, ['level' => $level - 1]),
+            $this->generate($this->model, ['level' => $level - 1]),
+            $this->generate($this->model, ['level' => $level - 1]),
+        ];
+        $condition = $user->attachRole($roles);
+        $this->assertFalse($condition);
+        $this->assertTrue(
+            collect($roles)->every(
+                fn ($role) => $user->roles->contains(
+                    fn ($item) => ! $item->is($role)
+                )
+            )
+        );
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||            Передаем массив отсутствующих в таблице идентификаторов.            ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = [354345, '354546544765', '34342'];
+        $condition = $user->attachRole(...$roles);
+        $this->assertFalse($condition);
+        $this->assertTrue(
+            collect($roles)->every(
+                fn ($role) => ! $user->roles->contains(
+                    fn ($item) => $item->getKey() === $role
+                )
+            )
+        );
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                Подтверждаем количество выполненных запросов к БД               ||
+        // ! ||                      при передачи массива идентификаторов.                     ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = [
+            $this->generate($this->model, ['level' => ++$level])->getKey(),
+            $this->generate($this->model, ['level' => ++$level])->getKey(),
+            $this->generate($this->model, ['level' => ++$level])->getKey(),
+        ];
+        $this->resetQueryExecutedCount();
+        $user->attachRole(...$roles);
+        $this->assertQueryExecutedCount(3);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                Подтверждаем количество выполненных запросов к БД               ||
+        // ! ||                          при передачи массива моделей.                         ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = [
+            $this->generate($this->model, ['level' => ++$level]),
+            $this->generate($this->model, ['level' => ++$level]),
+            $this->generate($this->model, ['level' => ++$level]),
+        ];
+        $this->resetQueryExecutedCount();
+        $user->attachRole($roles);
+        $this->assertQueryExecutedCount(2);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                Подтверждаем количество выполненных запросов к БД               ||
+        // ! ||               при повторной передачи ранее присоединенных ролей.               ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $this->resetQueryExecutedCount();
+        $user->attachRole($roles);
+        $this->assertQueryExecutedCount(0);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                Подтверждаем количество выполненных запросов к БД               ||
+        // ! ||                      при передачи массива ролей с уровнем                      ||
+        // ! ||                        ниже максимального уровня модели.                       ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = [
+            $this->generate($this->model, ['level' => $level - 1]),
+            $this->generate($this->model, ['level' => $level - 1]),
+            $this->generate($this->model, ['level' => $level - 1]),
+        ];
+        $this->resetQueryExecutedCount();
+        $user->attachRole($roles);
+        $this->assertQueryExecutedCount(0);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                Подтверждаем количество выполненных запросов к БД               ||
+        // ! ||           при передачи отсутствующих в таблице идентификаторов ролей.          ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = [354345, '354546544765', '34342'];
+        $this->resetQueryExecutedCount();
+        $condition = $user->attachRole(...$roles);
+        $this->assertQueryExecutedCount(1);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                Подтверждаем количество выполненных запросов к БД               ||
+        // ! ||              при отключении подгрузки отношений после обновления.              ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        config(['is.uses.load_on_update' => false]);
+        $roles = [
+            $this->generate($this->model, ['level' => ++$level])->getKey(),
+            $this->generate($this->model, ['level' => ++$level])->getKey(),
+            $this->generate($this->model, ['level' => ++$level])->getKey(),
+        ];
+        $this->resetQueryExecutedCount();
+        $user->attachRole(...$roles);
+        $this->assertQueryExecutedCount(2);
     }
 
     // /**

@@ -3,12 +3,13 @@
 namespace dmitryrogolev\Is\Contracts;
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * Функционал ролей.
  */
-interface Roleable extends Levelable
+interface Roleable
 {
     /**
      * Модель относится к множеству ролей.
@@ -28,7 +29,8 @@ interface Roleable extends Levelable
     /**
      * Присоединяет роль(-и) к модели.
      *
-     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role
+     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
+     * @return bool Была ли присоединена хотябы одна роль?
      */
     public function attachRole(mixed ...$role): bool;
 
@@ -72,4 +74,14 @@ interface Roleable extends Levelable
      * @param  bool  $all Проверить наличие всех ролей?
      */
     public function hasRole($role, bool $all = false): bool;
+
+    /**
+     * Получить роль с наибольшим уровнем.
+     */
+    public function role(): ?Model;
+
+    /**
+     * Получить наибольший уровень ролей.
+     */
+    public function level(): int;
 }
