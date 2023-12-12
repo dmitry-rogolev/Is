@@ -35,53 +35,56 @@ interface Roleable
     public function attachRole(mixed ...$role): bool;
 
     /**
-     * Отсоединить роль.
+     * Отсоединяет роль(-и).
      *
-     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  ...$role
+     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
+     * @return bool Была ли отсоединена хотябы одна роль?
      */
-    public function detachRole(...$role): bool;
+    public function detachRole(mixed ...$role): bool;
 
     /**
-     * Отсоединить все роли.
+     * Отсоединяет все роли.
+     * 
+     * @return bool Были ли отсоединены роли?
      */
     public function detachAllRoles(): bool;
 
     /**
-     * Синхронизировать роли.
+     * Синхронизирует роли.
      *
-     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  ...$roles
+     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
      */
-    public function syncRoles(...$roles): void;
+    public function syncRoles(mixed ...$roles): void;
 
     /**
      * Проверяет наличие хотябы одной роли из переданных.
      *
-     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  ...$role
+     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
      */
-    public function hasOneRole(...$role): bool;
+    public function hasOneRole(mixed ...$role): bool;
 
     /**
      * Проверяет наличие всех переданных ролей.
      *
-     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  ...$role
+     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
      */
-    public function hasAllRoles(...$role): bool;
+    public function hasAllRoles(mixed ...$role): bool;
 
     /**
-     * Проверяет наличие роли.
+     * Проверяет наличие роли(-ей).
      *
-     * @param  int|string|\Illuminate\Database\Eloquent\Model|array|\Illuminate\Support\Collection  $role
+     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  $role Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
      * @param  bool  $all Проверить наличие всех ролей?
      */
-    public function hasRole($role, bool $all = false): bool;
+    public function hasRole(mixed $role, bool $all = false): bool;
 
     /**
-     * Получить роль с наибольшим уровнем.
+     * Получить роль с наибольшим уровнем доступа.
      */
     public function role(): ?Model;
 
     /**
-     * Получить наибольший уровень ролей.
+     * Получить наибольший уровень доступа из присоединенных ролей.
      */
     public function level(): int;
 }
