@@ -44,7 +44,7 @@ interface Roleable
 
     /**
      * Отсоединяет все роли.
-     * 
+     *
      * @return bool Были ли отсоединены роли?
      */
     public function detachAllRoles(): bool;
