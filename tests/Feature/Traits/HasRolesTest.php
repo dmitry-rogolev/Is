@@ -881,50 +881,318 @@ class HasRolesTest extends TestCase
         $this->assertQueryExecutedCount(4);
     }
 
-    // /**
-    //  * Есть ли метод, отсоединяющий роль?
-    //  */
-    // public function test_detach_role(): void
-    // {
-    //     // Включаем авто подгрузку ролей.
-    //     Is::usesLoadOnUpdate(true);
+    /**
+     * Есть ли метод, отсоединяющий роль?
+     */
+    public function test_detach_role_with_one_param(): void
+    {
+        config(['is.uses.levels' => false]);
+        config(['is.uses.load_on_update' => true]);
+        $user = $this->generate($this->user);
 
-    //     // Включаем иерархию ролей.
-    //     Is::usesLevels(true);
-    //     $user = $this->getUser();
-    //     $role = Is::generate(['level' => 3]);
-    //     $user->attachRole($role);
-    //     $this->assertTrue($user->detachRole(Is::generate(['level' => 2])));
-    //     $this->assertFalse($user->detachRole(Is::generate(['level' => 4])));
-    //     $this->assertCount(2, $user->getRoles());
-    //     $this->assertTrue($user->detachRole($role));
-    //     $this->assertCount(0, $user->getRoles());
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                   Подтверждаем возврат логического значения.                   ||
+        // ! ||--------------------------------------------------------------------------------||
 
-    //     // Есть не передать аргумент, то будут отсоединены все роли.
-    //     $user->attachRole(Is::generate());
-    //     $this->assertNotCount(0, $user->getRoles());
-    //     $this->assertTrue($user->detachRole());
-    //     $this->assertCount(0, $user->getRoles());
+        $role = $this->generate($this->model);
+        $user->roles()->attach($role);
+        $user->loadRoles();
+        $condition = $user->detachRole($role);
+        $this->assertIsBool($condition);
 
-    //     // Отключаем иерархию ролей.
-    //     Is::usesLevels(false);
-    //     $role = Is::generate();
-    //     $user->attachRole($role);
-    //     $this->assertFalse($user->detachRole(Is::generate()));
-    //     $this->assertTrue($user->detachRole($role));
-    //     $this->assertCount(0, $user->getRoles());
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                             Передаем идентификатор.                            ||
+        // ! ||--------------------------------------------------------------------------------||
 
-    //     // Отключаем авто подгрузку ролей.
-    //     Is::usesLoadOnUpdate(false);
+        $role = $this->generate($this->model)->getKey();
+        $user->roles()->attach($role);
+        $user->loadRoles();
+        $condition = $user->detachRole($role);
+        $this->assertTrue($condition);
+        $this->assertFalse(
+            $user->roles->contains(fn ($item) => $item->getKey() === $role)
+        );
 
-    //     $user->attachRole(Is::generate(3));
-    //     $user->loadRoles();
-    //     $this->assertCount(3, $user->getRoles());
-    //     $user->detachRole();
-    //     $this->assertCount(3, $user->getRoles());
-    //     $user->loadRoles();
-    //     $this->assertCount(0, $user->getRoles());
-    // }
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                                 Передаем slug.                                 ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $role = $this->generate($this->model);
+        $user->roles()->attach($role);
+        $user->loadRoles();
+        $condition = $user->detachRole($role->getSlug());
+        $this->assertTrue($condition);
+        $this->assertFalse(
+            $user->roles->contains(fn ($item) => $item->getSlug() === $role->getSlug())
+        );
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                                Передаем модель.                                ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $role = $this->generate($this->model);
+        $user->roles()->attach($role);
+        $user->loadRoles();
+        $condition = $user->detachRole($role);
+        $this->assertTrue($condition);
+        $this->assertFalse(
+            $user->roles->contains(fn ($item) => $item->is($role))
+        );
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                     Повторно передаем отсоединенную модель.                    ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $condition = $user->detachRole($role);
+        $this->assertFalse($condition);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                        Передаем не присоединенную роль.                        ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $role = $this->generate($this->model);
+        $condition = $user->detachRole($role);
+        $this->assertFalse($condition);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                 Передаем отсутствующий в таблице идентификатор.                ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $role = 4564564564;
+        $condition = $user->detachRole($role);
+        $this->assertFalse($condition);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                               Ничего не передаем.                              ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $role = $this->generate($this->model);
+        $user->roles()->attach($role);
+        $user->loadRoles();
+        $condition = $user->detachRole();
+        $this->assertTrue($condition);
+        $this->assertTrue($user->roles->isEmpty());
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||               Передаем роль, которая фактически не присоединена,               ||
+        // ! ||             но присутствует у модели при включении иерархии ролей.             ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        config(['is.uses.levels' => true]);
+        $user->roles()->detach();
+        $level1 = $this->generate($this->model, ['level' => 1]);
+        $level2 = $this->generate($this->model, ['level' => 2]);
+        $user->roles()->attach($level2);
+        $user->loadRoles();
+        $condition = $user->detachRole($level1);
+        $this->assertFalse($condition);
+        config(['is.uses.levels' => false]);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                Подтверждаем количество выполненных запросов к БД               ||
+        // ! ||                          при передачи идентификатора.                          ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $role = $this->generate($this->model)->getKey();
+        $user->roles()->attach($role);
+        $user->loadRoles();
+        $this->resetQueryExecutedCount();
+        $user->detachRole($role);
+        $this->assertQueryExecutedCount(3);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                Подтверждаем количество выполненных запросов к БД               ||
+        // ! ||                              при передачи модели.                              ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $role = $this->generate($this->model);
+        $user->roles()->attach($role);
+        $user->loadRoles();
+        $this->resetQueryExecutedCount();
+        $user->detachRole($role);
+        $this->assertQueryExecutedCount(2);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                Подтверждаем количество выполненных запросов к БД               ||
+        // ! ||                     при передачи не присоединенной модели.                     ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $role = $this->generate($this->model);
+        $this->resetQueryExecutedCount();
+        $user->detachRole($role);
+        $this->assertQueryExecutedCount(0);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                Подтверждаем количество выполненных запросов к БД               ||
+        // ! ||       при отключении автоматической подгрузки отношений после обновления.      ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        config(['is.uses.load_on_update' => false]);
+        $role = $this->generate($this->model);
+        $user->roles()->attach($role);
+        $user->loadRoles();
+        $this->resetQueryExecutedCount();
+        $user->detachRole($role);
+        $this->assertQueryExecutedCount(1);
+    }
+
+    /**
+     * Есть ли метод, отсоединяющий множество ролей?
+     */
+    public function test_detach_role_with_many_params(): void
+    {
+        config(['is.uses.load_on_update' => true]);
+        config(['is.uses.levels' => false]);
+        $user = $this->generate($this->user);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                   Подтверждаем возврат логического значения.                   ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = $this->generate($this->model, 3)->pluck($this->keyName)->all();
+        $user->roles()->attach($roles);
+        $user->loadRoles();
+        $condition = $user->detachRole($roles);
+        $this->assertIsBool($condition);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                        Передаем массив идентификаторов.                        ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = $this->generate($this->model, 3)->pluck($this->keyName)->all();
+        $user->roles()->attach($roles);
+        $user->loadRoles();
+        $condition = $user->detachRole(...$roles);
+        $this->assertTrue($condition);
+        $this->assertTrue(
+            collect($roles)->every(
+                fn ($role) => ! $user->roles->contains(fn ($item) => $item->getKey() === $role)
+            )
+        );
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                       Передаем коллекцию идентификаторов.                      ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = $this->generate($this->model, 3)->pluck($this->keyName)->all();
+        $user->roles()->attach($roles);
+        $user->loadRoles();
+        $condition = $user->detachRole(collect($roles));
+        $this->assertTrue($condition);
+        $this->assertTrue(
+            collect($roles)->every(
+                fn ($role) => ! $user->roles->contains(fn ($item) => $item->getKey() === $role)
+            )
+        );
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                            Передаем массив slug'ов.                            ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $slugName = app($this->model)->getSlugName();
+        $roles = $this->generate($this->model, 3);
+        $user->roles()->attach($roles->pluck($this->keyName)->all());
+        $user->loadRoles();
+        $condition = $user->detachRole(...$roles->pluck($slugName)->all());
+        $this->assertTrue($condition);
+        $this->assertTrue(
+            $roles->pluck($slugName)->every(
+                fn ($role) => ! $user->roles->contains(fn ($item) => $item->getSlug() === $role)
+            )
+        );
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                            Передаем массив моделей.                            ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = $this->generate($this->model, 3);
+        $user->roles()->attach($roles->pluck($this->keyName)->all());
+        $user->loadRoles();
+        $condition = $user->detachRole($roles->all());
+        $this->assertTrue($condition);
+        $this->assertTrue(
+            $roles->every(
+                fn ($role) => ! $user->roles->contains(fn ($item) => $item->is($role))
+            )
+        );
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                    Передаем массив не присоединенных ролей.                    ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = $this->generate($this->model, 3)->pluck($this->keyName)->all();
+        $condition = $user->detachRole(...$roles);
+        $this->assertFalse($condition);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||            Передаем массив отсутствующих в таблице идентификаторов.            ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = [485475, '45646', 'sjfldlg'];
+        $condition = $user->detachRole($roles);
+        $this->assertFalse($condition);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||       Передаем массив ролей с уровнями ниже максимального уровня модели.       ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        config(['is.uses.levels' => true]);
+        $level1 = $this->generate($this->model, ['level' => 1]);
+        $level2 = $this->generate($this->model, ['level' => 2]);
+        $level3 = $this->generate($this->model, ['level' => 3]);
+        $user->roles()->attach($level3);
+        $user->loadRoles();
+        $condition = $user->detachRole($level1, $level2);
+        $this->assertFalse($condition);
+        config(['is.uses.levels' => false]);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                Подтверждаем количество выполненных запросов к БД               ||
+        // ! ||                      при передачи массива идентификаторов.                     ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = $this->generate($this->model, 3)->pluck($this->keyName)->all();
+        $user->roles()->attach($roles);
+        $user->loadRoles();
+        $this->resetQueryExecutedCount();
+        $user->detachRole($roles);
+        $this->assertQueryExecutedCount(5);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                Подтверждаем количество выполненных запросов к БД               ||
+        // ! ||                          при передачи массива моделей.                         ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = $this->generate($this->model, 3);
+        $user->roles()->attach($roles->pluck($this->keyName)->all());
+        $user->loadRoles();
+        $this->resetQueryExecutedCount();
+        $user->detachRole($roles->all());
+        $this->assertQueryExecutedCount(4);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                Подтверждаем количество выполненных запросов к БД               ||
+        // ! ||                  при передачи массива не присоединенных ролей.                 ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = $this->generate($this->model, 3)->all();
+        $this->resetQueryExecutedCount();
+        $user->detachRole($roles);
+        $this->assertQueryExecutedCount(0);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                Подтверждаем количество выполненных запросов к БД               ||
+        // ! ||       при отключении автоматической подгрузки отношений после изменения.       ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        config(['is.uses.load_on_update' => false]);
+        $roles = $this->generate($this->model, 3);
+        $user->roles()->attach($roles->pluck($this->keyName)->all());
+        $user->loadRoles();
+        $this->resetQueryExecutedCount();
+        $user->detachRole($roles->all());
+        $this->assertQueryExecutedCount(3);
+    }
 
     // /**
     //  * Есть ли метод, отсоединяющий все роли?

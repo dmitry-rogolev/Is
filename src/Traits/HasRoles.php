@@ -57,8 +57,8 @@ trait HasRoles
         //
         // Если используется иерархия ролей, из всех переданных ролей,
         // будет присоединена одна с наибольшим уровнем доступа.
-        // 
-        // Наконец, заменяем модели на их идентификаторы, 
+        //
+        // Наконец, заменяем модели на их идентификаторы,
         // так как метод attach ожидает массив идентификаторов.
         $roles = $this->getModelsForAttach($role);
 
@@ -96,6 +96,9 @@ trait HasRoles
         // При этом переданные идентификаторы и slug'и будут заменены на модели.
         //
         // Затем фильтруем роли, оставляя те, которые фактически присоединены к модели.
+        //
+        // Наконец, заменяем модели на их идентификаторы,
+        // так как метод detach ожидает массив идентификаторов.
         $roles = $this->getModelsForDetach($roles);
 
         if (empty($roles)) {
@@ -103,7 +106,7 @@ trait HasRoles
         }
 
         // Отсоединяем роли.
-        array_walk($roles, fn ($role) => $this->roles()->detach($role));
+        $this->roles()->detach($roles);
 
         // Обновляем роли, если данная опция включена.
         if (config('is.uses.load_on_update')) {
@@ -418,10 +421,10 @@ trait HasRoles
     /**
      * Заменяет модели на их идентификаторы.
      *
-     * @param array<int, \Illuminate\Database\Eloquent\Model> $roles
+     * @param  array<int, \Illuminate\Database\Eloquent\Model>  $roles
      * @return array<int, mixed>
      */
-    protected function modelsToIds(array $roles): array 
+    protected function modelsToIds(array $roles): array
     {
         return collect($roles)->pluck($this->getKeyName())->all();
     }
@@ -430,7 +433,7 @@ trait HasRoles
      * Возвращает модели ролей, которые могут быть присоединены к модели.
      *
      * @param  array<int, mixed>  $roles
-     * @return array<int, \Illuminate\Database\Eloquent\Model>
+     * @return array<int, mixed>
      */
     protected function getModelsForAttach(array $roles): array
     {
@@ -447,12 +450,14 @@ trait HasRoles
      * Возвращает модели ролей, которые могут быть отсоединены от модели.
      *
      * @param  array<int, mixed>  $roles
-     * @return array<int, \Illuminate\Database\Eloquent\Model>
+     * @return array<int, mixed>
      */
     protected function getModelsForDetach(array $roles): array
     {
-        return $this->attachedFilter(
-            $this->parseRoles($roles)
+        return $this->modelsToIds(
+            $this->attachedFilter(
+                $this->parseRoles($roles)
+            )
         );
     }
 }
