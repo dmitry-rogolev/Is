@@ -181,6 +181,10 @@ trait HasRoles
         // При этом переданные идентификаторы и slug'и будут заменены на модели.
         $roles = $this->parseRoles($role);
 
+        if (empty($roles)) {
+            return false;
+        }
+
         // Возвращаем false, если хотябы одна роль не присоединена.
         foreach ($roles as $role) {
             if (! $this->checkRole($role)) {
