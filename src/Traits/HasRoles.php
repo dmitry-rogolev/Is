@@ -232,18 +232,14 @@ trait HasRoles
     public function is($model, bool $all = false): bool
     {
         if (
-            config('is.uses.extend_is_method') && (
-                $this->isId($model)
-                || is_string($model)
-                || is_a($model, config('is.models.role'))
-                || is_array($model)
-                || $model instanceof Arrayable
-            )
+            ! config('is.uses.extend_is_method') ||
+            $model instanceof Model &&
+            ! is_a($model, config('is.models.role'))
         ) {
-            return $this->hasRole($model, $all);
+            return parent::is($model);
         }
 
-        return parent::is($model);
+        return $this->hasRole($model, $all);
     }
 
     public function __call($method, $parameters)

@@ -2265,6 +2265,89 @@ class HasRolesTest extends TestCase
         $this->assertEquals(0, $user->level());
     }
 
+    /**
+     * Есть ли метод, проверяющий наличие ролей?
+     */
+    public function test_is(): void
+    {
+        config(['is.uses.extend_is_method' => true]);
+        config(['is.uses.load_on_update' => true]);
+        config(['is.uses.levels' => false]);
+        $user = $this->generate($this->user);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                   Подтверждаем возврат логического значения.                   ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $role = $this->generate($this->model);
+        $user->roles()->attach($role);
+        $user->loadRoles();
+        $condition = $user->is($role);
+        $this->assertIsBool($condition);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                             Передаем идентификатор.                            ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $role = $this->generate($this->model);
+        $user->roles()->attach($role);
+        $user->loadRoles();
+        $condition = $user->is($role);
+        $this->assertTrue($condition);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                            Передаем массив slug'ов.                            ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = [
+            $this->generate($this->model)->getSlug(),
+            $this->generate($this->model)->getSlug(),
+            $this->generate($this->model)->getSlug(),
+        ];
+        $user->attachRole($roles);
+        $condition = $user->is($roles, true);
+        $this->assertTrue($condition);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                            Передаем массив моделей.                            ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $roles = collect([
+            $this->generate($this->model),
+            $this->generate($this->model),
+            $this->generate($this->model),
+        ]);
+        $user->attachRole($roles->slice(0, 2));
+        $condition = $user->is($roles, true);
+        $this->assertFalse($condition);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                          Передаем отсутствующую роль.                          ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $role = $this->generate($this->model);
+        $condition = $user->is($role);
+        $this->assertFalse($condition);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                    Подтверждаем работу метода по умолчанию.                    ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $condition = $user->is($user);
+        $this->assertTrue($condition);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||       Подтверждаем работу метода по умолчанию при отключении расширения.       ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        config(['is.uses.extend_is_method' => false]);
+        $role = $this->generate($this->model);
+        $user->roles()->attach($role);
+        $user->loadRoles();
+        $condition = $user->is($role);
+        $this->assertFalse($condition);
+    }
+
     // /**
     //  * Есть ли магический метод, проверяющий наличие роли по его slug'у?
     //  */
