@@ -3,11 +3,8 @@
 namespace dmitryrogolev\Is\Tests\Feature\Traits;
 
 use BadMethodCallException;
-use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;
-use dmitryrogolev\Is\Traits\ExtendIsMethod;
-use dmitryrogolev\Is\Traits\HasLevels;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 

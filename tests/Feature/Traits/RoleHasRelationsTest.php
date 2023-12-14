@@ -2,9 +2,9 @@
 
 namespace dmitryrogolev\Is\Tests\Feature\Traits;
 
-use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * Тестируем функционал, добавляющий модели роли отношения с другими моделями.
@@ -14,14 +14,59 @@ class RoleHasRelationsTest extends TestCase
     use RefreshDatabase;
 
     /**
+     * Имя модели роли.
+     */
+    protected string $model;
+
+    /**
+     * Имя модели пользователя.
+     */
+    protected string $user;
+
+    /**
+     * Имя промежуточной модели.
+     */
+    protected string $pivot;
+
+    /**
+     * Имя первичного ключа.
+     */
+    protected string $keyName;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->model = config('is.models.role');
+        $this->user = config('is.models.user');
+        $this->pivot = config('is.models.roleable');
+        $this->keyName = config('is.primary_key');
+    }
+
+    /**
      * Относится ли роль к множеству моделей?
      */
     public function test_roleables(): void
     {
-        $role = Is::generate();
-        $users = config('is.models.user')::factory()->count(3)->create();
-        $users->each(fn ($item) => $item->roles()->attach($role));
-        $this->assertEquals($users->pluck(config('is.primary_key')), $role->roleables(config('is.models.user'))->get()->pluck(config('is.primary_key')));
+        $role = $this->generate($this->model);
+
+        $users = $this->generate($this->user, 3);
+        $users->each(fn ($user) => $user->roles()->attach($role));
+        $expected = $users->pluck($this->keyName)->all();
+        $relation = $role->roleables($this->user);
+        $actual = $relation->get()->pluck($this->keyName)->all();
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                         Подтверждаем возврат отношения.                        ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $this->assertInstanceOf(MorphToMany::class, $relation);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                        Подтверждаем получение отношения.                       ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $this->assertEquals($expected, $actual);
     }
 
     /**
@@ -29,19 +74,28 @@ class RoleHasRelationsTest extends TestCase
      */
     public function test_roleables_with_timestamps(): void
     {
-        $role = Is::generate();
-        config('is.models.user')::factory()->create()->roles()->attach($role);
-        $createdAtColumn = app(config('is.models.roleable'))->getCreatedAtColumn();
-        $updatedAtColumn = app(config('is.models.roleable'))->getUpdatedAtColumn();
-        $user = fn () => $role->roleables(config('is.models.user'))->first();
-        $checkTimestamps = fn () => $user()->pivot->{$createdAtColumn} && $user()->pivot->{$updatedAtColumn};
+        $role = $this->generate($this->model);
+        $users = $this->generate($this->user, 3);
+        $users->each(fn ($user) => $user->roles()->attach($role));
+        $createdAtColumn = app($this->pivot)->getCreatedAtColumn();
+        $updatedAtColumn = app($this->pivot)->getUpdatedAtColumn();
 
-        // Включаем временные метки моделей.
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||            Подтверждаем наличие временных меток при включении опции.           ||
+        // ! ||--------------------------------------------------------------------------------||
+
         config(['is.uses.timestamps' => true]);
-        $this->assertTrue($checkTimestamps());
+        $pivot = $role->roleables($this->user)->first()->pivot;
+        $this->assertNotNull($pivot->{$createdAtColumn});
+        $this->assertNotNull($pivot->{$updatedAtColumn});
 
-        // Отключаем временные метки моделей.
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||          Подтверждаем отсутствие временных меток при отключении опции.         ||
+        // ! ||--------------------------------------------------------------------------------||
+
         config(['is.uses.timestamps' => false]);
-        $this->assertFalse($checkTimestamps());
+        $pivot = $role->roleables($this->user)->first()->pivot;
+        $this->assertNull($pivot->{$createdAtColumn});
+        $this->assertNull($pivot->{$updatedAtColumn});
     }
 }

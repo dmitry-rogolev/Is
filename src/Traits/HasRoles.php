@@ -4,7 +4,6 @@ namespace dmitryrogolev\Is\Traits;
 
 use BadMethodCallException;
 use dmitryrogolev\Is\Facades\Is;
-use dmitryrogolev\Slug\Facades\Slug;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;

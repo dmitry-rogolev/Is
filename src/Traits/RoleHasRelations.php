@@ -12,7 +12,7 @@ trait RoleHasRelations
     /**
      * Роль относится к множеству моделей.
      *
-     * @param  string  $related Имя модели
+     * @param  string  $related Имя модели.
      */
     public function roleables(string $related): MorphToMany
     {
