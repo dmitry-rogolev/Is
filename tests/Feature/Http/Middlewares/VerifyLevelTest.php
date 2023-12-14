@@ -13,12 +13,36 @@ class VerifyLevelTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Имя модели роли.
+     *
+     * @var string
+     */
+    protected string $model;
+
+    /**
+     * Имя модели пользователя. 
+     *
+     * @var string
+     */
+    protected string $user;
+
+    /**
+     * Имя slug'а.
+     *
+     * @var string
+     */
+    protected string $slugName;
+
     public function setUp(): void
     {
         parent::setUp();
 
-        // Включаем иерархию ролей.
         config(['is.uses.levels' => true]);
+
+        $this->model = config('is.models.role');
+        $this->user = config('is.models.user');
+        $this->slugName = app($this->model)->getSlugName();
     }
 
     /**
@@ -26,9 +50,6 @@ class VerifyLevelTest extends TestCase
      */
     public function test_without_auth(): void
     {
-        $user = $this->generate(config('is.models.user'));
-        $user->attachRole(Is::generate(['slug' => 'user', 'level' => 1]));
-
         $response = $this->get('level/1');
         $response->assertStatus(403);
     }
@@ -38,8 +59,9 @@ class VerifyLevelTest extends TestCase
      */
     public function test_with_level(): void
     {
-        $user = $this->generate(config('is.models.user'));
-        $user->attachRole(Is::generate(['slug' => 'user', 'level' => 2]));
+        $user = $this->generate($this->user);
+        $role = $this->generate($this->model, [$this->slugName => 'user', 'level' => 2]);
+        $user->roles()->attach($role);
 
         $response = $this->actingAs($user)->get('level/2');
         $response->assertStatus(200);
@@ -50,8 +72,9 @@ class VerifyLevelTest extends TestCase
      */
     public function test_with_lower_level(): void
     {
-        $user = $this->generate(config('is.models.user'));
-        $user->attachRole(Is::generate(['slug' => 'user', 'level' => 2]));
+        $user = $this->generate($this->user);
+        $role = $this->generate($this->model, [$this->slugName => 'user', 'level' => 2]);
+        $user->roles()->attach($role);
 
         $response = $this->actingAs($user)->get('level/3');
         $response->assertStatus(403);
@@ -62,8 +85,9 @@ class VerifyLevelTest extends TestCase
      */
     public function test_with_large_level(): void
     {
-        $user = $this->generate(config('is.models.user'));
-        $user->attachRole(Is::generate(['slug' => 'user', 'level' => 5]));
+        $user = $this->generate($this->user);
+        $role = $this->generate($this->model, [$this->slugName => 'user', 'level' => 5]);
+        $user->roles()->attach($role);
 
         $response = $this->actingAs($user)->get('level/4');
         $response->assertStatus(200);
