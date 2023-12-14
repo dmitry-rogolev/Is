@@ -259,15 +259,13 @@ trait HasRoles
      * Магический метод. Проверяет наличие роли по его slug'у.
      *
      * Пример вызова: isAdmin(), isUser().
-     *
-     * @param  string  $method
      */
-    protected function callMagicIsRole($method): ?bool
+    protected function callMagicIsRole(string $method): ?bool
     {
         if (str_starts_with($method, 'is')) {
             $slug = str($method)->after('is')->snake(config('is.separator'))->toString();
 
-            return $this->hasRole($slug);
+            return $this->hasOneRole($slug);
         }
 
         return null;

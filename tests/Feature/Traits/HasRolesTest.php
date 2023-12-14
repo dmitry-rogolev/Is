@@ -2,6 +2,7 @@
 
 namespace dmitryrogolev\Is\Tests\Feature\Traits;
 
+use BadMethodCallException;
 use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;
@@ -2348,114 +2349,49 @@ class HasRolesTest extends TestCase
         $this->assertFalse($condition);
     }
 
-    // /**
-    //  * Есть ли магический метод, проверяющий наличие роли по его slug'у?
-    //  */
-    // public function test_call_magic_is_role(): void
-    // {
-    //     // Включаем авто подгрузку ролей.
-    //     Is::usesLoadOnUpdate(true);
+    /**
+     * Есть ли магический метод, проверяющий наличие роли по его slug'у?
+     */
+    public function test_call_magic_is_role(): void
+    {
+        config(['is.uses.load_on_update' => true]);
+        config(['is.uses.levels' => false]);
+        $user = $this->generate($this->user);
 
-    //     // Включаем иерархию ролей.
-    //     Is::usesLevels(true);
-    //     $level1 = Is::generate(['level' => 1]);
-    //     $level2 = Is::generate(['level' => 2]);
-    //     $level3 = Is::generate(['level' => 3]);
-    //     $user = $this->getUser();
-    //     $user->attachRole($level2);
-    //     $this->assertTrue($user->{'is'.ucfirst($level2->slug)}());
-    //     $this->assertTrue($user->{'is'.ucfirst($level1->slug)}());
-    //     $this->assertFalse($user->{'is'.ucfirst($level3->slug)}());
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                   Подтверждаем возврат логического значения.                   ||
+        // ! ||--------------------------------------------------------------------------------||
 
-    //     // Отключаем иерархию ролей.
-    //     Is::usesLevels(false);
-    //     $role = Is::generate();
-    //     $user->attachRole($role);
-    //     $this->assertTrue($user->{'is'.ucfirst($role->slug)}());
-    //     $this->assertFalse($user->{'is'.ucfirst(Is::generate()->slug)}());
-    // }
+        $role = $this->generate($this->model);
+        $user->attachRole($role);
+        $method = 'is'.ucfirst($role->getSlug());
+        $condition = $user->{$method}();
+        $this->assertIsBool($condition);
 
-    // /**
-    //  * Подключены ли трейты согласно конфигурации?
-    //  */
-    // public function test_uses_traits(): void
-    // {
-    //     $traits = collect(class_uses_recursive(app(config('is.models.user'))));
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                           Подтверждаем наличие роли.                           ||
+        // ! ||--------------------------------------------------------------------------------||
 
-    //     $this->assertTrue($traits->contains(HasLevels::class));
-    //     $this->assertTrue($traits->contains(ExtendIsMethod::class));
-    // }
+        $role = $this->generate($this->model);
+        $user->attachRole($role);
+        $method = 'is'.ucfirst($role->getSlug());
+        $condition = $user->{$method}();
+        $this->assertTrue($condition);
 
-    // /**
-    //  * Есть ли метод, возвращающий роль с наибольшим уровнем?
-    //  */
-    // public function test_role(): void
-    // {
-    //     // Включаем авто подгрузку ролей.
-    //     Is::usesLoadOnUpdate(true);
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                          Подтверждаем отсутствие роли.                         ||
+        // ! ||--------------------------------------------------------------------------------||
 
-    //     // Включаем иерархию ролей.
-    //     Is::usesLevels(true);
+        $role = $this->generate($this->model);
+        $method = 'is'.ucfirst($role->getSlug());
+        $condition = $user->{$method}();
+        $this->assertFalse($condition);
 
-    //     $user = $this->getUser();
-    //     $user->attachRole(Is::generate(['level' => 1]));
-    //     $user->attachRole(Is::generate(['level' => 2]));
-    //     $role = Is::generate(['level' => 3]);
-    //     $user->attachRole($role);
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                         Подтверждаем выброс исключения.                        ||
+        // ! ||--------------------------------------------------------------------------------||
 
-    //     $this->assertTrue($role->is($user->role()));
-    // }
-
-    // /**
-    //  * Есть ли метод, возвращающий наибольший уровень ролей, привязанных к модели?
-    //  */
-    // public function test_level(): void
-    // {
-    //     // Включаем авто подгрузку ролей.
-    //     Is::usesLoadOnUpdate(true);
-
-    //     // Включаем иерархию ролей.
-    //     Is::usesLevels(true);
-
-    //     $user = $this->getUser();
-    //     $user->attachRole(Is::generate(['level' => 1]));
-    //     $user->attachRole(Is::generate(['level' => 2]));
-    //     $user->attachRole(Is::generate(['level' => 3]));
-
-    //     $this->assertEquals(3, $user->level());
-    // }
-
-    // /**
-    //  * Есть ли метод, расширяющий метод "is"?
-    //  */
-    // public function test_is(): void
-    // {
-    //     // Включаем авто подгрузку ролей.
-    //     Is::usesLoadOnUpdate(true);
-
-    //     // Включаем иерархию ролей.
-    //     Is::usesLevels(true);
-
-    //     // Включаем расширение метода "is" модели Eloquent.
-    //     Is::usesExtendIsMethod(true);
-
-    //     $user = $this->getUser();
-    //     $level1 = Is::generate(['level' => 1]);
-    //     $level2 = Is::generate(['level' => 2]);
-    //     $level3 = Is::generate(['level' => 3]);
-    //     $user->attachRole($level2);
-
-    //     // Проверяем возможность сравнения моделей.
-    //     $this->assertTrue($user->is($user));
-    //     $this->assertFalse($user->is($this->getUser()));
-
-    //     // Проверяем наличие роли.
-    //     $this->assertTrue($user->is($level2));
-    //     $this->assertTrue($user->is($level1->getKey()));
-    //     $this->assertFalse($user->is($level3));
-
-    //     // Проверяем наличие нескольких ролей.
-    //     $this->assertTrue($user->is([$level1, $level2], true));
-    //     $this->assertFalse($user->is([$level1, $level2, $level3], true));
-    // }
+        $this->expectException(BadMethodCallException::class);
+        $user->undefined();
+    }
 }
