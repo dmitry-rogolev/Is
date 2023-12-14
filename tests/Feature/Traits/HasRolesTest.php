@@ -2072,10 +2072,8 @@ class HasRolesTest extends TestCase
 
     /**
      * Есть ли метод, проверяющий наличие всех ролей у модели?
-     *
-     * @return void
      */
-    public function test_has_all_roles_without_levels(): void 
+    public function test_has_all_roles_without_levels(): void
     {
         config(['is.uses.load_on_update' => true]);
         config(['is.uses.levels' => false]);
@@ -2189,6 +2187,82 @@ class HasRolesTest extends TestCase
         $this->resetQueryExecutedCount();
         $user->hasRole($roles, true);
         $this->assertQueryExecutedCount(1);
+    }
+
+    /**
+     * Есть ли метод, возвращающий роль модели с максимальным уровнем доступа.
+     */
+    public function test_role(): void
+    {
+        config(['is.uses.load_on_update' => true]);
+        config(['is.uses.levels' => true]);
+        $user = $this->generate($this->user);
+        $level1 = $this->generate($this->model, ['level' => 1]);
+        $level2 = $this->generate($this->model, ['level' => 2]);
+        $level3 = $this->generate($this->model, ['level' => 3]);
+        $user->roles()->attach($level2);
+        $user->loadRoles();
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                          Подтверждаем возврат модели.                          ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $role = $user->role();
+        $this->assertInstanceOf($this->model, $role);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                Подтверждаем возврат роли с максимальным уровнем.               ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $role = $user->role();
+        $this->assertTrue($level2->is($role));
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                 Подтверждаем возврат null при отсутствии ролей.                ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $user->roles()->detach();
+        $user->loadRoles();
+        $role = $user->role();
+        $this->assertNull($role);
+    }
+
+    /**
+     * Есть ли метод, возвращающий наибольший уровень присоединенных ролей.
+     */
+    public function test_level(): void
+    {
+        config(['is.uses.load_on_update' => true]);
+        config(['is.uses.levels' => true]);
+        $user = $this->generate($this->user);
+        $level1 = $this->generate($this->model, ['level' => 1]);
+        $level2 = $this->generate($this->model, ['level' => 2]);
+        $level3 = $this->generate($this->model, ['level' => 3]);
+        $user->roles()->attach($level2);
+        $user->loadRoles();
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                           Подтверждаем возврат числа.                          ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $level = $user->level();
+        $this->assertIsInt($level);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||                Подтверждаем возврат максимального уровня ролей.                ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $level = $user->level();
+        $this->assertEquals($level2->level, $level);
+
+        // ! ||--------------------------------------------------------------------------------||
+        // ! ||         Подтверждаем возврат нуля при отсутствии присоединенных ролей.         ||
+        // ! ||--------------------------------------------------------------------------------||
+
+        $user->roles()->detach();
+        $user->loadRoles();
+        $level = $user->level();
+        $this->assertEquals(0, $user->level());
     }
 
     // /**

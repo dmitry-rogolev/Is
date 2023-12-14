@@ -79,12 +79,12 @@ interface Roleable
     public function hasRole(mixed $role, bool $all = false): bool;
 
     /**
-     * Получить роль с наибольшим уровнем доступа.
+     * Возвращает роль с наибольшим уровнем доступа.
      */
     public function role(): ?Model;
 
     /**
-     * Получить наибольший уровень доступа из присоединенных ролей.
+     * Возвращает наибольший уровень доступа присоединенных ролей.
      */
     public function level(): int;
 }
