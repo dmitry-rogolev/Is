@@ -2,7 +2,6 @@
 
 namespace dmitryrogolev\Is\Tests\Feature\Http\Middlewares;
 
-use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;
 
@@ -15,22 +14,16 @@ class VerifyLevelTest extends TestCase
 
     /**
      * Имя модели роли.
-     *
-     * @var string
      */
     protected string $model;
 
     /**
-     * Имя модели пользователя. 
-     *
-     * @var string
+     * Имя модели пользователя.
      */
     protected string $user;
 
     /**
      * Имя slug'а.
-     *
-     * @var string
      */
     protected string $slugName;
 

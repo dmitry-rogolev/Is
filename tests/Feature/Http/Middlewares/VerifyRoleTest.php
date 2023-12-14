@@ -2,7 +2,6 @@
 
 namespace dmitryrogolev\Is\Tests\Feature\Http\Middlewares;
 
-use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;
 
@@ -15,31 +14,25 @@ class VerifyRoleTest extends TestCase
 
     /**
      * Имя модели роли.
-     *
-     * @var string
      */
     protected string $model;
 
     /**
-     * Имя модели пользователя. 
-     *
-     * @var string
+     * Имя модели пользователя.
      */
     protected string $user;
 
     /**
      * Имя slug'а.
-     *
-     * @var string
      */
     protected string $slugName;
 
-    public function setUp(): void 
+    public function setUp(): void
     {
         parent::setUp();
 
         config(['is.uses.levels' => false]);
-        
+
         $this->model = config('is.models.role');
         $this->user = config('is.models.user');
         $this->slugName = app($this->model)->getSlugName();

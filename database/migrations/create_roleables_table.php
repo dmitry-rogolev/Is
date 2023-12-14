@@ -22,7 +22,7 @@ return new class extends Migration
     }
 
     /**
-     * Запустить миграцию
+     * Запустить миграцию.
      */
     public function up(): void
     {
@@ -30,13 +30,9 @@ return new class extends Migration
 
         if (! $exists) {
             Schema::create($this->table, function (Blueprint $table) {
-                // Внешний ключ роли.
                 $table->foreignIdFor(config('is.models.role'));
-
-                // Внешний ключ модели, связанной с ролями.
                 $table->morphs(config('is.relations.roleable'));
 
-                // Временные метки.
                 if (config('is.uses.timestamps')) {
                     $table->timestamps();
                 }
@@ -45,7 +41,7 @@ return new class extends Migration
     }
 
     /**
-     * Откатить миграцию
+     * Откатить миграцию.
      */
     public function down(): void
     {

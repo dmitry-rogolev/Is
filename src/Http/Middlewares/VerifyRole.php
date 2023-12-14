@@ -23,15 +23,13 @@ class VerifyRole
 
     /**
      * Обработать входящий запрос.
-     *
-     * @param  int|string  $role
      */
-    public function handle(Request $request, \Closure $next, ...$role): mixed
+    public function handle(Request $request, \Closure $next, mixed ...$role): mixed
     {
         if ($this->auth->check() && $this->auth->user() instanceof Roleable && $this->auth->user()->hasRole($role)) {
             return $next($request);
         }
 
-        abort(403, sprintf('Доступ запрещен. Нет требуемой роли "%s".', implode(',', $role)));
+        abort(403, 'Доступ запрещен. Нет требуемой роли "'.implode(',', $role).'".');
     }
 }

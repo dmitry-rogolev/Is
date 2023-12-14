@@ -27,16 +27,13 @@ class RoleFactory extends Factory
     public function definition(): array
     {
         $name = fake()->unique()->word();
+        $slugName = app($this->model)->getSlugName();
 
-        $definition = [
+        return [
             'name' => ucfirst($name),
+            $slugName => $this->model::toSlug($name),
             'description' => ucfirst($name).' role',
             'level' => fake()->numberBetween(1, 9),
         ];
-
-        $slugName = app($this->model)->getSlugName();
-        $definition[$slugName] = $this->model::toSlug($name);
-
-        return $definition;
     }
 }

@@ -36,10 +36,7 @@ class IsServiceProvider extends ServiceProvider
         if (config('is.uses.middlewares')) {
             $this->app['router']->aliasMiddleware('is', VerifyRole::class);
             $this->app['router']->aliasMiddleware('role', VerifyRole::class);
-
-            if (config('is.uses.levels')) {
-                $this->app['router']->aliasMiddleware('level', VerifyLevel::class);
-            }
+            $this->app['router']->aliasMiddleware('level', VerifyLevel::class);
         }
     }
 
@@ -119,16 +116,14 @@ class IsServiceProvider extends ServiceProvider
                 return '<?php endif; ?>';
             });
 
-            if (config('is.uses.levels')) {
-                $blade->directive('level', function ($expression) {
-                    $level = trim($expression, '()');
+            $blade->directive('level', function ($expression) {
+                $level = trim($expression, '()');
 
-                    return "<?php if (Auth::check() && Auth::user()->level() >= {$level}): ?>";
-                });
-                $blade->directive('endlevel', function () {
-                    return '<?php endif; ?>';
-                });
-            }
+                return "<?php if (Auth::check() && Auth::user()->level() >= {$level}): ?>";
+            });
+            $blade->directive('endlevel', function () {
+                return '<?php endif; ?>';
+            });
         }
     }
 

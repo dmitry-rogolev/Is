@@ -23,15 +23,13 @@ class VerifyLevel
 
     /**
      * Обработать входящий запрос.
-     *
-     * @param  string  $level
      */
-    public function handle(Request $request, \Closure $next, $level): mixed
+    public function handle(Request $request, \Closure $next, mixed $level): mixed
     {
         if ($this->auth->check() && $this->auth->user() instanceof Roleable && $this->auth->user()->level() >= intval($level)) {
             return $next($request);
         }
 
-        abort(403, sprintf('Доступ запрещен. Нет требуемого уровня "%s".', $level));
+        abort(403, "Доступ запрещен. Нет требуемого уровня \"$level\".");
     }
 }

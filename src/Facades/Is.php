@@ -5,12 +5,12 @@ namespace dmitryrogolev\Is\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * Фасад для работы с таблицей ролей.
+ * Фасад работы с сервисом ролей.
  */
 class Is extends Facade
 {
     /**
-     * Получить зарегистрированное имя компонента.
+     * Возвращает имя компонента.
      *
      * @return string
      */

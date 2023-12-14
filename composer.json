@@ -43,7 +43,6 @@
     },
     "autoload": {
         "psr-4": {
-            "dmitryrogolev\\": "src/",
             "dmitryrogolev\\Is\\": "src/",
             "dmitryrogolev\\Is\\Database\\Factories\\": "database/factories/",
             "dmitryrogolev\\Is\\Database\\Seeders\\": "database/seeders/"

@@ -14,9 +14,21 @@ return new class extends Migration
      */
     protected string $table;
 
+    /**
+     * Имя первичного ключа.
+     */
+    protected string $keyName;
+
+    /**
+     * Имя slug'а.
+     */
+    protected string $slugName;
+
     public function __construct()
     {
         $this->table = config('is.tables.roles');
+        $this->keyName = config('is.primary_key');
+        $this->slugName = app(config('is.models.role'))->getSlugName();
     }
 
     /**
@@ -28,32 +40,16 @@ return new class extends Migration
 
         if (! $exists) {
             Schema::create($this->table, function (Blueprint $table) {
-                // Первичный ключ.
-                if (config('is.uses.uuid')) {
-                    $table->uuid(config('is.primary_key'));
-                } else {
-                    $table->id(config('is.primary_key'));
-                }
-
-                // Название роли.
+                config('is.uses.uuid') ? $table->uuid($this->keyName) : $table->id($this->keyName);
                 $table->string('name', 255);
-
-                // Человеко-понятный идентификатор роли.
-                $slugName = app(config('is.models.role'))->getSlugName();
-                $table->string($slugName, 255)->unique();
-
-                // Описание роли.
+                $table->string($this->slugName, 255)->unique();
                 $table->text('description')->nullable();
-
-                // Уровень доступа роли.
                 $table->tinyInteger('level')->default(0);
 
-                // Временные метки.
                 if (config('is.uses.timestamps')) {
                     $table->timestamps();
                 }
 
-                // Временная метка программного удаления.
                 if (config('is.uses.soft_deletes')) {
                     $table->softDeletes();
                 }
