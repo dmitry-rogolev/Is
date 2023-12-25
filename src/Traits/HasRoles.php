@@ -329,11 +329,11 @@ trait HasRoles
      * @param  array<int, mixed>  $roles
      * @return array<int, \Illuminate\Database\Eloquent\Model>
      */
-    protected function replaceIdsWithModels(array $roles): array
+    protected function replaceIdsWithRoles(array $roles): array
     {
         // Сортируем переданный массив. Складываем модели в один массив,
         // а идентификаторы и slug'и в другой массив.
-        [$result, $ids] = $this->sortModelsAndIds($roles);
+        [$result, $ids] = $this->sortRolesAndIds($roles);
 
         // Если были переданы идентификаторы и(или) slug'и, получаем по ним модели,
         // а затем добавляем их в результирующий массив.
@@ -351,7 +351,7 @@ trait HasRoles
      * @param  array<int, mixed>  $roles
      * @return array<int, array<int, mixed>>
      */
-    protected function sortModelsAndIds(array $roles): array
+    protected function sortRolesAndIds(array $roles): array
     {
         $ids = [];
         $models = [];
@@ -375,7 +375,7 @@ trait HasRoles
      */
     protected function parseRoles(mixed $roles): array
     {
-        return $this->replaceIdsWithModels(
+        return $this->replaceIdsWithRoles(
             $this->toFlattenArray($roles)
         );
     }
@@ -386,7 +386,7 @@ trait HasRoles
      * @param  array<int, \Illuminate\Database\Eloquent\Model>  $roles
      * @return array<int, \Illuminate\Database\Eloquent\Model>
      */
-    protected function notAttachedFilter(array $roles): array
+    protected function notAttachedRolesFilter(array $roles): array
     {
         return array_values(array_filter($roles, fn ($role) => ! $this->checkRole($role)));
     }
@@ -397,7 +397,7 @@ trait HasRoles
      * @param  array<int, \Illuminate\Database\Eloquent\Model>  $roles
      * @return array<int, \Illuminate\Database\Eloquent\Model>
      */
-    protected function attachedFilter(array $roles): array
+    protected function attachedRolesFilter(array $roles): array
     {
         return array_values(array_filter(
             $roles,
@@ -410,7 +410,7 @@ trait HasRoles
      *
      * @param  array<int, \Illuminate\Database\Eloquent\Model>  $roles
      */
-    protected function getModelWithMaxLevel(array $roles): ?Model
+    protected function getRoleWithMaxLevel(array $roles): ?Model
     {
         return collect($roles)->sortByDesc('level')->first();
     }
@@ -423,7 +423,7 @@ trait HasRoles
      */
     protected function useLevelsFilter(array $roles): array
     {
-        return config('is.uses.levels') && ! empty($roles) ? [$this->getModelWithMaxLevel($roles)] : $roles;
+        return config('is.uses.levels') && ! empty($roles) ? [$this->getRoleWithMaxLevel($roles)] : $roles;
     }
 
     /**
@@ -436,7 +436,7 @@ trait HasRoles
     {
         return $this->modelsToIds(
             $this->useLevelsFilter(
-                $this->notAttachedFilter(
+                $this->notAttachedRolesFilter(
                     $this->parseRoles($roles)
                 )
             )
@@ -452,7 +452,7 @@ trait HasRoles
     protected function getRolesForDetach(array $roles): array
     {
         return $this->modelsToIds(
-            $this->attachedFilter(
+            $this->attachedRolesFilter(
                 $this->parseRoles($roles)
             )
         );
