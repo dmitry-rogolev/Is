@@ -266,7 +266,6 @@ class HasRolesTest extends TestCase
 
         $role = $this->generate($this->model, ['level' => ++$level]);
         $this->resetQueryExecutedCount();
-        $this->resetQueries();
         $user->attachRole($role);
         $this->assertQueryExecutedCount(2);
 
@@ -654,7 +653,6 @@ class HasRolesTest extends TestCase
 
         $role = $this->generate($this->model);
         $this->resetQueryExecutedCount();
-        $this->resetQueries();
         $user->attachRole($role);
         $this->assertQueryExecutedCount(2);
 
