@@ -59,7 +59,7 @@ trait HasRoles
         //
         // Наконец, заменяем модели на их идентификаторы,
         // так как метод attach ожидает массив идентификаторов.
-        $roles = $this->getModelsForAttach($role);
+        $roles = $this->getRolesForAttach($role);
 
         if (empty($roles)) {
             return false;
@@ -98,7 +98,7 @@ trait HasRoles
         //
         // Наконец, заменяем модели на их идентификаторы,
         // так как метод detach ожидает массив идентификаторов.
-        $roles = $this->getModelsForDetach($roles);
+        $roles = $this->getRolesForDetach($roles);
 
         if (empty($roles)) {
             return false;
@@ -313,6 +313,17 @@ trait HasRoles
     }
 
     /**
+     * Заменяет модели на их идентификаторы.
+     *
+     * @param  array<int, \Illuminate\Database\Eloquent\Model>  $models
+     * @return array<int, mixed>
+     */
+    protected function modelsToIds(array $models): array
+    {
+        return collect($models)->pluck($this->getKeyName())->all();
+    }
+
+    /**
      * Заменяет идентификаторы и slug'и на модели.
      *
      * @param  array<int, mixed>  $roles
@@ -416,23 +427,12 @@ trait HasRoles
     }
 
     /**
-     * Заменяет модели на их идентификаторы.
-     *
-     * @param  array<int, \Illuminate\Database\Eloquent\Model>  $roles
-     * @return array<int, mixed>
-     */
-    protected function modelsToIds(array $roles): array
-    {
-        return collect($roles)->pluck($this->getKeyName())->all();
-    }
-
-    /**
      * Возвращает модели ролей, которые могут быть присоединены к модели.
      *
      * @param  array<int, mixed>  $roles
      * @return array<int, mixed>
      */
-    protected function getModelsForAttach(array $roles): array
+    protected function getRolesForAttach(array $roles): array
     {
         return $this->modelsToIds(
             $this->useLevelsFilter(
@@ -449,7 +449,7 @@ trait HasRoles
      * @param  array<int, mixed>  $roles
      * @return array<int, mixed>
      */
-    protected function getModelsForDetach(array $roles): array
+    protected function getRolesForDetach(array $roles): array
     {
         return $this->modelsToIds(
             $this->attachedFilter(

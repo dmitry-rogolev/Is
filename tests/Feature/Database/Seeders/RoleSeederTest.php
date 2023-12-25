@@ -18,11 +18,17 @@ class RoleSeederTest extends TestCase
      */
     protected string $roleSeeder;
 
+    /**
+     * Имя slug'а.
+     */
+    protected string $slugName;
+
     public function setUp(): void
     {
         parent::setUp();
 
         $this->roleSeeder = config('is.seeders.role');
+        $this->slugName = app(config('is.models.role'))->getSlugName();
     }
 
     /**
@@ -33,7 +39,7 @@ class RoleSeederTest extends TestCase
         $roles = app($this->roleSeeder)->getRoles();
         $checkFields = collect($roles)->every(
             fn ($item) => array_key_exists('name', $item)
-            && array_key_exists('slug', $item)
+            && array_key_exists($this->slugName, $item)
             && array_key_exists('description', $item)
             && array_key_exists('level', $item)
         );
