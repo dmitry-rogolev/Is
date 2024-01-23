@@ -23,9 +23,6 @@ class IsServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfig();
-        $this->loadMigrations();
-        $this->publishFiles();
-        $this->registerCommands();
     }
 
     /**
@@ -33,6 +30,11 @@ class IsServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->loadMigrations();
+        $this->loadRoutes();
+        $this->publishFiles();
+        $this->registerCommands();
+        
         if (config('is.uses.middlewares')) {
             $this->app['router']->aliasMiddleware('is', VerifyRole::class);
             $this->app['router']->aliasMiddleware('role', VerifyRole::class);
@@ -56,6 +58,11 @@ class IsServiceProvider extends ServiceProvider
         if (config('is.uses.migrations')) {
             $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
         }
+    }
+
+    public function loadRoutes(): void 
+    {
+        $this->loadRoutesFrom(__DIR__."/../../routes/web.php");
     }
 
     /**
