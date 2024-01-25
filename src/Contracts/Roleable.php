@@ -29,7 +29,7 @@ interface Roleable
     /**
      * Присоединяет роль(-и) к модели.
      *
-     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
+     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role  Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
      * @return bool Была ли присоединена хотябы одна роль?
      */
     public function attachRole(mixed ...$role): bool;
@@ -37,7 +37,7 @@ interface Roleable
     /**
      * Отсоединяет роль(-и).
      *
-     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
+     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role  Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
      * @return bool Была ли отсоединена хотябы одна роль?
      */
     public function detachRole(mixed ...$role): bool;
@@ -52,29 +52,29 @@ interface Roleable
     /**
      * Синхронизирует роли.
      *
-     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
+     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role  Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
      */
     public function syncRoles(mixed ...$roles): void;
 
     /**
      * Проверяет наличие хотябы одной роли из переданных.
      *
-     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
+     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role  Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
      */
     public function hasOneRole(mixed ...$role): bool;
 
     /**
      * Проверяет наличие всех переданных ролей.
      *
-     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
+     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  ...$role  Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
      */
     public function hasAllRoles(mixed ...$role): bool;
 
     /**
      * Проверяет наличие роли(-ей).
      *
-     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  $role Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
-     * @param  bool  $all Проверить наличие всех ролей?
+     * @param  \Illuminate\Contracts\Support\Arrayable|array|\Illuminate\Database\Eloquent\Model|string|int  $role  Идентификатор(-ы), slug(-и) или модель(-и) роли(-ей).
+     * @param  bool  $all  Проверить наличие всех ролей?
      */
     public function hasRole(mixed $role, bool $all = false): bool;
 

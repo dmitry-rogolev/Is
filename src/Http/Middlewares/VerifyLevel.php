@@ -30,6 +30,6 @@ class VerifyLevel
             return $next($request);
         }
 
-        abort(403, "Доступ запрещен. Нет требуемого уровня \"$level\".");
+        return redirect('/');
     }
 }

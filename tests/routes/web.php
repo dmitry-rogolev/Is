@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::get('/', fn () => true)->name('welcome');
+Route::get('login', fn () => true)->name('login');
+
 Route::middleware(['role:user'])->get('role/user', fn () => true);
 Route::middleware(['role:moderator'])->get('role/moderator', fn () => true);
 Route::middleware(['role:editor'])->get('role/editor', fn () => true);

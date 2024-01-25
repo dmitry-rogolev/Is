@@ -1,7 +1,7 @@
 {
     "name": "dmitryrogolev/is",
     "description": "Functional roles for the Laravel framework.",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "type": "library",
     "keywords": [
         "roles",
@@ -30,12 +30,17 @@
         {
             "type": "vcs",
             "url": "git@github.com:dmitry-rogolev/Service.git"
+        }, 
+        {
+            "type": "vcs",
+            "url": "git@github.com:dmitry-rogolev/Helper.git"
         }
     ],
     "require": {
         "laravel/framework": "^10.30",
         "dmitryrogolev/service": "^0.0.1",
-        "dmitryrogolev/slug": "^0.0.1"
+        "dmitryrogolev/slug": "^0.0.1",
+        "dmitryrogolev/helper": "^0.0.3"
     },
     "require-dev": {
         "orchestra/testbench": "^8.15",

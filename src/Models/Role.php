@@ -58,7 +58,7 @@ abstract class BaseRole extends Model implements ContractRoleHasRelations, Slugg
     /**
      * Приводит переданную строку к "slug" значению.
      *
-     * @param  string  $str Входная строка.
+     * @param  string  $str  Входная строка.
      */
     public static function toSlug(string $str): string
     {

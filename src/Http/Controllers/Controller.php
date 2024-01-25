@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Http\Controllers;
 
@@ -8,6 +8,6 @@ use Illuminate\Routing\Controller as BaseController;
 
 abstract class Controller extends BaseController
 {
-	use AuthorizesRequests;
-	use ValidatesRequests;
+    use AuthorizesRequests;
+    use ValidatesRequests;
 }

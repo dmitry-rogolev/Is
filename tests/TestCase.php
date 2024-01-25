@@ -3,12 +3,14 @@
 namespace dmitryrogolev\Is\Tests;
 
 use dmitryrogolev\Is\Providers\IsServiceProvider;
+use dmitryrogolev\Testing\Concerns\InteractsWithDatabase;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
+    use InteractsWithDatabase;
+
     /**
      * Количество выполненных запросов к БД.
      */
@@ -25,7 +27,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
     {
         parent::setUp();
 
-        $this->registerListeners();
+        $this->registerQueryListener();
     }
 
     /**
@@ -75,40 +77,5 @@ class TestCase extends \Orchestra\Testbench\TestCase
         $factory = $class::factory($count, $state);
 
         return $create ? $factory->create() : $factory->make();
-    }
-
-    /**
-     * Зарегистрировать слушатели событий.
-     */
-    protected function registerListeners(): void
-    {
-        DB::listen(function ($query) {
-            $this->queryExecutedCount++;
-            $this->queries[] = $query->sql;
-        });
-    }
-
-    /**
-     * Сбросить количество выполненных запросов к БД.
-     */
-    protected function resetQueryExecutedCount(): void
-    {
-        $this->queryExecutedCount = 0;
-    }
-
-    /**
-     * Сбрасывает список SQL-запросов, отправленных на выполнение.
-     */
-    protected function resetQueries(): void
-    {
-        $this->queries = [];
-    }
-
-    /**
-     * Подтвердить количество выполненных запросов к БД.
-     */
-    protected function assertQueryExecutedCount(int $expectedCount, ?string $message = ''): void
-    {
-        $this->assertEquals($expectedCount, $this->queryExecutedCount, $message);
     }
 }

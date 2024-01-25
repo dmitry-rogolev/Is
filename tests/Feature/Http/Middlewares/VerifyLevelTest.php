@@ -44,7 +44,7 @@ class VerifyLevelTest extends TestCase
     public function test_without_auth(): void
     {
         $response = $this->get('level/1');
-        $response->assertStatus(403);
+        $response->assertRedirectToRoute('welcome');
     }
 
     /**
@@ -70,7 +70,7 @@ class VerifyLevelTest extends TestCase
         $user->roles()->attach($role);
 
         $response = $this->actingAs($user)->get('level/3');
-        $response->assertStatus(403);
+        $response->assertRedirectToRoute('welcome');
     }
 
     /**

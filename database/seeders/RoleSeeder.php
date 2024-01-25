@@ -25,8 +25,6 @@ class RoleSeeder extends Seeder
     {
         return [
             ['name' => 'Admin', 'slug' => 'admin', 'description' => 'Admin role', 'level' => 5],
-            ['name' => 'Editor', 'slug' => 'editor', 'description' => 'Editor role', 'level' => 3],
-            ['name' => 'Moderator', 'slug' => 'moderator', 'description' => 'Moderator role', 'level' => 2],
             ['name' => 'User', 'slug' => 'user', 'description' => 'User role', 'level' => 1],
         ];
     }

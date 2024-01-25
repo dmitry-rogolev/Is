@@ -1,19 +1,20 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Actions;
 
 use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Http\Requests\StoreRoleRequest;
 use dmitryrogolev\Is\Http\Resources\RoleResource;
+use Illuminate\Database\Eloquent\Model;
 
-class CreateNewRole 
+class CreateNewRole
 {
-	public function handle(StoreRoleRequest $request): RoleResource
-	{
-		$validated = $request->validated();
+    public function handle(StoreRoleRequest $request): RoleResource|Model
+    {
+        $validated = $request->validated();
 
-		$role = Is::create($validated);
+        $role = Is::create($validated);
 
-		return new RoleResource($role);
-	}
+        return new RoleResource($role);
+    }
 }

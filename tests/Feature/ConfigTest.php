@@ -191,4 +191,12 @@ class ConfigTest extends TestCase
     {
         $this->assertTrue(is_bool(config('is.uses.levels')));
     }
+
+    /**
+     * Есть ли конфигурация флага использования функционала API?
+     */
+    public function test_uses_api(): void
+    {
+        $this->assertTrue(is_bool(config('is.uses.api')));
+    }
 }

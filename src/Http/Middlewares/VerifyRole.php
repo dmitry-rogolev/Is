@@ -30,6 +30,6 @@ class VerifyRole
             return $next($request);
         }
 
-        abort(403, 'Доступ запрещен. Нет требуемой роли "'.implode(',', $role).'".');
+        return redirect('/');
     }
 }

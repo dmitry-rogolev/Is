@@ -35,6 +35,7 @@
     <env name="IS_USES_LOAD_ON_UPDATE" value="true" />
     <env name="IS_USES_EXTEND_IS_METHOD" value="true" />
     <env name="IS_USES_LEVELS" value="true" />
+    <env name="IS_USES_API" value="true" />
   </php>
   <source>
     <include>

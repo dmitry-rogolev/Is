@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Actions;
 
@@ -6,10 +6,10 @@ use dmitryrogolev\Is\Http\Resources\RoleResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
-class ShowRole 
+class ShowRole
 {
-	public function handle(Request $request, Model $role): RoleResource
-	{
-		return new RoleResource($role);
-	}
+    public function handle(Request $request, Model $role): RoleResource|Model
+    {
+        return new RoleResource($role);
+    }
 }

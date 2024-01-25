@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace dmitryrogolev\Is\Actions;
 
@@ -9,10 +9,10 @@ use Illuminate\Http\Request;
 
 class RestoreRole
 {
-	public function handle(Request $request, Model $role): RoleResource
-	{
-		Is::restore($role);
+    public function handle(Request $request, Model $role): RoleResource
+    {
+        Is::restore($role);
 
-		return new RoleResource($role);
-	}
+        return new RoleResource($role);
+    }
 }

@@ -44,7 +44,7 @@ class VerifyRoleTest extends TestCase
     public function test_without_auth(): void
     {
         $response = $this->get('role/user');
-        $response->assertStatus(403);
+        $response->assertRedirectToRoute('welcome');
     }
 
     /**
@@ -57,7 +57,7 @@ class VerifyRoleTest extends TestCase
         $user->roles()->attach($role);
 
         $response = $this->actingAs($user)->get('is/editor');
-        $response->assertStatus(403);
+        $response->assertRedirectToRoute('welcome');
     }
 
     /**
@@ -97,7 +97,7 @@ class VerifyRoleTest extends TestCase
         $user->roles()->attach($role);
 
         $response = $this->actingAs($user)->get('role/editor');
-        $response->assertStatus(403);
+        $response->assertRedirectToRoute('welcome');
     }
 
     /**
@@ -111,6 +111,6 @@ class VerifyRoleTest extends TestCase
         $user->roles()->attach($role);
 
         $response = $this->actingAs($user)->get('is/editor');
-        $response->assertStatus(403);
+        $response->assertRedirectToRoute('welcome');
     }
 }

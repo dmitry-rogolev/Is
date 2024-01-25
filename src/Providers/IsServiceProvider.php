@@ -34,7 +34,7 @@ class IsServiceProvider extends ServiceProvider
         $this->loadRoutes();
         $this->publishFiles();
         $this->registerCommands();
-        
+
         if (config('is.uses.middlewares')) {
             $this->app['router']->aliasMiddleware('is', VerifyRole::class);
             $this->app['router']->aliasMiddleware('role', VerifyRole::class);
@@ -60,9 +60,11 @@ class IsServiceProvider extends ServiceProvider
         }
     }
 
-    public function loadRoutes(): void 
+    public function loadRoutes(): void
     {
-        $this->loadRoutesFrom(__DIR__."/../../routes/web.php");
+        if (config('is.uses.api')) {
+            $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
+        }
     }
 
     /**
