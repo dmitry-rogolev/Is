@@ -6,10 +6,17 @@ use dmitryrogolev\Is\Providers\IsServiceProvider;
 use dmitryrogolev\Testing\Concerns\InteractsWithDatabase;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
+use Orchestra\Testbench\Concerns\WithWorkbench;
+use function Orchestra\Testbench\workbench_path;
+use Orchestra\Testbench\Attributes\WithMigration;
 
+#[WithMigration('cache', 'job', 'notifications', 'session', 'laravel')]
 class TestCase extends \Orchestra\Testbench\TestCase
 {
     use InteractsWithDatabase;
+    use WithWorkbench;
+    use InteractsWithViews;
 
     /**
      * Количество выполненных запросов к БД.
@@ -51,7 +58,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
      */
     protected function defineRoutes($router)
     {
-        $router->middleware('web')->group(__DIR__.'/routes/web.php');
+        $router->middleware('web')->group(workbench_path('routes/web.php'));
     }
 
     /**

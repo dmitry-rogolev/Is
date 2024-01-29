@@ -3,6 +3,8 @@
 namespace dmitryrogolev\Is\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase as TestingRefreshDatabase;
+use function Orchestra\Testbench\workbench_path;
+use function Orchestra\Testbench\artisan;
 
 trait RefreshDatabase
 {
@@ -14,7 +16,7 @@ trait RefreshDatabase
     protected function defineDatabaseMigrations(): void
     {
         $this->loadMigrationsFrom(
-            __DIR__.'/database/migrations'
+            workbench_path('database/migrations')
         );
     }
 }

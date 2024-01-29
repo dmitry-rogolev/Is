@@ -1,6 +1,6 @@
 <?php
 
-namespace dmitryrogolev\Is\Tests\Database\Factories;
+namespace dmitryrogolev\Is\Workbench\Database\Factories;
 
 use Orchestra\Testbench\Factories\UserFactory as TestbenchUserFactory;
 

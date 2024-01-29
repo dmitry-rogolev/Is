@@ -1,9 +1,9 @@
 <?php
 
-namespace dmitryrogolev\Is\Tests\Models;
+namespace dmitryrogolev\Is\Workbench\App\Models;
 
 use dmitryrogolev\Is\Contracts\Roleable;
-use dmitryrogolev\Is\Tests\Database\Factories\UserFactory;
+use dmitryrogolev\Is\Workbench\Database\Factories\UserFactory;
 use dmitryrogolev\Is\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

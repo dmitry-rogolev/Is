@@ -1,6 +1,6 @@
 <?php
 
-namespace dmitryrogolev\Is\Tests\Models;
+namespace dmitryrogolev\Is\Workbench\App\Models;
 
 use dmitryrogolev\Is\Models\Role as Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;

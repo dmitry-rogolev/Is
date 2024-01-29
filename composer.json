@@ -26,11 +26,11 @@
         {
             "type": "vcs",
             "url": "git@github.com:dmitry-rogolev/Slug.git"
-        }, 
+        },
         {
             "type": "vcs",
             "url": "git@github.com:dmitry-rogolev/Service.git"
-        }, 
+        },
         {
             "type": "vcs",
             "url": "git@github.com:dmitry-rogolev/Helper.git"
@@ -43,8 +43,9 @@
         "dmitryrogolev/helper": "^0.0.3"
     },
     "require-dev": {
-        "orchestra/testbench": "^8.15",
-        "laravel/pint": "^1.13"
+        "laravel/pint": "^1.13",
+        "orchestra/testbench": "^8.21",
+        "nunomaduro/collision": "^7.10"
     },
     "autoload": {
         "psr-4": {
@@ -56,7 +57,9 @@
     "autoload-dev": {
         "psr-4": {
             "dmitryrogolev\\Is\\Tests\\": "tests/",
-            "dmitryrogolev\\Is\\Tests\\Database\\Factories\\": "tests/database/factories/"
+            "dmitryrogolev\\Is\\Workbench\\App\\": "workbench/app/",
+            "dmitryrogolev\\Is\\Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "dmitryrogolev\\Is\\Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
         }
     },
     "extra": {
@@ -69,7 +72,23 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "scripts": {
-        "test": "vendor/bin/phpunit", 
-        "pint": "vendor/bin/pint"
+        "test": "@php vendor/bin/testbench package:test",
+        "pint": "@php vendor/bin/pint",
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve"
+        ],
+        "lint": [
+            "@php vendor/bin/pint",
+            "@php vendor/bin/phpstan analyse"
+        ]
     }
 }
