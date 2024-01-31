@@ -1,8 +1,7 @@
 <?php
 
-namespace dmitryrogolev\Is\Workbench\Database\Seeders;
+namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder

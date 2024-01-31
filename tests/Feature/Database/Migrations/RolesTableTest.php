@@ -27,11 +27,6 @@ class RolesTableTest extends TestCase
     protected string $model;
 
     /**
-     * Имя первичного ключа.
-     */
-    protected string $keyName;
-
-    /**
      * Имя временной метки создания записи.
      */
     protected string $createdAt;
@@ -53,7 +48,6 @@ class RolesTableTest extends TestCase
         $this->migration = require __DIR__.'/../../../../database/migrations/create_roles_table.php';
         $this->table = config('is.tables.roles');
         $this->model = config('is.models.role');
-        $this->keyName = config('is.primary_key');
         $this->createdAt = app($this->model)->getCreatedAtColumn();
         $this->updatedAt = app($this->model)->getUpdatedAtColumn();
         $this->deletedAt = app($this->model)->getDeletedAtColumn();
@@ -87,59 +81,8 @@ class RolesTableTest extends TestCase
     public function test_has_id(): void
     {
         $this->migration->up();
-        $hasPrimaryKey = Schema::hasColumn($this->table, $this->keyName);
+        $hasPrimaryKey = Schema::hasColumn($this->table, 'id');
 
         $this->assertTrue($hasPrimaryKey);
-    }
-
-    /**
-     * Есть ли временные метки у таблицы?
-     */
-    public function test_has_timestamps(): void
-    {
-        $hasCreatedAt = fn () => Schema::hasColumn($this->table, $this->createdAt);
-        $hasUpdatedAt = fn () => Schema::hasColumn($this->table, $this->updatedAt);
-
-        // ! ||--------------------------------------------------------------------------------||
-        // ! ||                      Подтверждаем наличие временных меток.                     ||
-        // ! ||--------------------------------------------------------------------------------||
-
-        config(['is.uses.timestamps' => true]);
-        $this->migration->up();
-        $this->assertTrue($hasCreatedAt() && $hasUpdatedAt());
-        $this->migration->down();
-
-        // ! ||--------------------------------------------------------------------------------||
-        // ! ||                    Подтверждаем отсутствие временных меток.                    ||
-        // ! ||--------------------------------------------------------------------------------||
-
-        config(['is.uses.timestamps' => false]);
-        $this->migration->up();
-        $this->assertTrue(! $hasCreatedAt() && ! $hasUpdatedAt());
-    }
-
-    /**
-     * Есть ли у таблицы поле программного удаления?
-     */
-    public function test_has_deleted_at(): void
-    {
-        $checkDeletedAt = fn () => Schema::hasColumn($this->table, $this->deletedAt);
-
-        // ! ||--------------------------------------------------------------------------------||
-        // ! ||           Подтверждаем наличие временно метки программного удаления.           ||
-        // ! ||--------------------------------------------------------------------------------||
-
-        config(['is.uses.soft_deletes' => true]);
-        $this->migration->up();
-        $this->assertTrue($checkDeletedAt());
-        $this->migration->down();
-
-        // ! ||--------------------------------------------------------------------------------||
-        // ! ||         Подтверждаем отсутствие временной метки программного удаления.         ||
-        // ! ||--------------------------------------------------------------------------------||
-
-        config(['is.uses.soft_deletes' => false]);
-        $this->migration->up();
-        $this->assertTrue(! $checkDeletedAt());
     }
 }

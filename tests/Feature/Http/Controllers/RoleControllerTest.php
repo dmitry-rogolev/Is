@@ -144,29 +144,16 @@ class RoleControllerTest extends TestCase
         $user = $this->createUser();
         $this->actingAs($user);
 
-        if (config('is.uses.soft_deletes')) {
-            $role = Is::generate();
+        $role = Is::generate();
 
-            $response = $this->delete(route('roles.destroy', ['role' => $role->id]));
-            $response->assertStatus(200);
+        $response = $this->delete(route('roles.destroy', ['role' => $role->id]));
+        $response->assertStatus(200);
 
-            $this->assertSoftDeleted($role);
-        } else {
-            $role = Is::generate();
-
-            $response = $this->delete(route('roles.destroy', ['role' => $role->id]));
-            $response->assertNoContent();
-
-            $this->assertModelMissing($role);
-        }
+        $this->assertSoftDeleted($role);
     }
 
     public function test_restore(): void
     {
-        if (! config('is.uses.soft_deletes')) {
-            $this->markTestSkipped();
-        }
-
         $user = $this->createUser();
         $this->actingAs($user);
 
@@ -182,10 +169,6 @@ class RoleControllerTest extends TestCase
 
     public function test_force_destroy(): void
     {
-        if (! config('is.uses.soft_deletes')) {
-            $this->markTestSkipped();
-        }
-
         $user = $this->createUser();
         $this->actingAs($user);
 

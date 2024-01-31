@@ -1,20 +1,20 @@
 providers:
-  - dmitryrogolev\Is\Workbench\App\Providers\WorkbenchServiceProvider
+  - App\Providers\WorkbenchServiceProvider
 
 migrations:
   - workbench/database/migrations
 
 seeders:
-  - dmitryrogolev\Is\Workbench\Database\Seeders\DatabaseSeeder
+  - Database\Seeders\DatabaseSeeder
 
 workbench:
   start: '/'
-  install: true
+  install: false
   discovers:
     web: true
     api: true
-    commands: false
-    components: false
+    commands: true
+    components: true
     views: true
   build: []
   assets: []

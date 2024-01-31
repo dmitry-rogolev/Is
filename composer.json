@@ -57,9 +57,9 @@
     "autoload-dev": {
         "psr-4": {
             "dmitryrogolev\\Is\\Tests\\": "tests/",
-            "dmitryrogolev\\Is\\Workbench\\App\\": "workbench/app/",
-            "dmitryrogolev\\Is\\Workbench\\Database\\Factories\\": "workbench/database/factories/",
-            "dmitryrogolev\\Is\\Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+            "App\\": "workbench/app/",
+            "Database\\Factories\\": "workbench/database/factories/",
+            "Seeders\\": "workbench/database/seeders/"
         }
     },
     "extra": {

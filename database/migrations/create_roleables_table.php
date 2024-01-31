@@ -32,10 +32,7 @@ return new class extends Migration
             Schema::create($this->table, function (Blueprint $table) {
                 $table->foreignIdFor(config('is.models.role'));
                 $table->morphs(config('is.relations.roleable'));
-
-                if (config('is.uses.timestamps')) {
-                    $table->timestamps();
-                }
+                $table->timestamps();
             });
         }
     }

@@ -16,11 +16,6 @@ class ServiceTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * Имя первичного ключа.
-     */
-    protected string $keyName;
-
-    /**
      * Имя модели.
      */
     protected string $model;
@@ -34,7 +29,6 @@ class ServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->keyName = config('is.primary_key');
         $this->model = config('is.models.role');
         $this->user = config('is.models.user');
     }

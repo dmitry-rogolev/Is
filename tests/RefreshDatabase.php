@@ -3,8 +3,8 @@
 namespace dmitryrogolev\Is\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase as TestingRefreshDatabase;
+
 use function Orchestra\Testbench\workbench_path;
-use function Orchestra\Testbench\artisan;
 
 trait RefreshDatabase
 {

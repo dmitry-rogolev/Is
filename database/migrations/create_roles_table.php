@@ -15,11 +15,6 @@ return new class extends Migration
     protected string $table;
 
     /**
-     * Имя первичного ключа.
-     */
-    protected string $keyName;
-
-    /**
      * Имя slug'а.
      */
     protected string $slugName;
@@ -27,7 +22,6 @@ return new class extends Migration
     public function __construct()
     {
         $this->table = config('is.tables.roles');
-        $this->keyName = config('is.primary_key');
         $this->slugName = app(config('is.models.role'))->getSlugName();
     }
 
@@ -40,19 +34,13 @@ return new class extends Migration
 
         if (! $exists) {
             Schema::create($this->table, function (Blueprint $table) {
-                config('is.uses.uuid') ? $table->uuid($this->keyName) : $table->id($this->keyName);
+                $table->uuid('id');
                 $table->string('name', 255);
                 $table->string($this->slugName, 255)->unique();
                 $table->text('description')->nullable();
                 $table->tinyInteger('level')->default(0);
-
-                if (config('is.uses.timestamps')) {
-                    $table->timestamps();
-                }
-
-                if (config('is.uses.soft_deletes')) {
-                    $table->softDeletes();
-                }
+                $table->timestamps();
+                $table->softDeletes();
             });
         }
     }

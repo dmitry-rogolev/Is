@@ -17,7 +17,7 @@ class RoleResource extends JsonResource
             'level' => $this->level,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
-            'deletedAt' => $this->when(config('is.uses.soft_deletes'), $this->deleted_at),
+            'deletedAt' => $this->deleted_at,
         ];
     }
 }

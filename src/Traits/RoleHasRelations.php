@@ -16,8 +16,6 @@ trait RoleHasRelations
      */
     public function roleables(string $related): MorphToMany
     {
-        $query = $this->morphedByMany($related, config('is.relations.roleable'))->using(config('is.models.roleable'));
-
-        return config('is.uses.timestamps') ? $query->withTimestamps() : $query;
+        return $this->morphedByMany($related, config('is.relations.roleable'))->using(config('is.models.roleable'))->withTimestamps();
     }
 }

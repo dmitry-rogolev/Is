@@ -4,6 +4,7 @@ namespace dmitryrogolev\Is\Models;
 
 use dmitryrogolev\Contracts\Sluggable;
 use dmitryrogolev\Is\Contracts\RoleHasRelations as ContractRoleHasRelations;
+use dmitryrogolev\Is\Database\Factories\RoleFactory;
 use dmitryrogolev\Is\Traits\RoleHasRelations;
 use dmitryrogolev\Traits\HasSlug;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -15,11 +16,13 @@ use Illuminate\Support\Str;
 /**
  * Модель роли.
  */
-abstract class BaseRole extends Model implements ContractRoleHasRelations, Sluggable
+class Role extends Model implements ContractRoleHasRelations, Sluggable
 {
     use HasFactory;
     use HasSlug;
+    use HasUuids;
     use RoleHasRelations;
+    use SoftDeletes;
 
     /**
      * Атрибуты, для которых разрешено массовое присвоение значений.
@@ -36,8 +39,6 @@ abstract class BaseRole extends Model implements ContractRoleHasRelations, Slugg
     {
         parent::__construct($attributes);
 
-        $this->setKeyName(config('is.primary_key'));
-        $this->timestamps = config('is.uses.timestamps');
         $this->setTable(config('is.tables.roles'));
 
         array_push($this->fillable, $this->getSlugName());
@@ -65,34 +66,8 @@ abstract class BaseRole extends Model implements ContractRoleHasRelations, Slugg
         return Str::slug($str, config('is.separator'));
     }
 
-    /**
-     * Создайте новый экземпляр фабрики для модели.
-     *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory<static>
-     */
-    protected static function newFactory()
+    protected static function newFactory(): RoleFactory
     {
-        return config('is.factories.role')::new();
-    }
-}
-
-if (config('is.uses.uuid') && config('is.uses.soft_deletes')) {
-    class Role extends BaseRole
-    {
-        use HasUuids, SoftDeletes;
-    }
-} elseif (config('is.uses.uuid')) {
-    class Role extends BaseRole
-    {
-        use HasUuids;
-    }
-} elseif (config('is.uses.soft_deletes')) {
-    class Role extends BaseRole
-    {
-        use SoftDeletes;
-    }
-} else {
-    class Role extends BaseRole
-    {
+        return RoleFactory::new();
     }
 }

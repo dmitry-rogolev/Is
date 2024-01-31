@@ -41,14 +41,4 @@ class RoleableTest extends TestCase
 
         $this->assertEquals(config('is.tables.roleables'), $roleable->getTable());
     }
-
-    /**
-     * Совпадает ли флаг включения временных меток в модели с конфигом?
-     */
-    public function test_timestamps(): void
-    {
-        $roleable = app($this->model);
-
-        $this->assertEquals(config('is.uses.timestamps'), $roleable->usesTimestamps());
-    }
 }

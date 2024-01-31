@@ -20,9 +20,7 @@ trait HasRoles
      */
     public function roles(): MorphToMany
     {
-        $query = $this->morphToMany(config('is.models.role'), config('is.relations.roleable'))->using(config('is.models.roleable'));
-
-        return config('is.uses.timestamps') ? $query->withTimestamps() : $query;
+        return $this->morphToMany(config('is.models.role'), config('is.relations.roleable'))->using(config('is.models.roleable'))->withTimestamps();
     }
 
     /**

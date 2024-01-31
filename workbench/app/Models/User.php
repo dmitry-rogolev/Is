@@ -1,73 +1,37 @@
 <?php
 
-namespace dmitryrogolev\Is\Workbench\App\Models;
+namespace App\Models;
 
+use Database\Factories\UserFactory;
 use dmitryrogolev\Is\Contracts\Roleable;
-use dmitryrogolev\Is\Workbench\Database\Factories\UserFactory;
 use dmitryrogolev\Is\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Model;
 
-/**
- * Модель пользователя.
- */
-abstract class BaseUser extends Model implements Roleable
+class User extends Model implements Roleable
 {
     use HasFactory;
     use HasRoles;
+    use HasUuids;
+    use SoftDeletes;
 
-    /**
-     * Таблица БД, ассоциированная с моделью.
-     *
-     * @var string
-     */
     protected $table = 'users';
 
-    /**
-     * Атрибуты, для которых НЕ разрешено массовое присвоение значений.
-     *
-     * @var array<string>
-     */
-    protected $guarded = [];
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
 
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
-        $this->setKeyName(config('is.primary_key'));
-        $this->timestamps = config('is.uses.timestamps');
-    }
-
-    /**
-     * Создайте новый экземпляр фабрики для модели.
-     *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory<static>
-     */
-    protected static function newFactory()
+    protected static function newFactory(): UserFactory
     {
         return UserFactory::new();
-    }
-}
-
-if (config('is.uses.uuid') && config('is.uses.soft_deletes')) {
-    class User extends BaseUser
-    {
-        use HasUuids, SoftDeletes;
-    }
-} elseif (config('is.uses.uuid')) {
-    class User extends BaseUser
-    {
-        use HasUuids;
-    }
-} elseif (config('is.uses.soft_deletes')) {
-    class User extends BaseUser
-    {
-        use SoftDeletes;
-    }
-} else {
-    class User extends BaseUser
-    {
     }
 }

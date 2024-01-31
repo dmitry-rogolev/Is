@@ -102,30 +102,4 @@ class RoleablesTableTest extends TestCase
 
         $this->assertTrue($checkId && $checkType);
     }
-
-    /**
-     * Есть ли временные метки у таблицы?
-     */
-    public function test_has_timestamps(): void
-    {
-        $hasCreatedAt = fn () => Schema::hasColumn($this->table, $this->createdAt);
-        $hasUpdatedAt = fn () => Schema::hasColumn($this->table, $this->updatedAt);
-
-        // ! ||--------------------------------------------------------------------------------||
-        // ! ||                      Подтверждаем наличие временных меток.                     ||
-        // ! ||--------------------------------------------------------------------------------||
-
-        config(['is.uses.timestamps' => true]);
-        $this->migration->up();
-        $this->assertTrue($hasCreatedAt() && $hasUpdatedAt());
-        $this->migration->down();
-
-        // ! ||--------------------------------------------------------------------------------||
-        // ! ||                    Подтверждаем отсутствие временных меток.                    ||
-        // ! ||--------------------------------------------------------------------------------||
-
-        config(['is.uses.timestamps' => false]);
-        $this->migration->up();
-        $this->assertTrue(! $hasCreatedAt() && ! $hasUpdatedAt());
-    }
 }

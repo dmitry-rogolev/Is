@@ -55,15 +55,6 @@ class ConfigTest extends TestCase
     }
 
     /**
-     * Есть ли конфигурация имени первичного ключа?
-     */
-    public function test_primary_key(): void
-    {
-        $this->assertTrue(is_string(config('is.primary_key')));
-        $this->assertNotEmpty(config('is.primary_key'));
-    }
-
-    /**
      * Есть ли конфигурация разделителя строк?
      */
     public function test_separator(): void
@@ -110,30 +101,6 @@ class ConfigTest extends TestCase
     public function test_seeders_role(): void
     {
         $this->assertTrue(class_exists(config('is.seeders.role')));
-    }
-
-    /**
-     * Есть ли конфигурация флага использования UUID?
-     */
-    public function test_uses_uuid(): void
-    {
-        $this->assertTrue(is_bool(config('is.uses.uuid')));
-    }
-
-    /**
-     * Есть ли конфигурация флага программного удаления моделей?
-     */
-    public function test_uses_soft_deletes(): void
-    {
-        $this->assertTrue(is_bool(config('is.uses.soft_deletes')));
-    }
-
-    /**
-     * Есть ли конфигурация флага временных меток моделей?
-     */
-    public function test_uses_timestamps(): void
-    {
-        $this->assertTrue(is_bool(config('is.uses.timestamps')));
     }
 
     /**

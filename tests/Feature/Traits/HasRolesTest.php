@@ -25,18 +25,12 @@ class HasRolesTest extends TestCase
      */
     protected string $user;
 
-    /**
-     * Имя первичного ключа.
-     */
-    protected string $keyName;
-
     public function setUp(): void
     {
         parent::setUp();
 
         $this->model = config('is.models.role');
         $this->user = config('is.models.user');
-        $this->keyName = config('is.primary_key');
     }
 
     /**
@@ -48,7 +42,7 @@ class HasRolesTest extends TestCase
         $roles = $this->generate($this->model, 3);
         $roles->each(fn ($role) => $user->roles()->attach($role));
         $this->generate($this->model, 2);
-        $expected = $roles->pluck($this->keyName)->all();
+        $expected = $roles->pluck('id')->all();
 
         // ! ||--------------------------------------------------------------------------------||
         // ! ||                         Подтверждаем возврат отношения.                        ||
@@ -61,26 +55,8 @@ class HasRolesTest extends TestCase
         // ! ||                      Подтверждаем получение ролей модели.                      ||
         // ! ||--------------------------------------------------------------------------------||
 
-        $actual = $user->roles()->get()->pluck($this->keyName)->all();
+        $actual = $user->roles()->get()->pluck('id')->all();
         $this->assertEquals($expected, $actual);
-
-        // ! ||--------------------------------------------------------------------------------||
-        // ! ||          Подтверждаем наличие временных меток у промежуточных моделей.         ||
-        // ! ||--------------------------------------------------------------------------------||
-
-        config(['is.uses.timestamps' => true]);
-        $pivot = $user->roles()->first()->pivot;
-        $this->assertNotNull($pivot->{$pivot->getCreatedAtColumn()});
-        $this->assertNotNull($pivot->{$pivot->getUpdatedAtColumn()});
-
-        // ! ||--------------------------------------------------------------------------------||
-        // ! ||        Подтверждаем отсутствие временных меток у промежуточных моделей.        ||
-        // ! ||--------------------------------------------------------------------------------||
-
-        config(['is.uses.timestamps' => false]);
-        $pivot = $user->roles()->first()->pivot;
-        $this->assertNull($pivot->{$pivot->getCreatedAtColumn()});
-        $this->assertNull($pivot->{$pivot->getUpdatedAtColumn()});
     }
 
     /**
@@ -107,7 +83,7 @@ class HasRolesTest extends TestCase
 
         config(['is.uses.levels' => false]);
         $expected = [$level2->getKey()];
-        $actual = $user->getRoles()->pluck($this->keyName)->all();
+        $actual = $user->getRoles()->pluck('id')->all();
         $this->assertEquals($expected, $actual);
 
         // ! ||--------------------------------------------------------------------------------||
@@ -116,7 +92,7 @@ class HasRolesTest extends TestCase
 
         config(['is.uses.levels' => true]);
         $expected = [$level1->getKey(), $level2->getKey()];
-        $actual = $user->getRoles()->pluck($this->keyName)->all();
+        $actual = $user->getRoles()->pluck('id')->all();
         $this->assertEquals($expected, $actual);
 
         // ! ||--------------------------------------------------------------------------------||
@@ -217,7 +193,7 @@ class HasRolesTest extends TestCase
 
         $condition = $user->attachRole($role);
         $this->assertFalse($condition);
-        $roles = $user->roles->where($this->keyName, $role->getKey());
+        $roles = $user->roles->where('id', $role->getKey());
         $this->assertCount(1, $roles);
 
         // ! ||--------------------------------------------------------------------------------||
@@ -423,7 +399,7 @@ class HasRolesTest extends TestCase
 
         $condition = $user->attachRole(...$roles);
         $this->assertFalse($condition);
-        $this->assertTrue($user->roles->where($this->keyName, last($roles)->getKey())->count() === 1);
+        $this->assertTrue($user->roles->where('id', last($roles)->getKey())->count() === 1);
         $this->assertTrue(
             collect($roles)->slice(0, count($roles) - 1)->every(
                 fn ($role) => ! $user->roles->contains(
@@ -615,7 +591,7 @@ class HasRolesTest extends TestCase
 
         $condition = $user->attachRole($role);
         $this->assertFalse($condition);
-        $roles = $user->roles->where($this->keyName, $role->getKey());
+        $roles = $user->roles->where('id', $role->getKey());
         $this->assertCount(1, $roles);
 
         // ! ||--------------------------------------------------------------------------------||
@@ -795,7 +771,7 @@ class HasRolesTest extends TestCase
         $this->assertFalse($condition);
         $this->assertTrue(
             collect($roles)->every(
-                fn ($role) => $user->roles->where($this->keyName, $role->getKey())->count() === 1
+                fn ($role) => $user->roles->where('id', $role->getKey())->count() === 1
             )
         );
 
@@ -1045,7 +1021,7 @@ class HasRolesTest extends TestCase
         // ! ||                   Подтверждаем возврат логического значения.                   ||
         // ! ||--------------------------------------------------------------------------------||
 
-        $roles = $this->generate($this->model, 3)->pluck($this->keyName)->all();
+        $roles = $this->generate($this->model, 3)->pluck('id')->all();
         $user->roles()->attach($roles);
         $user->loadRoles();
         $condition = $user->detachRole($roles);
@@ -1055,7 +1031,7 @@ class HasRolesTest extends TestCase
         // ! ||                        Передаем массив идентификаторов.                        ||
         // ! ||--------------------------------------------------------------------------------||
 
-        $roles = $this->generate($this->model, 3)->pluck($this->keyName)->all();
+        $roles = $this->generate($this->model, 3)->pluck('id')->all();
         $user->roles()->attach($roles);
         $user->loadRoles();
         $condition = $user->detachRole(...$roles);
@@ -1070,7 +1046,7 @@ class HasRolesTest extends TestCase
         // ! ||                       Передаем коллекцию идентификаторов.                      ||
         // ! ||--------------------------------------------------------------------------------||
 
-        $roles = $this->generate($this->model, 3)->pluck($this->keyName)->all();
+        $roles = $this->generate($this->model, 3)->pluck('id')->all();
         $user->roles()->attach($roles);
         $user->loadRoles();
         $condition = $user->detachRole(collect($roles));
@@ -1087,7 +1063,7 @@ class HasRolesTest extends TestCase
 
         $slugName = app($this->model)->getSlugName();
         $roles = $this->generate($this->model, 3);
-        $user->roles()->attach($roles->pluck($this->keyName)->all());
+        $user->roles()->attach($roles->pluck('id')->all());
         $user->loadRoles();
         $condition = $user->detachRole(...$roles->pluck($slugName)->all());
         $this->assertTrue($condition);
@@ -1102,7 +1078,7 @@ class HasRolesTest extends TestCase
         // ! ||--------------------------------------------------------------------------------||
 
         $roles = $this->generate($this->model, 3);
-        $user->roles()->attach($roles->pluck($this->keyName)->all());
+        $user->roles()->attach($roles->pluck('id')->all());
         $user->loadRoles();
         $condition = $user->detachRole($roles->all());
         $this->assertTrue($condition);
@@ -1116,7 +1092,7 @@ class HasRolesTest extends TestCase
         // ! ||                    Передаем массив не присоединенных ролей.                    ||
         // ! ||--------------------------------------------------------------------------------||
 
-        $roles = $this->generate($this->model, 3)->pluck($this->keyName)->all();
+        $roles = $this->generate($this->model, 3)->pluck('id')->all();
         $condition = $user->detachRole(...$roles);
         $this->assertFalse($condition);
 
@@ -1147,7 +1123,7 @@ class HasRolesTest extends TestCase
         // ! ||                      при передачи массива идентификаторов.                     ||
         // ! ||--------------------------------------------------------------------------------||
 
-        $roles = $this->generate($this->model, 3)->pluck($this->keyName)->all();
+        $roles = $this->generate($this->model, 3)->pluck('id')->all();
         $user->roles()->attach($roles);
         $user->loadRoles();
         $this->resetQueryExecutedCount();
@@ -1160,7 +1136,7 @@ class HasRolesTest extends TestCase
         // ! ||--------------------------------------------------------------------------------||
 
         $roles = $this->generate($this->model, 3);
-        $user->roles()->attach($roles->pluck($this->keyName)->all());
+        $user->roles()->attach($roles->pluck('id')->all());
         $user->loadRoles();
         $this->resetQueryExecutedCount();
         $user->detachRole($roles->all());
@@ -1183,7 +1159,7 @@ class HasRolesTest extends TestCase
 
         config(['is.uses.load_on_update' => false]);
         $roles = $this->generate($this->model, 3);
-        $user->roles()->attach($roles->pluck($this->keyName)->all());
+        $user->roles()->attach($roles->pluck('id')->all());
         $user->loadRoles();
         $this->resetQueryExecutedCount();
         $user->detachRole($roles->all());
@@ -1274,7 +1250,7 @@ class HasRolesTest extends TestCase
         $role = $this->generate($this->model);
         $expected = [$role->getKey()];
         $user->syncRoles($role->getKey());
-        $actual = $user->roles->pluck($this->keyName)->all();
+        $actual = $user->roles->pluck('id')->all();
         $this->assertEquals($expected, $actual);
 
         // ! ||--------------------------------------------------------------------------------||
@@ -1284,7 +1260,7 @@ class HasRolesTest extends TestCase
         $role = $this->generate($this->model);
         $expected = [$role->getKey()];
         $user->syncRoles($role);
-        $actual = $user->roles->pluck($this->keyName)->all();
+        $actual = $user->roles->pluck('id')->all();
         $this->assertEquals($expected, $actual);
 
         // ! ||--------------------------------------------------------------------------------||
@@ -1292,9 +1268,9 @@ class HasRolesTest extends TestCase
         // ! ||--------------------------------------------------------------------------------||
 
         $roles = $this->generate($this->model, 3);
-        $expected = $roles->pluck($this->keyName)->all();
+        $expected = $roles->pluck('id')->all();
         $user->syncRoles($expected);
-        $actual = $user->roles->pluck($this->keyName)->all();
+        $actual = $user->roles->pluck('id')->all();
         $this->assertEquals($expected, $actual);
 
         // ! ||--------------------------------------------------------------------------------||
@@ -1302,9 +1278,9 @@ class HasRolesTest extends TestCase
         // ! ||--------------------------------------------------------------------------------||
 
         $roles = $this->generate($this->model, 3);
-        $expected = $roles->pluck($this->keyName)->all();
+        $expected = $roles->pluck('id')->all();
         $user->syncRoles($roles);
-        $actual = $user->roles->pluck($this->keyName)->all();
+        $actual = $user->roles->pluck('id')->all();
         $this->assertEquals($expected, $actual);
 
         // ! ||--------------------------------------------------------------------------------||
@@ -1776,7 +1752,7 @@ class HasRolesTest extends TestCase
         // ! ||                        Передаем массив идентификаторов.                        ||
         // ! ||--------------------------------------------------------------------------------||
 
-        $roles = $this->generate($this->model, 3)->pluck($this->keyName);
+        $roles = $this->generate($this->model, 3)->pluck('id');
         $user->attachRole($roles);
         $condition = $user->hasRole($roles);
         $this->assertTrue($condition);
@@ -1835,7 +1811,7 @@ class HasRolesTest extends TestCase
         // ! ||                      при передаче массива идентификаторов.                     ||
         // ! ||--------------------------------------------------------------------------------||
 
-        $roles = $this->generate($this->model, 3)->pluck($this->keyName)->all();
+        $roles = $this->generate($this->model, 3)->pluck('id')->all();
         $user->attachRole($roles);
         $this->resetQueryExecutedCount();
         $user->hasRole($roles);
@@ -2088,7 +2064,7 @@ class HasRolesTest extends TestCase
         // ! ||                        Передаем массив идентификаторов.                        ||
         // ! ||--------------------------------------------------------------------------------||
 
-        $roles = $this->generate($this->model, 3)->pluck($this->keyName);
+        $roles = $this->generate($this->model, 3)->pluck('id');
         $user->attachRole($roles);
         $condition = $user->hasRole($roles, true);
         $this->assertTrue($condition);
@@ -2147,7 +2123,7 @@ class HasRolesTest extends TestCase
         // ! ||                      при передаче массива идентификаторов.                     ||
         // ! ||--------------------------------------------------------------------------------||
 
-        $roles = $this->generate($this->model, 3)->pluck($this->keyName)->all();
+        $roles = $this->generate($this->model, 3)->pluck('id')->all();
         $user->attachRole($roles);
         $this->resetQueryExecutedCount();
         $user->hasRole($roles, true);

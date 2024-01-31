@@ -9,10 +9,10 @@ use Illuminate\Http\Request;
 
 class DeleteRole
 {
-    public function handle(Request $request, Model $role): mixed
+    public function handle(Request $request, Model $role): RoleResource
     {
         Is::destroy($role);
 
-        return config('is.uses.soft_deletes') ? new RoleResource($role) : null;
+        return new RoleResource($role);
     }
 }
