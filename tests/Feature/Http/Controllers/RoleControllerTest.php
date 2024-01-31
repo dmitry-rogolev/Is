@@ -2,6 +2,7 @@
 
 namespace dmitryrogolev\Is\Tests\Feature\Http\Controllers;
 
+use App\Models\User;
 use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;
@@ -22,7 +23,7 @@ class RoleControllerTest extends TestCase
 
         config(['is.uses.api' => true]);
         $this->seed(config('is.seeders.role'));
-        $this->user = config('is.models.user');
+        $this->user = User::class;
         $this->slugName = app(config('is.models.role'))->getSlugName();
     }
 

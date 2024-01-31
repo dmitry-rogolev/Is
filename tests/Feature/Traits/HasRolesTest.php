@@ -2,6 +2,7 @@
 
 namespace dmitryrogolev\Is\Tests\Feature\Traits;
 
+use App\Models\User;
 use BadMethodCallException;
 use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;
@@ -30,7 +31,7 @@ class HasRolesTest extends TestCase
         parent::setUp();
 
         $this->model = config('is.models.role');
-        $this->user = config('is.models.user');
+        $this->user = User::class;
     }
 
     /**

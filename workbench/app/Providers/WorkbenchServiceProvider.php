@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use Illuminate\Support\ServiceProvider;
 
 class WorkbenchServiceProvider extends ServiceProvider
@@ -20,7 +21,7 @@ class WorkbenchServiceProvider extends ServiceProvider
     public function boot(): void
     {
         config('is.models.role')::macro('users', function () {
-            return $this->roleables(config('is.models.user'));
+            return $this->roleables(User::class);
         });
     }
 }

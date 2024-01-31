@@ -2,6 +2,7 @@
 
 namespace dmitryrogolev\Is\Tests\Feature\Traits;
 
+use App\Models\User;
 use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -33,7 +34,7 @@ class RoleHasRelationsTest extends TestCase
         parent::setUp();
 
         $this->model = config('is.models.role');
-        $this->user = config('is.models.user');
+        $this->user = User::class;
         $this->pivot = config('is.models.roleable');
     }
 

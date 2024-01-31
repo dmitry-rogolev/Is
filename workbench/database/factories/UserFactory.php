@@ -2,17 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Orchestra\Testbench\Factories\UserFactory as TestbenchUserFactory;
 
-/**
- * Фабрика модели пользователя.
- */
 class UserFactory extends TestbenchUserFactory
 {
-    public function __construct(...$parameters)
-    {
-        parent::__construct(...$parameters);
-
-        $this->model = config('is.models.user');
-    }
+    protected $model = User::class;
 }

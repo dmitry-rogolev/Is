@@ -2,6 +2,7 @@
 
 namespace dmitryrogolev\Is\Tests\Feature\Http\Middlewares;
 
+use App\Models\User;
 use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;
 
@@ -34,7 +35,7 @@ class VerifyRoleTest extends TestCase
         config(['is.uses.levels' => false]);
 
         $this->model = config('is.models.role');
-        $this->user = config('is.models.user');
+        $this->user = User::class;
         $this->slugName = app($this->model)->getSlugName();
     }
 

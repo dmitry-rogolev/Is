@@ -60,9 +60,6 @@ return [
         // Промежуточная модель
         'roleable' => env('IS_MODELS_ROLEABLE', \dmitryrogolev\Is\Models\Roleable::class),
 
-        // Пользователь по умолчанию
-        'user' => env('IS_MODELS_USER', config('auth.providers.users.model')),
-
     ],
 
     /**

@@ -2,6 +2,7 @@
 
 namespace dmitryrogolev\Is\Tests\Feature\Services;
 
+use App\Models\User;
 use dmitryrogolev\Contracts\Resourcable;
 use dmitryrogolev\Is\Facades\Is;
 use dmitryrogolev\Is\Services\RoleService;
@@ -30,7 +31,7 @@ class ServiceTest extends TestCase
         parent::setUp();
 
         $this->model = config('is.models.role');
-        $this->user = config('is.models.user');
+        $this->user = User::class;
     }
 
     /**

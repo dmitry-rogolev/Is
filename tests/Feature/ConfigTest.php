@@ -80,14 +80,6 @@ class ConfigTest extends TestCase
     }
 
     /**
-     * Есть ли конфигурация имени модели пользователя?
-     */
-    public function test_models_user(): void
-    {
-        $this->assertTrue(class_exists(config('is.models.user')));
-    }
-
-    /**
      * Есть ли конфигурация имени фабрики модели роли?
      */
     public function test_factories_role(): void
