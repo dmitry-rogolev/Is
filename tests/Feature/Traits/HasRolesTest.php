@@ -2,7 +2,7 @@
 
 namespace dmitryrogolev\Is\Tests\Feature\Traits;
 
-use App\Models\User;
+use dmitryrogolev\Is\Tests\Models\User;
 use BadMethodCallException;
 use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;

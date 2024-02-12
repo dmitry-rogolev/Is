@@ -2,7 +2,7 @@
 
 namespace dmitryrogolev\Is\Tests\Feature\Http\Middlewares;
 
-use App\Models\User;
+use dmitryrogolev\Is\Tests\Models\User;
 use dmitryrogolev\Is\Tests\RefreshDatabase;
 use dmitryrogolev\Is\Tests\TestCase;
 

@@ -7,8 +7,6 @@ use dmitryrogolev\Testing\Concerns\InteractsWithDatabase;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-use function Orchestra\Testbench\workbench_path;
-
 class TestCase extends \Orchestra\Testbench\TestCase
 {
     use InteractsWithDatabase;
@@ -53,7 +51,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
      */
     protected function defineRoutes($router)
     {
-        $router->middleware('web')->group(workbench_path('routes/web.php'));
+        $router->middleware('web')->group(__DIR__.'/routes/web.php');
     }
 
     /**

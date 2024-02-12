@@ -1,8 +1,8 @@
 <?php
 
-namespace Database\Factories;
+namespace dmitryrogolev\Is\Tests\Database\Factories;
 
-use App\Models\User;
+use dmitryrogolev\Is\Tests\Models\User;
 use Orchestra\Testbench\Factories\UserFactory as TestbenchUserFactory;
 
 class UserFactory extends TestbenchUserFactory

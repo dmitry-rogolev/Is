@@ -1,7 +1,7 @@
 {
     "name": "dmitryrogolev/is",
     "description": "Functional roles for the Laravel framework.",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "type": "library",
     "keywords": [
         "roles",
@@ -22,20 +22,20 @@
             "role": "Developer"
         }
     ],
-    "repositories": [
-        {
+    "repositories": {
+        "slug": {
             "type": "vcs",
             "url": "git@github.com:dmitry-rogolev/Slug.git"
         },
-        {
+        "service": {
             "type": "vcs",
             "url": "git@github.com:dmitry-rogolev/Service.git"
         },
-        {
+        "helper": {
             "type": "vcs",
             "url": "git@github.com:dmitry-rogolev/Helper.git"
         }
-    ],
+    },
     "require": {
         "laravel/framework": "^10.30",
         "dmitryrogolev/service": "^0.0.1",
@@ -57,9 +57,7 @@
     "autoload-dev": {
         "psr-4": {
             "dmitryrogolev\\Is\\Tests\\": "tests/",
-            "App\\": "workbench/app/",
-            "Database\\Factories\\": "workbench/database/factories/",
-            "Seeders\\": "workbench/database/seeders/"
+            "dmitryrogolev\\Is\\Tests\\Database\\Factories\\": "tests/database/factories/"
         }
     },
     "extra": {
@@ -75,42 +73,64 @@
         "test": "@php vendor/bin/testbench package:test",
         "pint": "@php vendor/bin/pint",
         "create-skeleton": [
-            "composer create-project laravel/laravel skeleton --verbose", 
-            "composer require laravel/jetstream --working-dir=skeleton", 
-            "npm install --prefix=skeleton", 
-            "ln -s $PWD/skeleton/node_modules $PWD --verbose", 
-            "ln $PWD/skeleton/package.json $PWD --verbose", 
-            "ln $PWD/skeleton/package-lock.json $PWD --verbose", 
-            "ln $PWD/workbench/vite.config.js $PWD --verbose", 
+            "composer create-project laravel/laravel skeleton --verbose",
+            "composer require laravel/jetstream --working-dir=skeleton",
+
+            "npm install --prefix=skeleton",
+            "ln -s $PWD/skeleton/node_modules $PWD --verbose",
+            "ln $PWD/skeleton/package.json $PWD --verbose",
+            "ln $PWD/skeleton/package-lock.json $PWD --verbose",
+            "ln $PWD/workbench/vite.config.js $PWD --verbose",
             "ln $PWD/workbench/tailwind.config.js $PWD --verbose",
-            "php skeleton/artisan jetstream:install livewire --dark", 
-            "touch skeleton/database/database.sqlite", 
-            "rm skeleton/.env --verbose", 
+            "php skeleton/artisan jetstream:install livewire --dark",
+
+            "rm -r skeleton/database/seeders --verbose",
+            "ln -s $PWD/workbench/database/seeders $PWD/skeleton/database --verbose",
+            "rm -r skeleton/database/migrations --verbose",
+            "ln -s $PWD/workbench/database/migrations $PWD/skeleton/database --verbose",
+
+            "ln -s $PWD/skeleton/public $PWD --verbose",
+            "rm -r skeleton/resources --verbose",
+            "ln -s $PWD/workbench/resources $PWD/skeleton --verbose",
+            "rm -r skeleton/app/View --verbose",
+            "ln -s $PWD/workbench/app/View $PWD/skeleton/app --verbose", 
+
+            "rm -r skeleton/app/Models --verbose", 
+            "ln -s $PWD/workbench/app/Models $PWD/skeleton/app --verbose", 
+
+            "composer config repositories.is vcs git@github.com:dmitry-rogolev/Is.git --working-dir=skeleton", 
+            "composer config repositories.slug vcs git@github.com:dmitry-rogolev/Slug.git --working-dir=skeleton", 
+            "composer config repositories.service vcs git@github.com:dmitry-rogolev/Service.git --working-dir=skeleton", 
+            "composer config repositories.helper vcs git@github.com:dmitry-rogolev/Helper.git --working-dir=skeleton", 
+            "composer require dmitryrogolev/is:dev-dev --working-dir=skeleton", 
+            "composer artisan is:install", 
+
+            "touch skeleton/database/database.sqlite",
+            "rm skeleton/.env --verbose",
             "ln $PWD/workbench/.env $PWD/skeleton --verbose", 
-            "php skeleton/artisan migrate", 
-            "ln -s $PWD/skeleton/public $PWD --verbose", 
-            "rm -r skeleton/resources --verbose", 
-            "ln -s $PWD/workbench/resources $PWD/skeleton --verbose", 
-            "rm -r skeleton/app/View --verbose", 
-            "ln -s $PWD/workbench/app/View $PWD/skeleton/app --verbose"
-        ], 
+            "@php skeleton/artisan migrate --seed"
+        ],
         "remove-skeleton": [
-            "rm -r skeleton --verbose", 
-            "rm -r node_modules --verbose", 
-            "rm package.json --verbose", 
-            "rm package-lock.json --verbose", 
-            "rm vite.config.js --verbose", 
-            "rm tailwind.config.js --verbose", 
-            "rm -r public --verbose"
-        ], 
+            "rm -r skeleton --verbose",
+            "rm -r node_modules --verbose",
+            "rm package.json --verbose",
+            "rm package-lock.json --verbose",
+            "rm vite.config.js --verbose",
+            "rm tailwind.config.js --verbose",
+            "rm -r public --verbose", 
+            "rm workbench/database/seeders/RoleSeeder.php --verbose", 
+            "rm workbench/database/migrations/create_roles_table.php --verbose", 
+            "rm workbench/database/migrations/create_roleables_table.php --verbose"
+        ],
         "build": [
             "npm run build"
         ],
         "dev": [
             "npm run dev"
-        ], 
+        ],
         "serve": [
             "@php skeleton/artisan serve"
-        ]
+        ],
+        "artisan": "@php skeleton/artisan"
     }
 }
