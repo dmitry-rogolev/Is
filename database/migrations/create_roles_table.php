@@ -9,14 +9,8 @@ use Illuminate\Support\Facades\Schema;
  */
 return new class extends Migration
 {
-    /**
-     * Имя таблицы.
-     */
     protected string $table;
 
-    /**
-     * Имя slug'а.
-     */
     protected string $slugName;
 
     public function __construct()
@@ -25,9 +19,6 @@ return new class extends Migration
         $this->slugName = app(config('is.models.role'))->getSlugName();
     }
 
-    /**
-     * Запустить миграцию.
-     */
     public function up(): void
     {
         $exists = Schema::hasTable($this->table);
@@ -45,9 +36,6 @@ return new class extends Migration
         }
     }
 
-    /**
-     * Откатить миграцию.
-     */
     public function down(): void
     {
         Schema::dropIfExists($this->table);

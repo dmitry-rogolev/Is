@@ -11,9 +11,6 @@ use Illuminate\Support\Facades\Schema;
  */
 return new class extends Migration
 {
-    /**
-     * Имя таблицы.
-     */
     protected string $table;
 
     public function __construct()
@@ -21,9 +18,6 @@ return new class extends Migration
         $this->table = config('is.tables.roleables');
     }
 
-    /**
-     * Запустить миграцию.
-     */
     public function up(): void
     {
         $exists = Schema::hasTable($this->table);
@@ -37,9 +31,6 @@ return new class extends Migration
         }
     }
 
-    /**
-     * Откатить миграцию.
-     */
     public function down(): void
     {
         Schema::dropIfExists($this->table);

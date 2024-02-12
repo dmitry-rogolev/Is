@@ -13,9 +13,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
-/**
- * Модель роли.
- */
 class Role extends Model implements ContractRoleHasRelations, Sluggable
 {
     use HasFactory;
@@ -24,11 +21,6 @@ class Role extends Model implements ContractRoleHasRelations, Sluggable
     use RoleHasRelations;
     use SoftDeletes;
 
-    /**
-     * Атрибуты, для которых разрешено массовое присвоение значений.
-     *
-     * @var array<string>
-     */
     protected $fillable = [
         'name',
         'description',
@@ -44,11 +36,6 @@ class Role extends Model implements ContractRoleHasRelations, Sluggable
         array_push($this->fillable, $this->getSlugName());
     }
 
-    /**
-     * Возвращает столбцы, которые содержат уникальные данные.
-     *
-     * @return array<int, string>
-     */
     public function uniqueKeys()
     {
         return [
@@ -56,11 +43,6 @@ class Role extends Model implements ContractRoleHasRelations, Sluggable
         ];
     }
 
-    /**
-     * Приводит переданную строку к "slug" значению.
-     *
-     * @param  string  $str  Входная строка.
-     */
     public static function toSlug(string $str): string
     {
         return Str::slug($str, config('is.separator'));
