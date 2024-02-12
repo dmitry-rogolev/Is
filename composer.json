@@ -74,21 +74,39 @@
     "scripts": {
         "test": "@php vendor/bin/testbench package:test",
         "pint": "@php vendor/bin/pint",
-        "post-autoload-dump": [
-            "@clear",
-            "@prepare"
+        "create-skeleton": [
+            "composer create-project laravel/laravel skeleton --verbose", 
+            "composer require laravel/jetstream --working-dir=skeleton", 
+            "npm install --prefix=skeleton", 
+            "ln -s skeleton/node_modules ./ --verbose", 
+            "ln skeleton/package.json ./ --verbose", 
+            "ln skeleton/package-lock.json ./ --verbose", 
+            "ln workbench/vite.config.js ./ --verbose", 
+            "ln workbench/tailwind.config.js ./ --verbose",
+            "php skeleton/artisan jetstream:install livewire --dark", 
+            "touch skeleton/database/database.sqlite", 
+            "rm skeleton/.env --verbose", 
+            "ln workbench/.env skeleton --verbose", 
+            "php skeleton/artisan migrate", 
+            "ln -s skeleton/public ./ --verbose"
+        ], 
+        "remove-skeleton": [
+            "rm -r skeleton --verbose", 
+            "rm -r node_modules --verbose", 
+            "rm package.json --verbose", 
+            "rm package-lock.json --verbose", 
+            "rm vite.config.js --verbose", 
+            "rm tailwind.config.js --verbose", 
+            "rm -r public --verbose"
+        ], 
+        "build": [
+            "npm run build"
         ],
-        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
-        "prepare": "@php vendor/bin/testbench package:discover --ansi",
-        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "dev": [
+            "npm run dev"
+        ], 
         "serve": [
-            "Composer\\Config::disableProcessTimeout",
-            "@build",
-            "@php vendor/bin/testbench serve"
-        ],
-        "lint": [
-            "@php vendor/bin/pint",
-            "@php vendor/bin/phpstan analyse"
+            "@php skeleton/artisan serve"
         ]
     }
 }
